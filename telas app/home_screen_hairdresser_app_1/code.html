@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Meus Agendamentos - Exclusive Barbershop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "background-dark": "#0a0a0a",
+                        "surface-dark": "#121212",
+                        "surface-light": "#2a2a2a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-bg {
+            background-color: #111;
+            background-image: 
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-slate-100 font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-black border-x border-zinc-900">
+<div class="absolute inset-0 carbon-bg opacity-30 pointer-events-none"></div>
+<header class="flex items-center justify-between p-4 pt-6 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-primary/20">
+<button class="p-2 -ml-2 rounded-full hover:bg-zinc-800 text-primary transition-colors">
+<span class="material-symbols-outlined text-[28px]">chevron_left</span>
+</button>
+<h1 class="text-sm font-extrabold tracking-[0.2em] text-white uppercase">Meus Agendamentos</h1>
+<div class="w-10"></div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-8 text-center relative z-10 pb-32">
+<div class="mb-8 relative">
+<div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
+<div class="relative w-24 h-24 bg-zinc-900/80 border border-primary/30 rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-primary text-[48px]" style="font-variation-settings: 'FILL' 0, 'wght' 200;">calendar_today</span>
+</div>
+</div>
+<h2 class="text-xl font-bold text-white uppercase tracking-tight mb-3">Você não possui nenhum agendamento ativo.</h2>
+<p class="text-slate-400 text-sm leading-relaxed mb-10 max-w-[280px]">
+                É hora de agendar seu próximo corte e manter o estilo em dia!
+            </p>
+<button class="w-full h-16 bg-gradient-to-r from-primary to-[#bfa040] hover:from-[#cfaa33] hover:to-[#dcb650] text-black rounded-sm shadow-[0_4px_25px_-5px_rgba(212,175,55,0.4)] flex items-center justify-center gap-3 font-extrabold text-base uppercase tracking-[0.1em] transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl">add_circle</span>
+                AGENDAR NOVO HORÁRIO
+            </button>
+<div class="mt-12">
+<a class="text-[10px] font-bold text-slate-500 hover:text-primary transition-colors uppercase tracking-[0.2em] border-b border-zinc-800 pb-1" href="#">
+                    Precisa de ajuda? Fale conosco
+                </a>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/10 pb-safe pt-2 px-6 max-w-md mx-auto z-50">
+<div class="flex justify-between items-end pb-4">
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">home</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Início</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-primary" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Agendamentos</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">history</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Histórico</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">account_circle</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Perfil</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

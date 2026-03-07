@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pix Payment and Summary Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "gold": {
+                            50: "#fff9eb",
+                            100: "#fdf1ce",
+                            200: "#fbe2a0",
+                            300: "#f8cf69",
+                            400: "#f5ba38",
+                            500: "#dca715",
+                            600: "#b07d0d",
+                            700: "#8c5c0d",
+                            800: "#734a12",
+                            900: "#633f14",
+                        },
+                        "dark-bg": "#080808",
+                        "dark-card": "#141414",
+                        "dark-surface": "#1e1e1e",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: 100dvh;
+            background-color: #080808;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-dark-bg text-slate-200 font-display antialiased flex flex-col">
+<div class="sticky top-0 z-30 bg-dark-bg/90 backdrop-blur-xl border-b border-white/5 p-4">
+<div class="flex items-center justify-between max-w-md mx-auto">
+<button class="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h2 class="text-white text-lg font-bold tracking-tight">Pagamento</h2>
+<div class="size-10"></div>
+</div>
+</div>
+<main class="flex-1 w-full max-w-md mx-auto px-5 pt-6 pb-48">
+<section class="mb-8">
+<h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-4 px-1">Resumo do Agendamento</h3>
+<div class="p-5 rounded-3xl bg-dark-card border border-white/5 shadow-2xl relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-gold-500/5 blur-[50px] rounded-full -mr-16 -mt-16"></div>
+<div class="flex items-start gap-4">
+<div class="size-14 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shrink-0 shadow-lg">
+<span class="material-symbols-outlined text-black text-3xl">content_cut</span>
+</div>
+<div class="flex-1">
+<h4 class="text-white font-extrabold text-xl leading-tight">Corte Moderno</h4>
+<div class="mt-3 space-y-2">
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-gold-500 text-[18px]">calendar_today</span>
+<span class="text-sm font-medium">Domingo, 8 Out</span>
+</div>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined text-gold-500 text-[18px]">schedule</span>
+<span class="text-sm font-medium">18:00 • 30 min</span>
+</div>
+<div class="flex items-start gap-2 text-slate-400 pt-1 border-t border-white/5">
+<span class="material-symbols-outlined text-gold-500 text-[18px] mt-0.5">location_on</span>
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-slate-200">The Barber Elite</span>
+<span class="text-[11px] leading-tight text-slate-500">Av. Paulista, 1200 - Jardins, São Paulo</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-8">
+<div class="flex items-center justify-between mb-4 px-1">
+<h3 class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Método de Pagamento</h3>
+<span class="text-[10px] bg-gold-500/10 text-gold-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Apenas Pix</span>
+</div>
+<div class="space-y-3">
+<div class="p-5 rounded-2xl bg-dark-card border-2 border-gold-500 flex items-center justify-between shadow-xl ring-1 ring-gold-500/20">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-lg bg-[#32BCAD]/10 flex items-center justify-center">
+<svg class="size-6" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.0001 2.3999L6.1511 8.2489L12.0001 14.0979L17.8491 8.2489L12.0001 2.3999Z" fill="#32BCAD"></path>
+<path d="M12.0001 21.6001L17.8491 15.7511L12.0001 9.9021L6.1511 15.7511L12.0001 21.6001Z" fill="#32BCAD"></path>
+<path d="M2.3999 12.0001L8.2489 17.8491L14.0979 12.0001L8.2489 6.1511L2.3999 12.0001Z" fill="#32BCAD"></path>
+<path d="M21.6001 12.0001L15.7511 6.1511L9.9021 12.0001L15.7511 17.8491L21.6001 12.0001Z" fill="#32BCAD"></path>
+</svg>
+</div>
+<div>
+<span class="text-white font-bold text-lg block">Pix</span>
+<span class="text-slate-500 text-xs font-medium">Aprovação instantânea</span>
+</div>
+</div>
+<div class="size-6 rounded-full border-2 border-gold-500 flex items-center justify-center p-1">
+<div class="size-full bg-gold-500 rounded-full"></div>
+</div>
+</div>
+<p class="text-[11px] text-slate-500 text-center mt-4 font-medium italic">O pagamento via Pix é obrigatório para garantir a exclusividade do horário.</p>
+</div>
+</section>
+<section class="mt-10 border-t border-white/5 pt-6">
+<div class="flex justify-between items-center mb-2 px-1">
+<span class="text-slate-400 font-medium">Subtotal</span>
+<span class="text-white font-bold">R$ 85,00</span>
+</div>
+<div class="flex justify-between items-center mb-6 px-1">
+<span class="text-slate-400 font-medium">Taxa de Reserva</span>
+<span class="text-gold-500 font-bold">Grátis</span>
+</div>
+<div class="flex justify-between items-end px-1">
+<div>
+<span class="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1">Valor Total</span>
+<span class="text-white text-3xl font-black tracking-tight leading-none">R$ 85,00</span>
+</div>
+</div>
+</section>
+</main>
+<div class="fixed bottom-0 left-0 right-0 bg-dark-bg/95 backdrop-blur-2xl border-t border-white/5 p-6 pb-10 z-40">
+<div class="max-w-md mx-auto space-y-4">
+<button class="w-full h-16 bg-gradient-to-r from-gold-600 via-gold-500 to-gold-600 bg-[length:200%_100%] hover:bg-[100%_0] transition-all duration-500 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
+<span>Pagar com Pix e Confirmar</span>
+<span class="material-symbols-outlined font-black">qr_code_2</span>
+</button>
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-slate-500 text-[16px]">info</span>
+<p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">
+                    Cancelamentos não permitidos, apenas reagendamentos
+                </p>
+</div>
+</div>
+</div>
+
+</body></html>

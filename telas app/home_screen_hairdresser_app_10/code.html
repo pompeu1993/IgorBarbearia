@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barber Shop - Criar Conta</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "charcoal": "#121212",
+                        "deep-black": "#0a0a0a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-texture {
+            background-color: #121212;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .gold-glow {
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 1px #D4AF37;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-deep-black text-slate-100 font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-deep-black border-x border-zinc-900 carbon-texture">
+<div class="pt-12 px-6 flex items-center relative z-10">
+<a class="inline-flex items-center justify-center w-10 h-10 -ml-2 text-primary hover:text-primary-dark transition-colors" href="#">
+<span class="material-symbols-outlined text-3xl">chevron_left</span>
+</a>
+</div>
+<div class="px-8 pt-8 pb-10 relative z-10">
+<h1 class="text-4xl font-extrabold text-primary mb-2 tracking-tight">
+                Criar Conta
+            </h1>
+<p class="text-slate-400 text-sm font-medium tracking-wide">Preencha os dados para começar sua experiência premium.</p>
+</div>
+<div class="px-8 flex-1 relative z-10">
+<form class="space-y-5">
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary/70 ml-1">Nome Completo</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-xl group-focus-within:text-primary">person</span>
+<input class="w-full bg-zinc-900/50 border border-primary/30 rounded-sm py-4 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:border-primary transition-all bg-black/20" placeholder="Seu nome completo" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary/70 ml-1">E-mail</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-xl group-focus-within:text-primary">mail</span>
+<input class="w-full bg-zinc-900/50 border border-primary/30 rounded-sm py-4 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:border-primary transition-all bg-black/20" placeholder="seu@email.com" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary/70 ml-1">Número de Celular</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-xl group-focus-within:text-primary">call</span>
+<input class="w-full bg-zinc-900/50 border border-primary/30 rounded-sm py-4 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:border-primary transition-all bg-black/20" placeholder="(00) 00000-0000" type="tel"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary/70 ml-1">Senha</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-xl group-focus-within:text-primary">lock</span>
+<input class="w-full bg-zinc-900/50 border border-primary/30 rounded-sm py-4 pl-12 pr-12 text-white placeholder:text-zinc-600 focus:border-primary transition-all bg-black/20" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary-dark text-black font-extrabold py-5 rounded-sm uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-[0.98] mt-6" type="submit">
+                    CADASTRAR
+                </button>
+</form>
+<div class="mt-10 text-center pb-12">
+<p class="text-zinc-400 text-xs">
+                    Já tem uma conta? 
+                    <a class="text-primary font-bold uppercase ml-1 hover:underline" href="#">Entre</a>
+</p>
+</div>
+</div>
+<div class="h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-30 mt-auto"></div>
+</div>
+
+</body></html>

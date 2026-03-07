@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barber Admin Dashboard - Appointment Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "background-dark": "#0a0a0a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-bg {
+            background-color: #111;
+            background-image: 
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: 100dvh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-slate-100 font-display antialiased overflow-hidden">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-black border-x border-zinc-900">
+<div class="absolute inset-0 carbon-bg opacity-30 pointer-events-none"></div>
+<header class="grid grid-cols-2 items-center px-6 py-5 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-primary/20">
+<div class="flex items-center">
+<div class="text-[10px] font-bold tracking-[0.2em] text-primary uppercase border border-primary/30 px-3 py-1.5 rounded bg-primary/10">Barbearia</div>
+</div>
+<div class="flex justify-end">
+<button class="relative p-2 rounded-full hover:bg-zinc-800 text-slate-100 transition-colors">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+</button>
+</div>
+</header>
+<main class="flex-1 overflow-y-auto pb-32 hide-scrollbar relative z-10 filter blur-[2px]">
+<div class="px-6 py-8">
+<div class="flex items-center gap-4 mb-6">
+<div class="w-14 h-14 rounded-full p-0.5 border border-primary/50 bg-black overflow-hidden">
+<img alt="Barber Profile" class="w-full h-full object-cover rounded-full grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrb0_aTnKRkAfGDLmDgrA5s1tNhII27yVQ2jZL2a5ALb3Rk8DXKW_pYAsN-oFEa52YpkFXMEqAxWaitoFQH-v--VHgL0a08TLfbpnOoKRGtP8PvwKNo02B4YDUJoP_UscU5Fszvd-bnpIEvHEzm1HL510MSDqKqxl5vf00rFAyKWPyOSSNOMz7VW26bQTHd-7b5iQ2e3SQMnC0iJtoyhbk4WhCbti16c_S4lXrrxukhJdGlvmcsG-iP1jHXDejCoNcrENRZ99huQA"/>
+</div>
+<div>
+<h1 class="text-xl font-bold text-white uppercase tracking-tight">Painel Admin</h1>
+<p class="text-xs text-primary font-medium uppercase tracking-widest">Bom trabalho, Carlos</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between border-l-4 border-primary pl-3 mb-4">
+<h2 class="text-sm font-bold text-white uppercase tracking-widest">Próximos Clientes</h2>
+</div>
+<div class="bg-zinc-900/80 border border-white/5 rounded-sm p-4 flex justify-between items-center">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">09:00 - 09:45</span>
+<h3 class="text-white font-bold text-base uppercase mt-0.5">Ricardo Alencar</h3>
+<p class="text-[10px] text-slate-400 font-medium uppercase tracking-wide">Corte + Barba Therapy</p>
+</div>
+<button class="h-9 w-9 bg-zinc-800 rounded flex items-center justify-center text-primary border border-primary/20 transition-all shrink-0">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+</div>
+<div class="bg-zinc-900/80 border border-white/5 rounded-sm p-4 flex justify-between items-center">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">10:00 - 10:30</span>
+<h3 class="text-white font-bold text-base uppercase mt-0.5">Marcos Silva</h3>
+<p class="text-[10px] text-slate-400 font-medium uppercase tracking-wide">Degradê Americano</p>
+</div>
+<button class="h-9 w-9 bg-zinc-800 rounded flex items-center justify-center text-primary border border-primary/20 transition-all shrink-0">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed inset-0 z-50 flex items-center justify-center px-6">
+<div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+<div class="relative w-full max-w-sm bg-zinc-900 border border-primary/30 rounded-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+<div class="flex items-center justify-between px-6 py-5 border-b border-white/10 bg-black/40">
+<h2 class="text-sm font-bold text-white uppercase tracking-widest">Detalhes do Agendamento</h2>
+<button class="text-slate-400 hover:text-white transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6">
+<div class="mb-6">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cliente</p>
+<h3 class="text-2xl font-extrabold text-primary uppercase tracking-tight">Ricardo Alencar</h3>
+</div>
+<div class="space-y-4 mb-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">content_cut</span>
+<div>
+<p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Serviço</p>
+<p class="text-sm font-bold text-white uppercase">Corte + Barba Therapy</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">schedule</span>
+<div>
+<p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Horário</p>
+<p class="text-sm font-bold text-white uppercase">09:00 - 09:45 (Hoje)</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">payments</span>
+<div>
+<p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Valor Total</p>
+<p class="text-lg font-extrabold text-white">R$ 85,00</p>
+</div>
+</div>
+</div>
+<div class="bg-red-950/30 border border-red-500/20 rounded p-3 mb-6 flex items-center gap-3">
+<span class="material-symbols-outlined text-red-500 text-lg">info</span>
+<p class="text-[11px] font-bold text-red-400 uppercase tracking-wide">Cancelamentos não permitidos</p>
+</div>
+<div class="space-y-3">
+<button class="w-full py-4 bg-primary text-black font-extrabold text-sm uppercase tracking-[0.15em] rounded-sm shadow-lg shadow-primary/20 flex items-center justify-center gap-2 hover:bg-primary-dark transition-colors active:scale-95">
+<span class="material-symbols-outlined text-lg">event_repeat</span>
+                            Reagendar Horário
+                        </button>
+<button class="w-full py-3 bg-zinc-800 text-slate-300 font-bold text-xs uppercase tracking-widest rounded-sm border border-white/5 hover:bg-zinc-700 transition-colors">
+                            Fechar
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/10 pb-safe pt-2 px-6 max-w-md mx-auto z-40">
+<div class="flex justify-between items-end pb-4">
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400;">dashboard</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] text-slate-500" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Agenda</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] text-slate-500" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Serviços</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] text-slate-500" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Perfil</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

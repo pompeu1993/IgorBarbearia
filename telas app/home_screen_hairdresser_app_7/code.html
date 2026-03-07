@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barber Full Agenda Screen - Admin Block View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "background-light": "#1c1c1c",
+                        "background-dark": "#0a0a0a",
+                        "surface-dark": "#121212",
+                        "surface-light": "#2a2a2a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-bg {
+            background-color: #111;
+            background-image: 
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: 100dvh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-slate-100 font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-black border-x border-zinc-900">
+<div class="absolute inset-0 carbon-bg opacity-30 pointer-events-none"></div>
+<header class="flex items-center justify-between px-6 py-5 bg-black/90 backdrop-blur-md sticky top-0 z-30 border-b border-primary/20">
+<div>
+<h1 class="text-lg font-bold text-white uppercase tracking-tight">Agenda Completa</h1>
+<p class="text-[10px] text-primary font-bold uppercase tracking-widest">Carlos Barber</p>
+</div>
+<button class="p-2 rounded-full hover:bg-zinc-800 text-slate-100 transition-colors">
+<span class="material-symbols-outlined text-[24px]">calendar_month</span>
+</button>
+</header>
+<div class="bg-black/80 backdrop-blur-sm border-b border-white/5 sticky top-[77px] z-20 py-4">
+<div class="flex gap-4 px-6 overflow-x-auto hide-scrollbar">
+<div class="flex flex-col items-center min-w-[50px] py-3 rounded-sm border border-white/10 opacity-50">
+<span class="text-[10px] font-bold uppercase tracking-tighter mb-1">Seg</span>
+<span class="text-lg font-bold">12</span>
+</div>
+<div class="flex flex-col items-center min-w-[50px] py-3 rounded-sm border border-white/10 opacity-50">
+<span class="text-[10px] font-bold uppercase tracking-tighter mb-1">Ter</span>
+<span class="text-lg font-bold">13</span>
+</div>
+<div class="flex flex-col items-center min-w-[50px] py-3 rounded-sm border-2 border-primary bg-primary/10">
+<span class="text-[10px] font-bold uppercase tracking-tighter mb-1 text-primary">Qua</span>
+<span class="text-lg font-bold text-white">14</span>
+</div>
+<div class="flex flex-col items-center min-w-[50px] py-3 rounded-sm border border-white/10 opacity-50 text-white">
+<span class="text-[10px] font-bold uppercase tracking-tighter mb-1">Qui</span>
+<span class="text-lg font-bold">15</span>
+</div>
+<div class="flex flex-col items-center min-w-[50px] py-3 rounded-sm border border-white/10 opacity-50">
+<span class="text-[10px] font-bold uppercase tracking-tighter mb-1">Sex</span>
+<span class="text-lg font-bold">16</span>
+</div>
+<div class="flex flex-col items-center min-w-[50px] py-3 rounded-sm border border-white/10 opacity-50">
+<span class="text-[10px] font-bold uppercase tracking-tighter mb-1">Sáb</span>
+<span class="text-lg font-bold">17</span>
+</div>
+</div>
+</div>
+<main class="flex-1 overflow-y-auto pb-32 hide-scrollbar relative z-10 px-6 py-8">
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="w-12 text-right pt-2">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">08:00</span>
+</div>
+<div class="flex-1 bg-primary p-4 rounded-sm shadow-lg shadow-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-black font-extrabold text-sm uppercase">Ricardo Alencar</h3>
+<p class="text-[10px] text-black/70 font-bold uppercase tracking-wider">Corte + Barba Therapy</p>
+</div>
+<span class="material-symbols-outlined text-black/40">verified</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 text-right pt-2">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">09:00</span>
+</div>
+<button class="flex-1 border-2 border-dashed border-zinc-700/50 p-4 rounded-sm flex items-center justify-between hover:border-red-500/50 hover:bg-red-500/5 transition-all group text-left">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] group-hover:text-red-400">Disponível</span>
+<span class="text-[9px] font-medium text-zinc-600 uppercase tracking-wider group-hover:text-red-500/70 transition-colors">Toque para bloquear</span>
+</div>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-red-500 group-hover:scale-110 transition-all">do_not_disturb_on</span>
+</button>
+</div>
+<div class="flex gap-4">
+<div class="w-12 text-right pt-2">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">10:00</span>
+</div>
+<div class="flex-1 bg-primary p-4 rounded-sm shadow-lg shadow-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-black font-extrabold text-sm uppercase">Marcos Silva</h3>
+<p class="text-[10px] text-black/70 font-bold uppercase tracking-wider">Degradê Americano</p>
+</div>
+<span class="material-symbols-outlined text-black/40">verified</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 text-right pt-2">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">11:00</span>
+</div>
+<div class="flex-1 bg-zinc-900/50 border border-white/5 p-4 rounded-sm flex items-center justify-between opacity-60">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400 text-sm">block</span>
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Horário Bloqueado</span>
+</div>
+<button class="text-[9px] font-bold text-primary uppercase underline underline-offset-2">Desbloquear</button>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 text-right pt-2">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">12:00</span>
+</div>
+<button class="flex-1 border-2 border-dashed border-zinc-700/50 p-4 rounded-sm flex items-center justify-between hover:border-red-500/50 hover:bg-red-500/5 transition-all group text-left">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] group-hover:text-red-400">Disponível</span>
+<span class="text-[9px] font-medium text-zinc-600 uppercase tracking-wider group-hover:text-red-500/70 transition-colors">Toque para bloquear</span>
+</div>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-red-500 group-hover:scale-110 transition-all">do_not_disturb_on</span>
+</button>
+</div>
+<div class="flex gap-4">
+<div class="w-12 text-right pt-2">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">13:00</span>
+</div>
+<div class="flex-1 bg-primary p-4 rounded-sm shadow-lg shadow-primary/10">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-black font-extrabold text-sm uppercase">João Victor</h3>
+<p class="text-[10px] text-black/70 font-bold uppercase tracking-wider">Limpeza de Pele</p>
+</div>
+<span class="material-symbols-outlined text-black/40">verified</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 text-right pt-2">
+<span class="text-xs font-bold text-slate-500 uppercase tracking-tighter">14:00</span>
+</div>
+<button class="flex-1 border-2 border-dashed border-zinc-700/50 p-4 rounded-sm flex items-center justify-between hover:border-red-500/50 hover:bg-red-500/5 transition-all group text-left">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] group-hover:text-red-400">Disponível</span>
+<span class="text-[9px] font-medium text-zinc-600 uppercase tracking-wider group-hover:text-red-500/70 transition-colors">Toque para bloquear</span>
+</div>
+<span class="material-symbols-outlined text-zinc-600 group-hover:text-red-500 group-hover:scale-110 transition-all">do_not_disturb_on</span>
+</button>
+</div>
+</div>
+</main>
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-zinc-900 text-primary border border-primary/30 rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-3xl font-bold">event_busy</span>
+</button>
+<nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/10 pb-safe pt-2 px-6 max-w-md mx-auto z-50">
+<div class="flex justify-between items-end pb-4">
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400;">calendar_today</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Agenda</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">content_cut</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Serviços</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Perfil</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

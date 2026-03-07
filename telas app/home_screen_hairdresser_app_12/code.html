@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barber Shop - Esqueci minha senha</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "charcoal": "#121212",
+                        "deep-black": "#0a0a0a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-texture {
+            background-color: #121212;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .gold-glow {
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 1px #D4AF37;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-deep-black text-slate-100 font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-deep-black border-x border-zinc-900 carbon-texture">
+<div class="px-6 pt-12 pb-6 relative z-10">
+<a class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-primary/20 bg-black/40 text-primary hover:bg-primary/10 transition-colors" href="#">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</a>
+</div>
+<div class="flex flex-col px-8 pt-6 pb-12 relative z-10">
+<h1 class="text-3xl font-extrabold text-white mb-4 tracking-tight">
+                Esqueci minha <br/>senha
+            </h1>
+<p class="text-zinc-400 text-sm font-medium leading-relaxed max-w-[280px]">
+                Informe seu e-mail para receber um link de recuperação.
+            </p>
+</div>
+<div class="px-8 flex-1 relative z-10">
+<form class="space-y-8">
+<div class="space-y-3">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary/70 ml-1">E-mail</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-xl group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full bg-zinc-900/50 border border-primary/30 rounded-sm py-4 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:border-primary transition-all bg-black/20" placeholder="seu@email.com" type="email"/>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full bg-primary hover:bg-primary-dark text-black font-extrabold py-5 rounded-sm uppercase tracking-widest shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" type="submit">
+                        ENVIAR LINK
+                    </button>
+</div>
+</form>
+<div class="mt-12 text-center">
+<p class="text-zinc-500 text-[11px] uppercase tracking-widest leading-relaxed">
+                    Não recebeu o e-mail?<br/>
+<a class="text-primary font-bold hover:underline" href="#">Tentar novamente</a>
+</p>
+</div>
+</div>
+<div class="mt-auto">
+<div class="h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-30"></div>
+<div class="py-10 flex justify-center">
+<div class="w-12 h-12 rounded-full border border-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary/20 text-2xl">content_cut</span>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

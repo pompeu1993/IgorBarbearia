@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestão de Serviços - Barber Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "background-light": "#1c1c1c",
+                        "background-dark": "#0a0a0a",
+                        "surface-dark": "#121212",
+                        "surface-light": "#2a2a2a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-bg {
+            background-color: #111;
+            background-image: 
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }.toggle-checkbox:checked {
+            right: 0;
+            background-color: #D4AF37;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: rgba(212, 175, 55, 0.2);
+        }
+        body {
+            min-height: 100dvh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-slate-100 font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-black border-x border-zinc-900">
+<div class="absolute inset-0 carbon-bg opacity-30 pointer-events-none"></div>
+<header class="flex items-center justify-between px-6 py-5 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-primary/20">
+<h1 class="text-xl font-bold text-white uppercase tracking-tight">Gestão de Serviços</h1>
+<button class="flex items-center gap-1 bg-primary text-black px-3 py-2 rounded-sm text-[10px] font-extrabold uppercase tracking-wider transition-transform active:scale-95">
+<span class="material-symbols-outlined text-sm">add</span>
+                Adicionar Novo
+            </button>
+</header>
+<main class="flex-1 overflow-y-auto pb-32 hide-scrollbar relative z-10">
+<div class="px-6 py-6">
+<p class="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-6">Serviços Ativos</p>
+<div class="space-y-4">
+<div class="bg-zinc-900/80 border border-white/5 p-4 rounded-sm">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-white font-bold text-lg uppercase tracking-tight">Degradê Americano</h3>
+<div class="flex items-center gap-4 mt-1">
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xs">payments</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">R$ 45,00</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">30 min</span>
+</div>
+</div>
+</div>
+<button class="p-2 text-primary hover:bg-white/5 rounded transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-white/5">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status do Serviço</span>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-zinc-600 border-0 appearance-none cursor-pointer right-5 transition-all duration-300 ease-in-out" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-zinc-800 cursor-pointer" for="toggle1"></label>
+</div>
+</div>
+</div>
+<div class="bg-zinc-900/80 border border-white/5 p-4 rounded-sm">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-white font-bold text-lg uppercase tracking-tight">Corte Social</h3>
+<div class="flex items-center gap-4 mt-1">
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xs">payments</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">R$ 35,00</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">40 min</span>
+</div>
+</div>
+</div>
+<button class="p-2 text-primary hover:bg-white/5 rounded transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-white/5">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status do Serviço</span>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-zinc-600 border-0 appearance-none cursor-pointer right-5 transition-all duration-300 ease-in-out" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-zinc-800 cursor-pointer" for="toggle2"></label>
+</div>
+</div>
+</div>
+<div class="bg-zinc-900/80 border border-white/5 p-4 rounded-sm">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-white font-bold text-lg uppercase tracking-tight">Corte na Máquina</h3>
+<div class="flex items-center gap-4 mt-1">
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xs">payments</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">R$ 25,00</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">20 min</span>
+</div>
+</div>
+</div>
+<button class="p-2 text-primary hover:bg-white/5 rounded transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-white/5">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status do Serviço</span>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-zinc-600 border-0 appearance-none cursor-pointer right-5 transition-all duration-300 ease-in-out" id="toggle3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-zinc-800 cursor-pointer" for="toggle3"></label>
+</div>
+</div>
+</div>
+<div class="bg-zinc-900/40 border border-white/5 p-4 rounded-sm opacity-60">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-slate-400 font-bold text-lg uppercase tracking-tight">Barba Therapy</h3>
+<div class="flex items-center gap-4 mt-1">
+<div class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xs">payments</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">R$ 60,00</span>
+</div>
+<div class="flex items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xs">schedule</span>
+<span class="text-[11px] font-bold uppercase tracking-wide">45 min</span>
+</div>
+</div>
+</div>
+<button class="p-2 text-slate-500 hover:bg-white/5 rounded transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-white/5">
+<span class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Status do Serviço</span>
+<div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-zinc-600 border-0 appearance-none cursor-pointer right-5 transition-all duration-300 ease-in-out" id="toggle4" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-5 rounded-full bg-zinc-800 cursor-pointer" for="toggle4"></label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/10 pb-safe pt-2 px-6 max-w-md mx-auto z-50">
+<div class="flex justify-between items-end pb-4">
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Agenda</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400;">content_cut</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Serviços</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Perfil</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

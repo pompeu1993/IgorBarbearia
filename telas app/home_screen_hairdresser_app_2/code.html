@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Barber Shop - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "charcoal": "#121212",
+                        "deep-black": "#0a0a0a",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-texture {
+            background-color: #0a0a0a;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.04) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .gold-glow {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+        .gold-glow-button {
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.4);
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 1px #D4AF37;
+        }
+    </style>
+<style>
+        body {
+            min-height: 100dvh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-deep-black text-slate-100 font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-deep-black border-x border-zinc-900 carbon-texture">
+<div class="flex flex-col items-center justify-center pt-24 pb-12 px-6 relative z-10">
+<div class="mb-8 relative">
+<div class="w-28 h-28 rounded-full border-2 border-primary flex items-center justify-center bg-black/60 backdrop-blur-md gold-glow">
+<span class="material-symbols-outlined text-[72px] text-primary" style="font-variation-settings: 'wght' 200;">
+                        content_cut
+                    </span>
+</div>
+<div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-deep-black px-4">
+<span class="text-primary font-bold tracking-[0.4em] text-[10px] uppercase">Premium</span>
+</div>
+</div>
+<h1 class="text-4xl font-extrabold text-white mb-3 tracking-tight text-center leading-tight">
+                Bem-vindo <br/> de volta
+            </h1>
+<p class="text-slate-400 text-sm font-medium tracking-wide">Entre para agendar seu próximo corte</p>
+</div>
+<div class="px-8 flex-1 flex flex-col relative z-10">
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary/80 ml-1">E-mail</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-xl group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full bg-zinc-900/40 border border-primary/20 rounded-md py-4 pl-12 pr-4 text-white placeholder:text-zinc-700 focus:border-primary transition-all bg-black/30" placeholder="seu@email.com" type="email"/>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="text-[10px] font-bold uppercase tracking-widest text-primary/80">Senha</label>
+<a class="text-[10px] font-bold uppercase tracking-widest text-primary/60 hover:text-primary transition-colors" href="#">Esqueci minha senha</a>
+</div>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/50 text-xl group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full bg-zinc-900/40 border border-primary/20 rounded-md py-4 pl-12 pr-12 text-white placeholder:text-zinc-700 focus:border-primary transition-all bg-black/30" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-xl">visibility</span>
+</button>
+</div>
+</div>
+<button class="w-full bg-primary hover:bg-primary-dark text-black font-extrabold py-5 rounded-md uppercase tracking-[0.2em] transition-all active:scale-[0.98] mt-6 gold-glow-button" type="submit">
+                    Entrar
+                </button>
+</form>
+<div class="mt-12 mb-16 text-center">
+<div class="inline-flex flex-col items-center gap-3">
+<span class="text-zinc-500 text-sm font-medium">Ainda não tem uma conta?</span>
+<a class="relative group" href="#">
+<span class="text-primary font-bold uppercase tracking-widest text-base">Cadastre-se agora</span>
+<span class="absolute -bottom-1 left-0 w-full h-px bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+</a>
+</div>
+</div>
+</div>
+<div class="pb-8 flex flex-col items-center justify-center">
+<div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent mb-4"></div>
+<p class="text-[9px] uppercase tracking-[0.4em] text-zinc-600">The Gentlemen's Choice</p>
+</div>
+<div class="h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
+</div>
+
+</body></html>

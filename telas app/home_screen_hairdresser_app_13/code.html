@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Perfil - Exclusive Haircuts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D4AF37",
+                        "primary-dark": "#b08d26",
+                        "background-dark": "#0a0a0a",
+                        "surface-dark": "#121212",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .carbon-bg {
+            background-color: #111;
+            background-image: 
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black),
+                linear-gradient(45deg, black 25%, transparent 25%, transparent 75%, black 75%, black);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary .expand-icon {
+            transform: rotate(180deg);
+        }
+        details summary {
+            list-style: none;
+        }
+    </style>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: 100dvh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-slate-100 font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-black border-x border-zinc-900">
+<div class="absolute inset-0 carbon-bg opacity-30 pointer-events-none"></div>
+<header class="flex items-center justify-between p-4 pt-6 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-primary/20">
+<button class="p-2 -ml-2 rounded-full hover:bg-zinc-800 text-primary transition-colors">
+<span class="material-symbols-outlined text-[28px]">chevron_left</span>
+</button>
+<h1 class="text-sm font-extrabold tracking-[0.2em] text-white uppercase">Editar Perfil</h1>
+<div class="w-10"></div>
+</header>
+<div class="flex-1 relative z-10 px-6 pt-10 pb-32 overflow-y-auto hide-scrollbar">
+<div class="flex flex-col items-center mb-10">
+<div class="relative group">
+<div class="w-32 h-32 rounded-full p-1 border-2 border-primary shadow-[0_0_20px_rgba(212,175,55,0.2)] bg-black overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover filter grayscale contrast-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrb0_aTnKRkAfGDLmDgrA5s1tNhII27yVQ2jZL2a5ALb3Rk8DXKW_pYAsN-oFEa52YpkFXMEqAxWaitoFQH-v--VHgL0a08TLfbpnOoKRGtP8PvwKNo02B4YDUJoP_UscU5Fszvd-bnpIEvHEzm1HL510MSDqKqxl5vf00rFAyKWPyOSSNOMz7VW26bQTHd-7b5iQ2e3SQMnC0iJtoyhbk4WhCbti16c_S4lXrrxukhJdGlvmcsG-iP1jHXDejCoNcrENRZ99huQA"/>
+</div>
+<button class="absolute bottom-1 right-1 bg-primary text-black rounded-full p-2 shadow-lg border-4 border-black flex items-center justify-center hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</button>
+</div>
+<p class="mt-4 text-[10px] font-bold text-primary uppercase tracking-widest">Toque para alterar foto</p>
+</div>
+<div class="space-y-4">
+<details class="group bg-zinc-900/40 border border-primary/20 rounded-lg overflow-hidden transition-all duration-300 open:border-primary/60 open:bg-zinc-900/80">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Nome</span>
+<span class="text-white font-semibold text-base group-open:hidden">Carlos Eduardo</span>
+</div>
+<span class="material-symbols-outlined text-primary expand-icon transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-5 pb-6">
+<div class="relative">
+<input class="w-full bg-black border border-primary/30 rounded py-4 px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-medium" type="text" value="Carlos Eduardo"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary/50 text-[18px]">person</span>
+</div>
+</div>
+</details>
+<details class="group bg-zinc-900/40 border border-primary/20 rounded-lg overflow-hidden transition-all duration-300 open:border-primary/60 open:bg-zinc-900/80">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">E-mail</span>
+<span class="text-white font-semibold text-base group-open:hidden">carlos.edu@exemplo.com</span>
+</div>
+<span class="material-symbols-outlined text-primary expand-icon transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-5 pb-6">
+<div class="relative">
+<input class="w-full bg-black border border-primary/30 rounded py-4 px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-medium" type="email" value="carlos.edu@exemplo.com"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary/50 text-[18px]">mail</span>
+</div>
+</div>
+</details>
+<details class="group bg-zinc-900/40 border border-primary/20 rounded-lg overflow-hidden transition-all duration-300 open:border-primary/60 open:bg-zinc-900/80">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Telefone</span>
+<span class="text-white font-semibold text-base group-open:hidden">(11) 98765-4321</span>
+</div>
+<span class="material-symbols-outlined text-primary expand-icon transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-5 pb-6">
+<div class="relative">
+<input class="w-full bg-black border border-primary/30 rounded py-4 px-4 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-medium" type="tel" value="(11) 98765-4321"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-primary/50 text-[18px]">call</span>
+</div>
+</div>
+</details>
+</div>
+<div class="mt-10">
+<button class="w-full h-16 bg-gradient-to-r from-primary to-[#bfa040] hover:from-[#cfaa33] hover:to-[#dcb650] text-black rounded-sm shadow-[0_4px_25px_-5px_rgba(212,175,55,0.3)] flex items-center justify-center gap-3 font-extrabold text-lg uppercase tracking-wider transition-all active:scale-[0.98] border border-white/10">
+                Salvar Alterações
+            </button>
+<button class="w-full mt-6 text-slate-500 text-[10px] font-bold uppercase tracking-widest hover:text-white transition-colors">
+                Sair da Conta
+            </button>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-md border-t border-white/10 pb-safe pt-2 px-6 max-w-md mx-auto z-50">
+<div class="flex justify-between items-end pb-4">
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">home</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Início</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">calendar_month</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Agendar</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-slate-500 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">history</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Histórico</span>
+</a>
+<a class="flex flex-col items-center gap-1.5 min-w-[60px] group text-primary" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">account_circle</span>
+<span class="text-[9px] font-bold uppercase tracking-wider">Perfil</span>
+</a>
+</div>
+</div>
+</div>
+
+</body></html>
