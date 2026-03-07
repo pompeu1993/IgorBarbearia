@@ -24,6 +24,12 @@ function LoginContent() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!email || !password) {
+            setErrorMsg("Por favor, preencha o e-mail e a senha.");
+            return;
+        }
+
         setAuthLoading(true);
         setErrorMsg(null);
 
@@ -40,6 +46,11 @@ function LoginContent() {
     };
 
     const handleSignUp = async () => {
+        if (!email || !password) {
+            setErrorMsg("Por favor, preencha o e-mail e a senha para criar a conta.");
+            return;
+        }
+
         setAuthLoading(true);
         setErrorMsg(null);
 
