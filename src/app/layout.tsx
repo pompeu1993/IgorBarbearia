@@ -12,7 +12,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Exclusive Barbershop",
+  title: "Igor Barbearia",
   description: "Agendamento da Barbearia do Igor",
 };
 
