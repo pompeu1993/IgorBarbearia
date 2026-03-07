@@ -31,9 +31,11 @@ model Service {
 model Appointment {
   id        String   @id @default(cuid())
   date      DateTime
-  status    String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status        String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  paymentStatus String   @default("PENDING") // PENDING, PAID, FAILED
+  paymentId     String?  // ID da transação no PagSeguro
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   userId    String
   user      User     @relation(fields: [userId], references: [id])

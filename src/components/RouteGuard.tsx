@@ -5,28 +5,27 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function RouteGuard({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const [isChecking, setIsChecking] = useState(true);
 
     useEffect(() => {
+        if (loading) return; // Espera o AuthProvider carregar a sessão
+
         const publicPaths = ["/", "/login", "/cadastro"];
         const isPublicPath = publicPaths.includes(pathname);
 
-        const savedAuth = localStorage.getItem("barbearia_auth") === "true";
-        const isAuth = isAuthenticated || savedAuth;
-
-        if (!isAuth && !isPublicPath) {
+        if (!isAuthenticated && !isPublicPath) {
             router.replace("/");
         } else {
             setIsChecking(false);
         }
-    }, [isAuthenticated, pathname, router]);
+    }, [isAuthenticated, loading, pathname, router]);
 
-    if (isChecking) {
+    if (loading || isChecking) {
         return (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center min-h-screen z-50 bg-black">
                 <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
         );

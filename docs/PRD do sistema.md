@@ -7,7 +7,8 @@ O aplicativo web da Barbearia do Igor é uma plataforma onde clientes podem agen
 - **Frontend**: Next.js, React, Tailwind CSS
 - **Estilização**: Tailwind (Dark mode, Acentos em Dourado `#D4AF37`, Fonte "Plus Jakarta Sans")
 - **Ícones**: Material Symbols Outlined
-- **Backend/Banco de Dados**: Prisma ORM, banco flexível (PostgreSQL/SQLite)
+- **Backend/Banco de Dados**: Supabase (PostgreSQL) com RLS e Auth nativo.
+- **Pagamentos**: Integração com gateway PagSeguro.
 
 ## 3. Funcionalidades Principais
 1. **Página Inicial (Dashboard)**:
