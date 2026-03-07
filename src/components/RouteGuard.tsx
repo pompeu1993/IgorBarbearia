@@ -17,6 +17,8 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             "/",
             "/login",
             "/cadastro",
+            "/recuperar-senha",
+            "/update-password",
             "/appointments/new",
             "/appointments/new/datetime"
         ];
