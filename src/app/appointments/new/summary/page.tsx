@@ -1,24 +1,129 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
+
+type Service = {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    duration: number;
+};
 
 function SummaryContent() {
     const searchParams = useSearchParams();
-    const serviceId = searchParams.get("serviceId") || "1";
+    const router = useRouter();
+    const serviceId = searchParams.get("serviceId");
+    const datetimeStr = searchParams.get("datetime");
+    const { user } = useAuth();
+
+    const [service, setService] = useState<Service | null>(null);
+    const [loadingService, setLoadingService] = useState(true);
     const [showPixModal, setShowPixModal] = useState(false);
 
-    const serviceName = serviceId === "2" ? "Corte + Barba Therapy" : serviceId === "3" ? "Degradê Americano" : "Corte Moderno";
-    const servicePrice = serviceId === "2" ? "R$ 85,00" : serviceId === "3" ? "R$ 55,00" : "R$ 45,00";
+    // Payment Processing States
+    const [checkingOut, setCheckingOut] = useState(false);
+    const [confirming, setConfirming] = useState(false);
+    const [paymentId, setPaymentId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!serviceId) return;
+        const fetchService = async () => {
+            const { data } = await supabase.from("services").select("*").eq("id", serviceId).single();
+            if (data) setService(data);
+            setLoadingService(false);
+        };
+        fetchService();
+    }, [serviceId]);
+
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
+    };
+
+    const parsedDate = datetimeStr ? new Date(datetimeStr) : new Date();
+    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const weekDays = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+    const formattedDate = `${weekDays[parsedDate.getDay()]}, ${parsedDate.getDate()} ${monthNames[parsedDate.getMonth()]}`;
+    const formattedTime = `${parsedDate.getHours().toString().padStart(2, '0')}:${parsedDate.getMinutes().toString().padStart(2, '0')}`;
+
+    const handleCheckout = async () => {
+        if (!user || !service || !datetimeStr) return;
+        setCheckingOut(true);
+
+        try {
+            const res = await fetch("/api/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    serviceId: service.id,
+                    serviceName: service.name,
+                    price: service.price,
+                    date: datetimeStr,
+                    userId: user.id
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.paymentId) {
+                setPaymentId(data.paymentId);
+                setShowPixModal(true);
+            } else {
+                alert("Erro ao processar pagamento: " + (data.error || "Tente novamente."));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Erro de conexão ao processar agendamento.");
+        } finally {
+            setCheckingOut(false);
+        }
+    };
+
+    const handleConfirmPayment = async () => {
+        if (!paymentId) return;
+        setConfirming(true);
+
+        try {
+            const res = await fetch("/api/checkout/confirm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ paymentId })
+            });
+
+            if (res.ok) {
+                // Success, navigate to Dashboard
+                router.replace("/");
+                router.refresh(); // optionally force refresh
+            } else {
+                alert("Não foi possível confirmar o pagamento. Ele pode ainda estar sendo processado.");
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setConfirming(false);
+            // Optionally close the modal
+        }
+    };
+
+    if (loadingService || !service) {
+        return (
+            <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-black">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-primary text-sm font-bold tracking-widest uppercase">Carregando resumo...</p>
+            </div>
+        );
+    }
 
     return (
         <>
             <div className="sticky top-0 z-30 bg-black/90 backdrop-blur-xl border-b border-white/5 p-4">
                 <div className="flex items-center justify-between mx-auto">
-                    <Link href={`/appointments/new/datetime?serviceId=${serviceId}`} className="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+                    <button onClick={() => router.back()} className="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 transition-colors">
                         <span className="material-symbols-outlined">arrow_back_ios_new</span>
-                    </Link>
+                    </button>
                     <h2 className="text-white text-lg font-bold tracking-tight">Pagamento</h2>
                     <div className="size-10"></div>
                 </div>
@@ -34,15 +139,15 @@ function SummaryContent() {
                                 <span className="material-symbols-outlined text-black text-3xl">content_cut</span>
                             </div>
                             <div className="flex-1">
-                                <h4 className="text-white font-extrabold text-xl leading-tight">{serviceName}</h4>
+                                <h4 className="text-white font-extrabold text-xl leading-tight">{service.name}</h4>
                                 <div className="mt-3 space-y-2">
                                     <div className="flex items-center gap-2 text-slate-400">
                                         <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
-                                        <span className="text-sm font-medium">Domingo, 8 Out</span>
+                                        <span className="text-sm font-medium">{formattedDate}</span>
                                     </div>
                                     <div className="flex items-center gap-2 text-slate-400">
                                         <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
-                                        <span className="text-sm font-medium">18:00 • 30 min</span>
+                                        <span className="text-sm font-medium">{formattedTime} • {service.duration} min</span>
                                     </div>
                                     <div className="flex items-start gap-2 text-slate-400 pt-1 border-t border-white/5">
                                         <span className="material-symbols-outlined text-primary text-[18px] mt-0.5">location_on</span>
@@ -84,7 +189,7 @@ function SummaryContent() {
                 <section className="mt-10 border-t border-white/5 pt-6">
                     <div className="flex justify-between items-center mb-2 px-1">
                         <span className="text-slate-400 font-medium">Subtotal</span>
-                        <span className="text-white font-bold">{servicePrice}</span>
+                        <span className="text-white font-bold">{formatPrice(service.price)}</span>
                     </div>
                     <div className="flex justify-between items-center mb-6 px-1">
                         <span className="text-slate-400 font-medium">Taxa de Reserva</span>
@@ -93,7 +198,7 @@ function SummaryContent() {
                     <div className="flex justify-between items-end px-1">
                         <div>
                             <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1">Valor Total</span>
-                            <span className="text-white text-3xl font-black tracking-tight leading-none">{servicePrice}</span>
+                            <span className="text-white text-3xl font-black tracking-tight leading-none">{formatPrice(service.price)}</span>
                         </div>
                     </div>
                 </section>
@@ -116,7 +221,7 @@ function SummaryContent() {
                                     <div className="text-left">
                                         <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-2 px-1">Chave Pix (E-mail)</span>
                                         <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-4 rounded-2xl group active:bg-white/10 transition-colors cursor-pointer">
-                                            <span className="text-sm font-bold text-white flex-1 truncate">pagamento@exclusivebarber.com</span>
+                                            <span className="text-sm font-bold text-white flex-1 truncate">pagamento@igorbarbearia.com</span>
                                             <button className="text-primary shrink-0">
                                                 <span className="material-symbols-outlined text-lg">content_copy</span>
                                             </button>
@@ -124,13 +229,13 @@ function SummaryContent() {
                                     </div>
                                     <div className="text-left pt-2 border-t border-white/5">
                                         <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1 px-1">Valor</span>
-                                        <span className="text-2xl font-black text-white px-1">{servicePrice}</span>
+                                        <span className="text-2xl font-black text-white px-1">{formatPrice(service.price)}</span>
                                     </div>
                                 </div>
                                 <div className="w-full space-y-5">
-                                    <Link href="/" className="w-full h-16 bg-gradient-to-r from-primary via-[#bfa040] to-primary text-black rounded-2xl font-black text-lg shadow-[0_15px_30px_-10px_rgba(212,175,55,0.4)] active:scale-[0.98] transition-transform flex items-center justify-center">
-                                        Já paguei
-                                    </Link>
+                                    <button onClick={handleConfirmPayment} disabled={confirming} className="w-full h-16 bg-gradient-to-r from-primary via-[#bfa040] to-primary text-black rounded-2xl font-black text-lg shadow-[0_15px_30px_-10px_rgba(212,175,55,0.4)] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center">
+                                        {confirming ? "Confirmando..." : "Já paguei"}
+                                    </button>
                                     <button onClick={() => setShowPixModal(false)} className="text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest px-4 py-2">
                                         Cancelar Pagamento
                                     </button>
@@ -144,9 +249,9 @@ function SummaryContent() {
 
             <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-6 pb-24 z-40 max-w-md mx-auto">
                 <div className="space-y-4">
-                    <button onClick={() => setShowPixModal(true)} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
-                        <span>Pagar com Pix e Confirmar</span>
-                        <span className="material-symbols-outlined font-black">qr_code_2</span>
+                    <button onClick={handleCheckout} disabled={checkingOut} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 disabled:opacity-50 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
+                        <span>{checkingOut ? "Processando..." : "Pagar com Pix e Confirmar"}</span>
+                        {!checkingOut && <span className="material-symbols-outlined font-black">qr_code_2</span>}
                     </button>
                     <div className="flex items-center justify-center gap-2">
                         <span className="material-symbols-outlined text-slate-500 text-[16px]">info</span>
@@ -162,7 +267,10 @@ function SummaryContent() {
 
 export default function SummaryPage() {
     return (
-        <Suspense fallback={<div className="p-8 text-center text-primary">Carregando resumo...</div>}>
+        <Suspense fallback={<div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-black">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p className="text-primary text-sm font-bold tracking-widest uppercase">Carregando...</p>
+        </div>}>
             <SummaryContent />
         </Suspense>
     );
