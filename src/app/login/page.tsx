@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
@@ -40,30 +42,6 @@ function LoginContent() {
 
         if (error) {
             setErrorMsg(error.message);
-        }
-
-        setAuthLoading(false);
-    };
-
-    const handleSignUp = async () => {
-        if (!email || !password) {
-            setErrorMsg("Por favor, preencha o e-mail e a senha para criar a conta.");
-            return;
-        }
-
-        setAuthLoading(true);
-        setErrorMsg(null);
-
-        // Para simplificar, o cadastro só usará email e senha.
-        const { error } = await supabase.auth.signUp({
-            email,
-            password,
-        });
-
-        if (error) {
-            setErrorMsg(error.message);
-        } else {
-            setErrorMsg("Verifique sua caixa de e-mail para confirmar a conta! (Se não exigido pelo painel, basta fazer login com a mesma senha)");
         }
 
         setAuthLoading(false);
@@ -127,14 +105,14 @@ function LoginContent() {
                     </button>
                 </form>
 
-                <div className="text-center">
-                    <button
-                        type="button"
-                        onClick={handleSignUp}
-                        className="text-xs font-bold text-primary hover:text-white transition-colors uppercase tracking-widest"
+                <div className="mt-8 text-center">
+                    <span className="text-slate-400 text-sm">Não tem uma conta? </span>
+                    <Link
+                        href={`/cadastro?redirect=${encodeURIComponent(redirectPath)}`}
+                        className="text-primary font-bold text-sm tracking-wider hover:text-white transition-colors uppercase"
                     >
-                        Ainda não tem conta? Criar conta
-                    </button>
+                        Crie Aqui
+                    </Link>
                 </div>
             </div>
         </div>

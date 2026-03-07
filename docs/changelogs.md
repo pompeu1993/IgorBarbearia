@@ -11,9 +11,10 @@ Todas as modificações do sistema devem ser registradas aqui.
   - Tela `/login` adicionada para simulação de Login/Cadastro.
 - **Implementação Real de Backend (Supabase + PagSeguro):**
   - Criação de migração SQL (`profiles`, `services`, `appointments`) no Supabase MCP.
+  - Criação do banco de dados na Postgres Function + Trigger Automático via SQL (`on_auth_user_created`) para auto-preencher a tabela `profiles` com `name` e `phone` do usuário ao se cadastrar.
   - Autenticação real integrada via `AuthContext` manipulando sessões do Supabase.
   - Adicionadas credenciais de ambiente em `.env.local` incluindo Token do PagSeguro.
-  - Tela de login `/login/page.tsx` conectada diretamente ao `signInWithPassword` e `signUp` do Supabase.
+  - Tela de login `/login/page.tsx` refatorada e Tela de cadastro separada (`/cadastro/page.tsx`) com os dados Nome, E-mail, Telefone e Senha (design premium dark).
   - Rota de API POST `/api/checkout/route.ts` preparada para receber payload e gerar Ordens de pagamento no PagSeguro e salvar no banco de dados.
 
 ### Modified
