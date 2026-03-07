@@ -15,6 +15,7 @@ function CadastroContent() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
+    const [cpf, setCpf] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [authLoading, setAuthLoading] = useState(false);
@@ -29,8 +30,14 @@ function CadastroContent() {
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!name || !email || !phone || !password) {
+        if (!name || !email || !phone || !password || !cpf) {
             setErrorMsg("Por favor, preencha todos os campos.");
+            return;
+        }
+
+        const unmaskedCpf = cpf.replace(/\D/g, "");
+        if (unmaskedCpf.length !== 11) {
+            setErrorMsg("Por favor, insira um CPF válido.");
             return;
         }
 
@@ -44,6 +51,7 @@ function CadastroContent() {
                 data: {
                     name: name,
                     phone: phone,
+                    cpf: unmaskedCpf,
                 }
             }
         });
@@ -124,10 +132,40 @@ function CadastroContent() {
                             <input
                                 type="tel"
                                 value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
+                                onChange={(e) => {
+                                    let val = e.target.value.replace(/\D/g, "");
+                                    if (val.length <= 11) {
+                                        val = val.replace(/^(\d{2})(\d)/g, "($1) $2");
+                                        val = val.replace(/(\d)(\d{4})$/, "$1-$2");
+                                        setPhone(val);
+                                    }
+                                }}
                                 required
                                 className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600"
                                 placeholder="(00) 00000-0000"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-2">CPF <span className="text-slate-500 lowercase font-normal">(Uso exclusivo para PIX)</span></label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-[20px]">badge</span>
+                            <input
+                                type="text"
+                                value={cpf}
+                                onChange={(e) => {
+                                    let val = e.target.value.replace(/\D/g, "");
+                                    if (val.length <= 11) {
+                                        val = val.replace(/(\d{3})(\d)/, "$1.$2");
+                                        val = val.replace(/(\d{3})(\d)/, "$1.$2");
+                                        val = val.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                                        setCpf(val);
+                                    }
+                                }}
+                                required
+                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600"
+                                placeholder="000.000.000-00"
                             />
                         </div>
                     </div>

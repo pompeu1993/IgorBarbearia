@@ -8,13 +8,14 @@ import { supabase } from "@/lib/supabase";
 export default function ProfilePage() {
     const { user, logout, isAuthenticated } = useAuth();
 
-    const [profile, setProfile] = useState<{ name: string, phone: string, avatar_url?: string } | null>(null);
+    const [profile, setProfile] = useState<{ name: string, phone: string, cpf?: string, avatar_url?: string } | null>(null);
     const [totalAppointments, setTotalAppointments] = useState(0);
     const [loading, setLoading] = useState(true);
 
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState("");
     const [editPhone, setEditPhone] = useState("");
+    const [editCpf, setEditCpf] = useState("");
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -34,6 +35,7 @@ export default function ProfilePage() {
                 setProfile(profileData);
                 setEditName(profileData.name || "");
                 setEditPhone(profileData.phone || "");
+                setEditCpf(profileData.cpf || "");
             }
 
             // Fetch Appts count
@@ -55,18 +57,48 @@ export default function ProfilePage() {
     const handleSave = async () => {
         if (!user) return;
         setSaving(true);
+        const unmaskedCpf = editCpf.replace(/\D/g, "");
+
+        if (editCpf && unmaskedCpf.length !== 11) {
+            alert("CPF inválido.");
+            setSaving(false);
+            return;
+        }
+
         const { error } = await supabase
             .from("profiles")
-            .update({ name: editName, phone: editPhone })
+            .update({ name: editName, phone: editPhone, cpf: unmaskedCpf || null })
             .eq("id", user.id);
 
         if (!error) {
-            setProfile(prev => prev ? { ...prev, name: editName, phone: editPhone } : { name: editName, phone: editPhone });
+            setProfile(prev => prev ? { ...prev, name: editName, phone: editPhone, cpf: unmaskedCpf } : { name: editName, phone: editPhone, cpf: unmaskedCpf });
             setIsEditing(false);
         } else {
-            alert("Erro ao atualizar o perfil.");
+            alert("Erro ao atualizar o perfil. Talvez o CPF já esteja em uso.");
         }
         setSaving(false);
+    };
+
+    const handleDeleteAccount = async () => {
+        if (!user) return;
+        const confirmDelete = window.confirm("Tem certeza absoluta de que deseja excluir sua conta permanentemente? Esta ação não pode ser desfeita e deletará seus agendamentos.");
+        if (!confirmDelete) return;
+
+        setLoading(true);
+        try {
+            const { error } = await supabase.rpc("delete_user");
+            if (error) {
+                console.error(error);
+                alert("Erro ao deletar conta: " + error.message);
+            } else {
+                alert("Sua conta foi deletada com sucesso.");
+                logout();
+            }
+        } catch (err: any) {
+            alert("Erro ao conectar com o servidor.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,9 +205,31 @@ export default function ProfilePage() {
                             <input
                                 type="text"
                                 value={editPhone}
-                                onChange={e => setEditPhone(e.target.value)}
+                                onChange={e => {
+                                    let val = e.target.value.replace(/\D/g, "");
+                                    if (val.length <= 11) {
+                                        val = val.replace(/^(\d{2})(\d)/g, "($1) $2");
+                                        val = val.replace(/(\d)(\d{4})$/, "$1-$2");
+                                        setEditPhone(val);
+                                    }
+                                }}
                                 className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center"
                                 placeholder="Seu Telefone"
+                            />
+                            <input
+                                type="text"
+                                value={editCpf}
+                                onChange={e => {
+                                    let val = e.target.value.replace(/\D/g, "");
+                                    if (val.length <= 11) {
+                                        val = val.replace(/(\d{3})(\d)/, "$1.$2");
+                                        val = val.replace(/(\d{3})(\d)/, "$1.$2");
+                                        val = val.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                                        setEditCpf(val);
+                                    }
+                                }}
+                                className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center"
+                                placeholder="Seu CPF (opcional)"
                             />
                             <div className="flex gap-2 justify-center">
                                 <button onClick={() => setIsEditing(false)} className="text-xs uppercase text-slate-400 p-2">Cancelar</button>
@@ -190,8 +244,11 @@ export default function ProfilePage() {
                                     <span className="material-symbols-outlined text-[16px]">edit</span>
                                 </button>
                             </h2>
-                            <p className="text-slate-400 text-xs font-medium tracking-widest uppercase mb-1">{profile?.phone || "S/ Telefone"}</p>
-                            <p className="text-primary/70 text-[10px] font-bold tracking-widest uppercase">{totalAppointments} Agendamentos</p>
+                            <p className="text-slate-400 text-xs font-medium tracking-widest uppercase mb-1 flex justify-center gap-3">
+                                <span>{profile?.phone || "S/ Telefone"}</span>
+                                {profile?.cpf && <span>• {profile.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")}</span>}
+                            </p>
+                            <p className="text-primary/70 text-[10px] font-bold tracking-widest uppercase mt-2">{totalAppointments} Agendamentos</p>
                         </>
                     )}
                 </div>
@@ -223,9 +280,14 @@ export default function ProfilePage() {
                         <span className="material-symbols-outlined text-slate-500">chevron_right</span>
                     </div>
 
-                    <button onClick={logout} className="w-full mt-8 bg-black border border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500 font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
-                        SAIR DA CONTA
-                    </button>
+                    <div className="flex flex-col gap-3 mt-8">
+                        <button onClick={logout} className="w-full bg-zinc-900 border border-white/10 text-white hover:bg-white/5 font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
+                            SAIR DA CONTA
+                        </button>
+                        <button onClick={handleDeleteAccount} className="w-full bg-black border border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500 font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
+                            DELETAR CONTA PERMANENTEMENTE
+                        </button>
+                    </div>
                 </div>
             </main>
         </>

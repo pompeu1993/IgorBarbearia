@@ -12,8 +12,30 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Igor Barbearia",
-  description: "Agendamento da Barbearia do Igor",
+  title: "A Elite do Corte | The Barber Elite",
+  description: "Eleve seu estilo a um novo patamar. Agende seu horário na The Barber Elite e experimente o padrão ouro em barbearia clássica e moderna com o Igor.",
+  openGraph: {
+    title: "A Elite do Corte | The Barber Elite",
+    description: "Eleve seu estilo a um novo patamar. Agende seu horário na The Barber Elite e experimente o padrão ouro em barbearia clássica e moderna.",
+    url: "https://thebarberelite.com", // Substituted dynamically if hosted
+    siteName: "The Barber Elite",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "The Barber Elite - Tesoura Dourada",
+      },
+    ],
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "A Elite do Corte | The Barber Elite",
+    description: "O padrão ouro em barbearia clássica e moderna com o Igor. Agende seu horário exclusvio.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({

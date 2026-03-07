@@ -12,6 +12,7 @@ model User {
   name         String
   email        String        @unique
   phone        String?
+  cpf          String?       @unique
   passwordHash String
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

@@ -19,6 +19,9 @@ Todas as modificações do sistema devem ser registradas aqui.
   - Rota de API POST `/api/checkout/route.ts` preparada para receber payload e gerar Ordens de pagamento no PagSeguro e salvar no banco de dados.
   - Rota de API POST `/api/checkout/confirm/route.ts` criada para receber a confirmação de pagamento simulando os Webhooks do PagSeguro (alterando o status do agendamento para `CONFIRMED` e `PAID`).
   - Preenchimento real da tabela de `services` no banco de dados para puxar o fluxo dinamicamente.
+  - Adição de RPC Function criptografada `delete_user` no Supabase para remoção segura de conta pelo próprio usuário.
+  - Criação de bloqueio com validação de CPF obrigatório (`profiles.cpf`) exigido pelo gateway PagSeguro.
+  - Melhorias de SEO (Share Image `og-image.png` estilo Premium, e tags Meta no `layout.tsx`).
 ### Modified
 - **`src/app/login/page.tsx`:** O layout da tela de login foi inteiramente reconstruído para refletir com exatidão o "Premium" design estabelecido pelo novo mockup. O texto "Premium" foi alterado para "Igor Barbearia". O botão "Esqueci minha senha" foi reposicionado para baixo do input de senha e linkado corretamente para a nova tela de recuperação (`/recuperar-senha`).
 - **`src/app/recuperar-senha/page.tsx`:** Nova tela construída seguindo fielmente o mockup UI premium. Ela invoca a Edge Function `send-reset-email` do Supabase bypassando os limites nativos de SMTP do Supabase e utilizando o Resend para enviar a recuperação de senha.
@@ -29,4 +32,6 @@ Todas as modificações do sistema devem ser registradas aqui.
 - **`src/app/appointments/new/datetime/page.tsx`:** Calendário complexo implementado do zero para varrer o mês atual e permitir seleção interativa. A seleção do dia busca e bloqueia horários específicos que já foram ocupados na tabela `appointments`.
 - **`src/app/appointments/new/summary/page.tsx`:** A tela final do fluxo agora gera e consome callbacks virtuais de pagamentos para efetivar agendamentos e marcá-los oficialmente confirmados.
 - **`src/app/history/page.tsx`:** Histórico consome agendamentos passados e futuros com join da tabela `services`. Permite o **cancelamento em tempo real** alterando o status no Supabase.
-- **`src/app/profile/page.tsx`:** Busca o total bruto de agendamentos para gerar a estatística e possibilita a edição de `Nome` e `Telefone` atualizando a entry oficial em `profiles`.
+- **`src/app/profile/page.tsx`:** Busca o total bruto de agendamentos para gerar a estatística, possibilita a edição de `Nome`, `Telefone`, `CPF` atualizando a entry oficial em `profiles`, e permite a exclusão permanente da conta.
+- **`src/app/api/checkout/route.ts`:** Integração PagSeguro API com tratamento de erros (CPF inválido, Formato de Nome com 2 strings) impedindo crash do checkout no client e emitindo erros descritivos.
+- **`src/app/layout.tsx`:** Adicionadas tags vitais Open Graph e Twitter Cards usando `og-image.png` renderizada por IA.

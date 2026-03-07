@@ -15,8 +15,12 @@ graph TD
     
     G --> J[Selecionar Serviço]
     J --> K[Selecionar Data e Hora]
-    K --> L[Confirmar Agendamento]
-    L --> F
+    K --> L[Módulo de Checkout]
+    L --> M2{Dados p/ Pagamento?}
+    M2 -- Faltam -- > N[Modal Perfil/CPF]
+    N --> N2[Gerar PIX - PagSeguro]
+    M2 -- Estão OK --> N2
+    N2 --> F
     
     F --> M[Banco de Dados]
     G --> M
