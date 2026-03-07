@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 function DateTimeSelection() {
     const searchParams = useSearchParams();
     const serviceId = searchParams.get("serviceId") || "1";
+    const { isAuthenticated } = useAuth();
 
     // Mock service details based on ID
     const serviceName = serviceId === "2" ? "Corte + Barba Therapy" : serviceId === "3" ? "Degradê Americano" : "Corte Moderno";
@@ -140,10 +142,17 @@ function DateTimeSelection() {
                             <span className="text-primary text-lg font-black tracking-tight">{servicePrice}</span>
                         </div>
                     </div>
-                    <Link href={`/appointments/new/summary?serviceId=${serviceId}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
-                        <span>Confirmar Horário</span>
-                        <span className="material-symbols-outlined font-black">calendar_check</span>
-                    </Link>
+                    {isAuthenticated ? (
+                        <Link href={`/appointments/new/summary?serviceId=${serviceId}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
+                            <span>Confirmar Horário</span>
+                            <span className="material-symbols-outlined font-black">calendar_check</span>
+                        </Link>
+                    ) : (
+                        <Link href={`/login?redirect=/appointments/new/summary?serviceId=${serviceId}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
+                            <span>Fazer Login para Confirmar</span>
+                            <span className="material-symbols-outlined font-black">lock</span>
+                        </Link>
+                    )}
                 </div>
             </div>
         </>

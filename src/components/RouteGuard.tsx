@@ -13,8 +13,16 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         if (loading) return; // Espera o AuthProvider carregar a sessão
 
-        const publicPaths = ["/", "/login", "/cadastro"];
-        const isPublicPath = publicPaths.includes(pathname);
+        const publicPaths = [
+            "/",
+            "/login",
+            "/cadastro",
+            "/appointments/new",
+            "/appointments/new/datetime"
+        ];
+        // Retirar query params para checagem exata, se necessário:
+        const currentPath = pathname.split('?')[0];
+        const isPublicPath = publicPaths.includes(currentPath);
 
         if (!isAuthenticated && !isPublicPath) {
             router.replace("/");

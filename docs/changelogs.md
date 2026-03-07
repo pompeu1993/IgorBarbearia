@@ -17,6 +17,7 @@ Todas as modificações do sistema devem ser registradas aqui.
   - Rota de API POST `/api/checkout/route.ts` preparada para receber payload e gerar Ordens de pagamento no PagSeguro e salvar no banco de dados.
 
 ### Modified
-- **`src/app/page.tsx`:** Alterado para Client Component. Passa a ocultar a imagem de perfil do header para deslogados e o ícone de notificações fica escuro e inacessível. Substituída saudação "Olá, CARLOS" por "OLÁ, CLIENTE" quando deslogado. Alterado o cabeçalho de "Barbearia" para "IGOR BARBEARIA". Ocultou a seção de "Próximo Horário" para usuários deslogados. Botão "Agendar Corte" redireciona para `/login` quando deslogado na tentativa de agendamento.
+- **`src/app/login/page.tsx` e `RouteGuard.tsx`:** O fluxo de agendamento foi reestruturado. O usuário não autenticado agora pode entrar e escolher livremente Serviço, Data e Horário. O login apenas será acionado confirmando a intenção de pagar as seleções. Adicionada a capacidade de capturar o parâmetro da URL de retorno no ato da conversão (`redirect`).
+- **`src/app/page.tsx`:** Alterado para Client Component. Passa a ocultar a imagem de perfil do header para deslogados e o ícone de notificações fica escuro e inacessível. Substituída saudação "Olá, CARLOS" por "OLÁ, CLIENTE" quando deslogado. Alterado o cabeçalho de "Barbearia" para "IGOR BARBEARIA". Ocultou a seção de "Próximo Horário" para usuários deslogados. Botão "Agendar Corte" redireciona para `/appointments/new` independentemente do estado da sessão.
 - **`src/components/BottomNav.tsx`:** Ícones de menu desabilitados (escuros e sem clique), exceto "Início", quando o usuário não está autenticado.
 - **`src/app/layout.tsx`:** Aplicação envolvida com `AuthProvider` e proteção de rotas com `RouteGuard`.

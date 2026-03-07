@@ -1,13 +1,15 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { supabase } from "@/lib/supabase";
 
-export default function Login() {
+function LoginContent() {
     const { isAuthenticated, loading } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get("redirect") || "/";
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -16,9 +18,9 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated && !loading) {
-            router.push("/");
+            router.push(redirectPath);
         }
-    }, [isAuthenticated, loading, router]);
+    }, [isAuthenticated, loading, router, redirectPath]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -125,5 +127,17 @@ export default function Login() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function Login() {
+    return (
+        <Suspense fallback={
+            <div className="flex-1 flex items-center justify-center min-h-[90vh]">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        }>
+            <LoginContent />
+        </Suspense>
     );
 }

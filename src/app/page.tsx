@@ -56,7 +56,7 @@ export default function Home() {
       {/* Main Action */}
       <div className="px-6 pb-10 relative z-10">
         <Link
-          href={isAuthenticated ? "/appointments/new" : "/login"}
+          href="/appointments/new"
           className="w-full h-16 bg-gradient-to-r from-primary to-[#bfa040] hover:from-[#cfaa33] hover:to-[#dcb650] text-black rounded-sm shadow-[0_4px_25px_-5px_rgba(212,175,55,0.3)] flex items-center justify-center gap-3 font-extrabold text-lg uppercase tracking-wider transition-all active:scale-[0.98] border border-white/10"
         >
           <span className="material-symbols-outlined text-[28px]">content_cut</span>
