@@ -17,9 +17,14 @@ export default function Home() {
           </div>
         </div>
         <div className="flex justify-end">
-          <button className="relative p-2 rounded-full hover:bg-zinc-800 text-slate-100 transition-colors">
+          <button
+            disabled={!isAuthenticated}
+            className={`relative p-2 rounded-full transition-colors ${isAuthenticated ? "hover:bg-zinc-800 text-slate-100" : "opacity-30 pointer-events-none text-slate-500"}`}
+          >
             <span className="material-symbols-outlined text-[24px]">notifications</span>
-            <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-600 border-2 border-black"></span>
+            {isAuthenticated && (
+              <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-600 border-2 border-black"></span>
+            )}
           </button>
         </div>
       </header>
