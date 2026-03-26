@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 export default function AdminAgenda() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -139,9 +140,25 @@ export default function AdminAgenda() {
                                             {apt.status === 'COMPLETED' ? 'Realizado' : 'Confirmado'}
                                         </span>
                                     </div>
-                                    <div className="relative z-10">
+                                    <div className="relative z-10 mb-4">
                                         <h3 className="text-white font-extrabold text-base tracking-tight mb-0.5">{apt.profiles?.name || 'Cliente'}</h3>
                                         <p className="text-white/70 text-xs font-bold uppercase tracking-widest">{apt.services?.name}</p>
+                                        
+                                        {apt.profiles?.phone && (
+                                            <a href={`https://wa.me/55${apt.profiles.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-green-400 transition-colors uppercase tracking-widest font-bold mt-2 inline-flex">
+                                                <span className="material-symbols-outlined text-[14px]">chat</span>
+                                                WhatsApp
+                                            </a>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="relative z-10 pt-3 border-t border-white/5 flex justify-end">
+                                        <Link
+                                            href={`/appointments/reschedule?appointmentId=${apt.id}`}
+                                            className="text-[10px] font-bold text-black uppercase tracking-widest transition-colors bg-primary hover:bg-[#cfaa33] px-4 py-2 rounded-full flex items-center gap-1 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                                        >
+                                            Reagendar
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
