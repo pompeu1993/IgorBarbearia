@@ -288,7 +288,7 @@ function SummaryContent() {
                         </section>
 
                         <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/90 to-transparent z-40 pointer-events-none">
-                            <div className="max-w-md mx-auto pointer-events-auto">
+                            <div className="max-w-md mx-auto pointer-events-auto space-y-4">
                                 <button
                                     onClick={() => handleCheckout()}
                                     disabled={checkingOut}
@@ -297,6 +297,10 @@ function SummaryContent() {
                                     <span>{checkingOut ? 'Gerando Pix...' : 'Pagar com Pix e Confirmar'}</span>
                                     {!checkingOut && <span className="material-symbols-outlined font-black">qr_code_2</span>}
                                 </button>
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className="material-symbols-outlined text-slate-500 text-[16px]">info</span>
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">Cancelamentos não permitidos, apenas reagendamentos</p>
+                                </div>
                             </div>
                         </div>
                     </>
