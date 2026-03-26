@@ -96,14 +96,13 @@ export default function HistoryPage() {
     };
 
     const canReschedule = (isoStr: string, status: string) => {
-        // Pode reagendar se for CONFIRMADO, estiver no futuro e faltar mais de 24h para o agendamento
+        // Pode reagendar se for CONFIRMADO e estiver no futuro
         if (status !== "CONFIRMED") return false;
         
         const apptDate = new Date(isoStr).getTime();
         const now = new Date().getTime();
-        const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
         
-        return apptDate > now && (apptDate - now) > twentyFourHoursInMs;
+        return apptDate > now;
     };
 
     return (
