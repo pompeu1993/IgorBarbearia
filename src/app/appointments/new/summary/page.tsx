@@ -111,6 +111,45 @@ function SummaryContent() {
         }
     };
 
+    const handleCancelPix = async () => {
+        if (!paymentId) {
+            setShowPixSection(false);
+            return;
+        }
+
+        const confirmCancel = confirm("Tem certeza que deseja cancelar este agendamento?");
+        if (!confirmCancel) return;
+
+        setConfirming(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (session?.access_token) {
+                headers["Authorization"] = `Bearer ${session.access_token}`;
+            }
+
+            const res = await fetch("/api/checkout/cancel", {
+                method: "POST",
+                headers,
+                body: JSON.stringify({ paymentId })
+            });
+
+            if (res.ok) {
+                // Limpa os estados e volta pra tela de resumo
+                setPaymentId(null);
+                setPixData(null);
+                setShowPixSection(false);
+                alert("Agendamento e cobrança cancelados com sucesso.");
+            } else {
+                alert("Erro ao cancelar a cobrança.");
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setConfirming(false);
+        }
+    };
+
     const handleConfirmPayment = async (silent = false) => {
         if (!paymentId) return;
         if (!silent) setConfirming(true);
@@ -354,10 +393,10 @@ function SummaryContent() {
                                 
                                 <div className="w-full space-y-4">
                                     <button onClick={() => handleConfirmPayment(false)} disabled={confirming} className="w-full h-16 bg-gradient-to-r from-primary via-[#bfa040] to-primary text-black rounded-xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center hover:bg-[100%_0] duration-500 uppercase tracking-widest">
-                                        {confirming ? "Confirmando..." : "Já fiz o pagamento"}
+                                        {confirming ? "Verificando..." : "Já fiz o pagamento"}
                                     </button>
-                                    <button onClick={() => setShowPixSection(false)} disabled={confirming} className="text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest px-4 py-3 disabled:opacity-50 w-full rounded-xl hover:bg-white/5">
-                                        Cancelar Pagamento
+                                    <button onClick={handleCancelPix} disabled={confirming} className="text-red-400 hover:text-red-300 transition-colors text-xs font-bold uppercase tracking-widest px-4 py-3 disabled:opacity-50 w-full rounded-xl hover:bg-red-500/10">
+                                        Cancelar Agendamento
                                     </button>
                                 </div>
                             </div>
