@@ -288,29 +288,26 @@ function SummaryContent() {
                         </section>
 
                         {/* Checkout button only visible when PIX is NOT showing */}
-                    </>
-                )}
-
-                {!showPixSection && (
-                    <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/90 to-transparent z-40 pointer-events-none">
-                        <div className="max-w-md mx-auto pointer-events-auto space-y-4">
-                            <button
-                                onClick={() => handleCheckout()}
-                                disabled={checkingOut}
-                                className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 disabled:opacity-50 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]"
-                            >
-                                <span>{checkingOut ? 'Gerando Pix...' : 'Pagar com Pix e Confirmar'}</span>
-                                {!checkingOut && <span className="material-symbols-outlined font-black">qr_code_2</span>}
-                            </button>
-                            <div className="flex items-center justify-center gap-2">
-                                <span className="material-symbols-outlined text-slate-500 text-[16px]">info</span>
-                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">Cancelamentos não permitidos, apenas reagendamentos</p>
+                        {!showPixSection && (
+                            <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/90 to-transparent z-40 pointer-events-none">
+                                <div className="max-w-md mx-auto pointer-events-auto space-y-4">
+                                    <button
+                                        onClick={() => handleCheckout()}
+                                        disabled={checkingOut}
+                                        className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 disabled:opacity-50 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]"
+                                    >
+                                        <span>{checkingOut ? 'Gerando Pix...' : 'Pagar com Pix e Confirmar'}</span>
+                                        {!checkingOut && <span className="material-symbols-outlined font-black">qr_code_2</span>}
+                                    </button>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <span className="material-symbols-outlined text-slate-500 text-[16px]">info</span>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">Cancelamentos não permitidos, apenas reagendamentos</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                )}
-
-                {showPixSection && (
+                        )}
+                    </>
+                ) : (
                     <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="bg-[#0a0a0a] border border-primary/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(220,167,21,0.1)] relative overflow-hidden">
                             <div className="absolute inset-0 border border-primary/10 rounded-3xl pointer-events-none"></div>
