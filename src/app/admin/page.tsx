@@ -65,11 +65,16 @@ export default function AdminHome() {
 
     return (
         <main className="flex-1 w-full relative">
-            <header className="px-6 py-8 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10">
-                <h1 className="text-2xl font-black text-white uppercase tracking-widest">Resumo de Hoje</h1>
-                <p className="text-primary text-xs font-bold tracking-widest mt-1">
-                    {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
-                </p>
+            <header className="px-6 py-8 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10 flex items-start justify-between">
+                <div>
+                    <h1 className="text-2xl font-black text-white uppercase tracking-widest">Resumo de Hoje</h1>
+                    <p className="text-primary text-xs font-bold tracking-widest mt-1">
+                        {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
+                    </p>
+                </div>
+                <a href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all">
+                    <span className="material-symbols-outlined text-[20px]">logout</span>
+                </a>
             </header>
 
             <div className="px-6 pt-6 pb-20">

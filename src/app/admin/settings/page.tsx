@@ -6,8 +6,21 @@ import { supabase } from "@/lib/supabase";
 export default function AdminSettings() {
     const [price, setPrice] = useState("");
     const [allowRescheduling, setAllowRescheduling] = useState(true);
+    const [operatingDays, setOperatingDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
+    const [disabledDates, setDisabledDates] = useState<string[]>([]);
+    const [newDisabledDate, setNewDisabledDate] = useState("");
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const weekDays = [
+        { id: 0, label: "Dom" },
+        { id: 1, label: "Seg" },
+        { id: 2, label: "Ter" },
+        { id: 3, label: "Qua" },
+        { id: 4, label: "Qui" },
+        { id: 5, label: "Sex" },
+        { id: 6, label: "Sáb" }
+    ];
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -31,6 +44,8 @@ export default function AdminSettings() {
 
             if (settingsData) {
                 setAllowRescheduling(settingsData.allow_rescheduling);
+                if (settingsData.operating_days) setOperatingDays(settingsData.operating_days);
+                if (settingsData.disabled_dates) setDisabledDates(settingsData.disabled_dates);
             }
 
             setLoading(false);
@@ -54,7 +69,9 @@ export default function AdminSettings() {
             await supabase
                 .from("settings")
                 .update({
-                    allow_rescheduling: allowRescheduling
+                    allow_rescheduling: allowRescheduling,
+                    operating_days: operatingDays,
+                    disabled_dates: disabledDates
                 })
                 .eq("id", 1);
 
@@ -67,6 +84,26 @@ export default function AdminSettings() {
         }
     };
 
+    const toggleOperatingDay = (dayId: number) => {
+        setOperatingDays(prev => 
+            prev.includes(dayId) 
+                ? prev.filter(d => d !== dayId)
+                : [...prev, dayId].sort()
+        );
+    };
+
+    const addDisabledDate = () => {
+        if (!newDisabledDate) return;
+        if (!disabledDates.includes(newDisabledDate)) {
+            setDisabledDates([...disabledDates, newDisabledDate].sort());
+        }
+        setNewDisabledDate("");
+    };
+
+    const removeDisabledDate = (dateToRemove: string) => {
+        setDisabledDates(disabledDates.filter(d => d !== dateToRemove));
+    };
+
     if (loading) {
         return (
             <div className="flex-1 flex items-center justify-center min-h-screen bg-black">
@@ -77,8 +114,11 @@ export default function AdminSettings() {
 
     return (
         <main className="flex-1 w-full relative pb-24">
-            <header className="px-6 py-8 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10">
+            <header className="px-6 py-8 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10 flex items-start justify-between">
                 <h1 className="text-2xl font-black text-white uppercase tracking-widest">Configurações</h1>
+                <a href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
+                    <span className="material-symbols-outlined text-[20px]">logout</span>
+                </a>
             </header>
 
             <div className="px-6 pt-6 space-y-8">
@@ -123,14 +163,76 @@ export default function AdminSettings() {
                             </button>
                         </div>
 
-                        {/* Future Implementation Note */}
+                        {/* Dias da Semana */}
                         <div className="pt-4 border-t border-white/5 relative z-10">
-                            <span className="text-white font-bold block mb-2">Dias de Funcionamento</span>
-                            <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-3">Configuração de dias desabilitados no mês</p>
-                            <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                                <span className="material-symbols-outlined text-slate-500 mb-1">build</span>
-                                <p className="text-xs text-slate-400 font-medium">Em breve: Bloqueio de dias específicos diretamente por aqui.</p>
+                            <span className="text-white font-bold block mb-2">Dias da Semana de Funcionamento</span>
+                            <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-4">Selecione os dias em que a barbearia abre</p>
+                            
+                            <div className="flex flex-wrap gap-2">
+                                {weekDays.map(day => {
+                                    const isActive = operatingDays.includes(day.id);
+                                    return (
+                                        <button
+                                            key={day.id}
+                                            onClick={() => toggleOperatingDay(day.id)}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                                                isActive 
+                                                ? 'bg-primary border-primary text-black shadow-[0_0_15px_rgba(212,175,55,0.3)]' 
+                                                : 'bg-white/5 border-white/10 text-slate-400 hover:text-white'
+                                            }`}
+                                        >
+                                            {day.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
+                        </div>
+
+                        {/* Feriados / Bloqueios Específicos */}
+                        <div className="pt-4 border-t border-white/5 relative z-10">
+                            <span className="text-white font-bold block mb-2">Bloquear Datas Específicas</span>
+                            <p className="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-4">Feriados, férias ou folgas</p>
+                            
+                            <div className="flex gap-2 mb-4">
+                                <input 
+                                    type="date" 
+                                    value={newDisabledDate}
+                                    onChange={(e) => setNewDisabledDate(e.target.value)}
+                                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors [color-scheme:dark]"
+                                />
+                                <button 
+                                    onClick={addDisabledDate}
+                                    disabled={!newDisabledDate}
+                                    className="bg-primary/20 text-primary border border-primary/30 px-4 rounded-xl font-bold uppercase text-xs tracking-widest disabled:opacity-50 transition-colors hover:bg-primary/30 flex items-center justify-center"
+                                >
+                                    <span className="material-symbols-outlined">add</span>
+                                </button>
+                            </div>
+
+                            {disabledDates.length > 0 ? (
+                                <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                                    {disabledDates.map(date => (
+                                        <div key={date} className="flex items-center justify-between bg-white/5 border border-white/5 px-4 py-2.5 rounded-lg group">
+                                            <div className="flex items-center gap-2">
+                                                <span className="material-symbols-outlined text-red-400 text-[16px]">event_busy</span>
+                                                <span className="text-white text-sm font-medium">
+                                                    {new Date(date + 'T12:00:00').toLocaleDateString('pt-BR')}
+                                                </span>
+                                            </div>
+                                            <button 
+                                                onClick={() => removeDisabledDate(date)}
+                                                className="text-white/30 hover:text-red-500 transition-colors p-1"
+                                            >
+                                                <span className="material-symbols-outlined text-[18px]">delete</span>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-4 bg-white/5 rounded-xl border border-white/5">
+                                    <p className="text-xs text-slate-500">Nenhuma data bloqueada.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </section>
