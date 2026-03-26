@@ -30,6 +30,7 @@ function SummaryContent() {
     const [confirming, setConfirming] = useState(false);
     const [paymentId, setPaymentId] = useState<string | null>(null);
     const [pixData, setPixData] = useState<{ image: string | null, text: string | null } | null>(null);
+    const [showPixSection, setShowPixSection] = useState(false);
 
     // CPF handling
     const [userCpf, setUserCpf] = useState<string | null>(null);
@@ -98,7 +99,7 @@ function SummaryContent() {
             if (res.ok && data.paymentId) {
                 setPaymentId(data.paymentId);
                 setPixData({ image: data.qrCodeImage, text: data.qrCodeText });
-                setShowPixModal(true);
+                setShowPixSection(true);
             } else {
                 alert("Erro ao processar pagamento: " + (data.error || "Tente novamente."));
             }
@@ -179,7 +180,7 @@ function SummaryContent() {
         <>
             <div className="sticky top-0 z-30 bg-black/90 backdrop-blur-xl border-b border-white/5 p-4">
                 <div className="flex items-center justify-between mx-auto">
-                    <button onClick={() => router.back()} className="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+                    <button onClick={() => showPixSection ? setShowPixSection(false) : router.back()} className="text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10 transition-colors">
                         <span className="material-symbols-outlined">arrow_back_ios_new</span>
                     </button>
                     <h2 className="text-white text-lg font-bold tracking-tight">Pagamento</h2>
@@ -188,136 +189,157 @@ function SummaryContent() {
             </div>
 
             <main className="flex-1 w-full px-5 pt-6 pb-[160px] relative">
-                <section className="mb-8">
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-4 px-1">Resumo do Agendamento</h3>
-                    <div className="p-5 rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-lg relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
-                        <div className="flex items-start gap-4 relative z-10">
-                            <div className="size-14 rounded-2xl bg-gradient-to-br from-[#dca715] to-[#8a680b] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)] text-black">
-                                <span className="material-symbols-outlined text-3xl">content_cut</span>
-                            </div>
-                            <div className="flex-1">
-                                <h4 className="text-white font-extrabold text-xl leading-tight mb-3">{service.name}</h4>
-                                <div className="space-y-2">
-                                    <div className="flex items-center gap-2 text-white/90">
-                                        <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
-                                        <span className="text-sm font-medium">{formattedDate}</span>
+                {!showPixSection ? (
+                    <>
+                        <section className="mb-8">
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-4 px-1">Resumo do Agendamento</h3>
+                            <div className="p-5 rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-lg relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                                <div className="flex items-start gap-4 relative z-10">
+                                    <div className="size-14 rounded-2xl bg-gradient-to-br from-[#dca715] to-[#8a680b] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)] text-black">
+                                        <span className="material-symbols-outlined text-3xl">content_cut</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-white/90">
-                                        <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
-                                        <span className="text-sm font-medium">{formattedTime} • {service.duration} min</span>
-                                    </div>
-                                    <div className="flex items-start gap-2 text-white/90 pt-2 mt-2 border-t border-white/5">
-                                        <span className="material-symbols-outlined text-primary text-[18px] mt-0.5">location_on</span>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-bold text-white">The Barber Elite</span>
-                                            <span className="text-[11px] leading-tight text-white/70">Av. Paulista, 1200 - Jardins, São Paulo</span>
+                                    <div className="flex-1">
+                                        <h4 className="text-white font-extrabold text-xl leading-tight mb-3">{service.name}</h4>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-white/90">
+                                                <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
+                                                <span className="text-sm font-medium">{formattedDate}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-white/90">
+                                                <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
+                                                <span className="text-sm font-medium">{formattedTime} • {service.duration} min</span>
+                                            </div>
+                                            <div className="flex items-start gap-2 text-white/90 pt-2 mt-2 border-t border-white/5">
+                                                <span className="material-symbols-outlined text-primary text-[18px] mt-0.5">location_on</span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-bold text-white">The Barber Elite</span>
+                                                    <span className="text-[11px] leading-tight text-white/70">Av. Paulista, 1200 - Jardins, São Paulo</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
+                        </section>
 
-                <section className="mb-8">
-                    <div className="flex items-center justify-between mb-4 px-1">
-                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Método de Pagamento</h3>
-                        <span className="text-[10px] bg-primary text-black px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Apenas Pix</span>
-                    </div>
-                    <div className="space-y-3">
-                        <div className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center gap-4 relative overflow-hidden shadow-lg group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
-                            <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#dca715] to-[#8a680b]"></div>
-                            <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-2 shrink-0 relative z-10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                                <img src="https://logospng.org/download/pix/logo-pix-icone-1024.png" alt="Pix" className="w-full h-full object-contain" />
+                        <section className="mb-8">
+                            <div className="flex items-center justify-between mb-4 px-1">
+                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Método de Pagamento</h3>
+                                <span className="text-[10px] bg-primary text-black px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Apenas Pix</span>
                             </div>
-                            <div className="flex-1 relative z-10">
-                                <span className="text-white font-extrabold block mb-0.5 text-lg">Pix</span>
-                                <span className="text-xs text-white/70 font-medium">Aprovação imediata</span>
-                            </div>
-                            <span className="material-symbols-outlined text-primary relative z-10 text-[28px]">radio_button_checked</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section>
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-4 px-1">Valores</h3>
-                    <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 space-y-4 shadow-lg relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
-                        <div className="relative z-10">
-                            <div className="flex justify-between items-center px-1 mb-4">
-                                <span className="text-white/90 font-medium">{service.name}</span>
-                                <span className="text-white font-bold">{formatPrice(service.price)}</span>
-                            </div>
-                            <div className="w-full h-px bg-white/10 mb-4"></div>
-                            <div className="flex justify-between items-center mb-2 px-1">
-                                <span className="text-white/90 font-medium">Subtotal</span>
-                                <span className="text-white font-bold">{formatPrice(service.price)}</span>
-                            </div>
-                            <div className="flex justify-between items-center mb-6 px-1">
-                                <span className="text-white/90 font-medium">Taxa de Reserva</span>
-                                <span className="text-primary font-bold">Grátis</span>
-                            </div>
-                            <div className="flex justify-between items-end px-1 pt-2">
-                                <div>
-                                    <span className="text-[10px] text-white/70 font-black uppercase tracking-widest block mb-1">Valor Total</span>
-                                    <span className="text-white text-3xl font-black tracking-tight leading-none">{formatPrice(service.price)}</span>
+                            <div className="space-y-3">
+                                <div className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center gap-4 relative overflow-hidden shadow-lg group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                                    <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#dca715] to-[#8a680b]"></div>
+                                    <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-2 shrink-0 relative z-10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                                        <img src="https://logospng.org/download/pix/logo-pix-icone-1024.png" alt="Pix" className="w-full h-full object-contain" />
+                                    </div>
+                                    <div className="flex-1 relative z-10">
+                                        <span className="text-white font-extrabold block mb-0.5 text-lg">Pix</span>
+                                        <span className="text-xs text-white/70 font-medium">Aprovação imediata</span>
+                                    </div>
+                                    <span className="material-symbols-outlined text-primary relative z-10 text-[28px]">radio_button_checked</span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
+                        </section>
 
-                {showPixModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-                        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !confirming && setShowPixModal(false)}></div>
-                        <div className="w-full max-w-sm bg-zinc-900 border border-primary/30 rounded-[2.5rem] p-8 shadow-[0_0_50px_rgba(220,167,21,0.15)] relative overflow-hidden z-10 animate-in fade-in zoom-in duration-300">
-                            <div className="absolute inset-0 border border-primary/20 rounded-[2.5rem] pointer-events-none"></div>
-                            <div className="flex flex-col items-center text-center">
-                                <h2 className="text-white text-xl font-extrabold mb-6 tracking-tight">Pagamento via Pix</h2>
-                                <div className="bg-white p-3 rounded-3xl mb-6 shadow-[0_0_30px_rgba(255,255,255,0.05)] w-48 h-48 flex items-center justify-center relative overflow-hidden">
+                        <section>
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-4 px-1">Valores</h3>
+                            <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 space-y-4 shadow-lg relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                                <div className="relative z-10">
+                                    <div className="flex justify-between items-center px-1 mb-4">
+                                        <span className="text-white/90 font-medium">{service.name}</span>
+                                        <span className="text-white font-bold">{formatPrice(service.price)}</span>
+                                    </div>
+                                    <div className="w-full h-px bg-white/10 mb-4"></div>
+                                    <div className="flex justify-between items-center mb-2 px-1">
+                                        <span className="text-white/90 font-medium">Subtotal</span>
+                                        <span className="text-white font-bold">{formatPrice(service.price)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center mb-6 px-1">
+                                        <span className="text-white/90 font-medium">Taxa de Reserva</span>
+                                        <span className="text-primary font-bold">Grátis</span>
+                                    </div>
+                                    <div className="flex justify-between items-end px-1 pt-2">
+                                        <div>
+                                            <span className="text-[10px] text-white/70 font-black uppercase tracking-widest block mb-1">Valor Total</span>
+                                            <span className="text-white text-3xl font-black tracking-tight leading-none">{formatPrice(service.price)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div className="fixed bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/90 to-transparent z-40 pointer-events-none">
+                            <div className="max-w-md mx-auto pointer-events-auto">
+                                <button
+                                    onClick={() => handleCheckout()}
+                                    disabled={checkingOut}
+                                    className="w-full h-16 bg-gradient-to-r from-primary to-[#bfa040] hover:from-[#cfaa33] hover:to-[#dcb650] text-black rounded-2xl shadow-[0_10px_30px_-10px_rgba(212,175,55,0.4)] flex items-center justify-center font-black text-lg uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50"
+                                >
+                                    {checkingOut ? 'Gerando Pix...' : 'Confirmar Agendamento'}
+                                </button>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="bg-[#0a0a0a] border border-primary/30 rounded-3xl p-8 shadow-[0_0_50px_rgba(220,167,21,0.1)] relative overflow-hidden">
+                            <div className="absolute inset-0 border border-primary/10 rounded-3xl pointer-events-none"></div>
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[60px] rounded-full -mr-32 -mt-32 pointer-events-none"></div>
+                            
+                            <div className="flex flex-col items-center text-center relative z-10">
+                                <h2 className="text-white text-2xl font-extrabold mb-2 tracking-tight">Pagamento via Pix</h2>
+                                <p className="text-white/60 text-sm mb-8">Escaneie o QR Code ou copie a chave abaixo</p>
+                                
+                                <div className="bg-white p-4 rounded-3xl mb-8 shadow-[0_0_40px_rgba(255,255,255,0.1)] w-56 h-56 flex items-center justify-center relative overflow-hidden group">
                                     {pixData?.image || pixData?.text ? (
-                                        <img alt="Pix QR Code" className="w-[110%] h-[110%] object-cover block rounded-xl contrast-125 mix-blend-multiply" src={pixData?.image || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(pixData?.text || '')}`} />
+                                        <img alt="Pix QR Code" className="w-[105%] h-[105%] object-cover block rounded-xl contrast-125 mix-blend-multiply group-hover:scale-105 transition-transform duration-500" src={pixData?.image || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(pixData?.text || '')}`} />
                                     ) : (
-                                        <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                                        <div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
                                     )}
                                 </div>
-                                <div className="flex items-center gap-2 mb-8 bg-primary/10 px-4 py-2 rounded-full">
-                                    <span className="size-2 bg-primary rounded-full animate-pulse"></span>
-                                    <span className="text-primary text-xs font-black uppercase tracking-widest">Aguardando Pagamento...</span>
+                                
+                                <div className="flex items-center gap-2 mb-8 bg-primary/10 border border-primary/20 px-5 py-2.5 rounded-full">
+                                    <span className="size-2.5 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(212,175,55,0.8)]"></span>
+                                    <span className="text-primary text-xs font-black uppercase tracking-[0.2em]">Aguardando Pagamento...</span>
                                 </div>
-                                <div className="w-full space-y-4 mb-10">
-                                    <div className="text-left">
-                                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-2 px-1">Pix Copia e Cola</span>
-                                        <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-4 rounded-2xl group active:bg-white/10 transition-colors cursor-pointer" onClick={() => {
+                                
+                                <div className="w-full space-y-5 mb-10">
+                                    <div className="text-left bg-black/50 p-5 rounded-2xl border border-white/5">
+                                        <span className="text-[10px] text-primary/80 font-black uppercase tracking-[0.2em] block mb-3 px-1">Pix Copia e Cola</span>
+                                        <div className="flex items-center gap-3 bg-white/5 border border-white/10 p-4 rounded-xl group active:bg-white/10 transition-colors cursor-pointer hover:border-primary/50" onClick={() => {
                                             if (pixData?.text) {
                                                 navigator.clipboard.writeText(pixData.text);
-                                                alert("Pix copiado!");
+                                                alert("Chave Pix copiada para a área de transferência!");
                                             }
                                         }}>
-                                            <span className="text-sm font-bold text-white flex-1 truncate">{pixData?.text || "Gerando chave..."}</span>
-                                            <button className="text-primary shrink-0">
-                                                <span className="material-symbols-outlined text-lg">content_copy</span>
+                                            <span className="text-sm font-bold text-white flex-1 truncate font-mono">{pixData?.text || "Gerando chave..."}</span>
+                                            <button className="text-primary shrink-0 bg-primary/10 p-2 rounded-lg group-hover:bg-primary group-hover:text-black transition-colors">
+                                                <span className="material-symbols-outlined text-xl">content_copy</span>
                                             </button>
                                         </div>
                                     </div>
-                                    <div className="text-left pt-2 border-t border-white/5">
-                                        <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1 px-1">Valor</span>
-                                        <span className="text-2xl font-black text-white px-1">{formatPrice(service.price)}</span>
+                                    
+                                    <div className="flex justify-between items-center bg-black/50 p-5 rounded-2xl border border-white/5">
+                                        <span className="text-xs text-white/70 font-black uppercase tracking-widest">Valor a pagar</span>
+                                        <span className="text-2xl font-black text-white">{formatPrice(service.price)}</span>
                                     </div>
                                 </div>
-                                <div className="w-full space-y-5">
-                                    <button onClick={handleConfirmPayment} disabled={confirming} className="w-full h-16 bg-gradient-to-r from-primary via-[#bfa040] to-primary text-black rounded-2xl font-black text-lg shadow-[0_15px_30px_-10px_rgba(212,175,55,0.4)] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center">
-                                        {confirming ? "Confirmando..." : "Já paguei"}
+                                
+                                <div className="w-full space-y-4">
+                                    <button onClick={handleConfirmPayment} disabled={confirming} className="w-full h-16 bg-gradient-to-r from-primary via-[#bfa040] to-primary text-black rounded-xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center hover:bg-[100%_0] duration-500 uppercase tracking-widest">
+                                        {confirming ? "Confirmando..." : "Já fiz o pagamento"}
                                     </button>
-                                    <button onClick={() => setShowPixModal(false)} disabled={confirming} className="text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest px-4 py-2 disabled:opacity-50">
+                                    <button onClick={() => setShowPixSection(false)} disabled={confirming} className="text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest px-4 py-3 disabled:opacity-50 w-full rounded-xl hover:bg-white/5">
                                         Cancelar Pagamento
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 )}
 
                 {showCpfModal && (
