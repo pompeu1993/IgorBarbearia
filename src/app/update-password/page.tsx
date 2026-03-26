@@ -26,13 +26,16 @@ export default function UpdatePasswordPage() {
         });
 
         if (error) {
+            console.error("Update password error:", error);
             let errorText = error.message;
-            if (errorText.includes("Password should be")) {
-                errorText = "A senha deve ter pelo menos 6 caracteres.";
-            } else if (errorText.includes("Auth session missing")) {
+            if (error.status === 422 || errorText.includes("Password should be") || errorText.includes("weak_password")) {
+                errorText = "A senha deve ter pelo menos 6 caracteres e não pode ser muito fraca.";
+            } else if (errorText.includes("Auth session missing") || error.status === 401) {
                 errorText = "Sessão inválida ou expirada. Tente solicitar um novo link de recuperação.";
+            } else if (errorText.includes("same_password")) {
+                 errorText = "A nova senha deve ser diferente da antiga.";
             } else {
-                errorText = "Ocorreu um erro ao atualizar a senha. Tente novamente.";
+                errorText = "Ocorreu um erro ao atualizar a senha. Verifique se o link ainda é válido.";
             }
             setMessage({ type: 'error', text: errorText });
         } else {
