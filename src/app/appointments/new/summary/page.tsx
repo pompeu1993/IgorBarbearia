@@ -127,12 +127,14 @@ function SummaryContent() {
                 body: JSON.stringify({ paymentId })
             });
 
-            if (res.ok) {
+            const data = await res.json();
+
+            if (res.ok && data.success) {
                 // Success, navigate to Dashboard
                 router.replace("/");
                 router.refresh(); // optionally force refresh
             } else {
-                alert("Não foi possível confirmar o pagamento. Ele pode ainda estar sendo processado.");
+                alert(data.message || "Não foi possível confirmar o pagamento. Ele pode ainda estar sendo processado.");
             }
         } catch (err) {
             console.error(err);
@@ -323,7 +325,7 @@ function SummaryContent() {
                         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !savingCpf && setShowCpfModal(false)}></div>
                         <div className="w-full max-w-sm bg-zinc-900 border border-primary/30 rounded-[2.5rem] p-8 shadow-[0_0_50px_rgba(220,167,21,0.15)] relative overflow-hidden z-10 animate-in fade-in zoom-in duration-300">
                             <h2 className="text-white text-xl font-extrabold mb-2 text-center tracking-tight">CPF Necessário</h2>
-                            <p className="text-slate-400 text-xs mb-6 text-center leading-relaxed">Para gerar a cobrança Pix via PagSeguro, você deve associar um CPF ativo à sua conta nesta barbearia.</p>
+                            <p className="text-slate-400 text-xs mb-6 text-center leading-relaxed">Para gerar a cobrança Pix via Asaas, você deve associar um CPF ativo à sua conta nesta barbearia.</p>
                             <div className="relative mb-6">
                                 <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-[20px]">badge</span>
                                 <input

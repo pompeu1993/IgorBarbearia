@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Integração com a API do PagSeguro (Ambiente de Produção)
-const PAGSEGURO_API_URL = "https://api.pagseguro.com/orders"; // Produção
+// Integração com a API do Asaas (Ambiente de Produção)
+const ASAAS_API_URL = "https://api.asaas.com/v3";
+const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmVmMjE3MThmLTgwMTAtNDAyZS1iNmYzLWM5Y2U0YjQ0NjI4Mjo6JGFhY2hfYjQxNzk5ZGEtMjg3ZC00MGMzLWFhMTUtM2I5NWQ2NGI4YzY2";
 
 export async function POST(req: Request) {
     try {
@@ -16,12 +17,6 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { serviceId, date, userId, price, serviceName } = body;
 
-        const token = process.env.PAGSEGURO_TOKEN;
-
-        if (!token) {
-            return NextResponse.json({ error: "Configuração de pagamento ausente." }, { status: 500 });
-        }
-
         // Pega os detalhes do usuário logado
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -32,86 +27,102 @@ export async function POST(req: Request) {
         const cpfToUse = profile?.cpf || user?.user_metadata?.cpf;
 
         if (!cpfToUse) {
-            return NextResponse.json({ error: "CPF obrigatório para pagamento Pix no PagSeguro." }, { status: 400 });
+            return NextResponse.json({ error: "CPF obrigatório para pagamento Pix no Asaas." }, { status: 400 });
         }
 
-        // PagSeguro exige que o nome tenha no mínimo duas palavras (Nome e Sobrenome)
-        let customerName = profile?.name || user?.user_metadata?.name || "Cliente Teste";
-        customerName = customerName.trim();
-        if (customerName.split(' ').length < 2) {
-            customerName = customerName + " Sobrenome";
-        }
-
-        // Garante que o CPF contenha apenas números (sem pontos ou traços)
+        let customerName = profile?.name || user?.user_metadata?.name || "Cliente";
         const cleanCpf = cpfToUse.replace(/\D/g, "");
 
-        // 1. Criar pedido no PagSeguro (PIX checkout transparente)
-        const pagSeguroPayload = {
-            reference_id: `agendamento_${Date.now()}`,
-            customer: {
-                name: customerName,
-                email: user?.email || "cliente@teste.com",
-                tax_id: cleanCpf, // CPF real do cadastro
-            },
-            items: [
-                {
-                    reference_id: serviceId,
-                    name: serviceName || "Corte",
-                    quantity: 1,
-                    unit_amount: Math.round(price * 100), // Em centavos
-                }
-            ],
-            // Adicionado bloco para gerar PIX
-            qr_codes: [
-                {
-                    amount: {
-                        value: Math.round(price * 100)
-                    }
-                }
-            ]
-        };
-
-        const response = await fetch(PAGSEGURO_API_URL, {
-            method: "POST",
+        // 1. Buscar se o cliente já existe no Asaas pelo CPF
+        let customerId = "";
+        const searchCustomerRes = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${cleanCpf}`, {
             headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify(pagSeguroPayload)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            console.error("Erro PagSeguro:", JSON.stringify(data, null, 2));
-
-            // Tenta extrair a exata mensagem de erro do PagSeguro
-            let msgError = "Erro desconhecido.";
-            if (data.error_messages && data.error_messages.length > 0) {
-                msgError = data.error_messages.map((e: any) => `${e.parameterName || ''}: ${e.description}`).join(" | ");
-            } else if (data.message) {
-                msgError = data.message;
-            } else {
-                msgError = JSON.stringify(data);
+                "access_token": ASAAS_TOKEN
             }
+        });
+        const searchCustomerData = await searchCustomerRes.json();
 
-            return NextResponse.json({ error: `PagSeguro: ${msgError}`, details: data }, { status: 400 });
+        if (searchCustomerData.data && searchCustomerData.data.length > 0) {
+            customerId = searchCustomerData.data[0].id;
+        } else {
+            // 2. Criar cliente no Asaas
+            const createCustomerRes = await fetch(`${ASAAS_API_URL}/customers`, {
+                method: "POST",
+                headers: {
+                    "access_token": ASAAS_TOKEN,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: customerName,
+                    cpfCnpj: cleanCpf,
+                    email: user.email || "cliente@teste.com"
+                })
+            });
+            const createCustomerData = await createCustomerRes.json();
+            if (!createCustomerRes.ok) {
+                console.error("Erro Asaas (Criar Cliente):", createCustomerData);
+                return NextResponse.json({ error: "Falha ao criar cliente no Asaas.", details: createCustomerData }, { status: 400 });
+            }
+            customerId = createCustomerData.id;
         }
 
-        const qrCodeLink = data.qr_codes?.[0]?.links?.find((l: any) => l.rel === 'QRCODE.PNG')?.href || null;
-        const qrCodeText = data.qr_codes?.[0]?.text || null;
+        // 3. Criar cobrança PIX
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 1); // Vencimento para amanhã
 
-        // 2. Salvar o agendamento no Supabase com status pendente e o ID do pagamento gerado
+        const paymentRes = await fetch(`${ASAAS_API_URL}/payments`, {
+            method: "POST",
+            headers: {
+                "access_token": ASAAS_TOKEN,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                customer: customerId,
+                billingType: "PIX",
+                value: price,
+                dueDate: dueDate.toISOString().split('T')[0],
+                description: `Agendamento: ${serviceName || 'Corte'}`,
+                externalReference: `agendamento_${Date.now()}`
+            })
+        });
+
+        const paymentData = await paymentRes.json();
+
+        if (!paymentRes.ok) {
+            console.error("Erro Asaas (Cobrança):", paymentData);
+            return NextResponse.json({ error: "Falha ao gerar cobrança PIX.", details: paymentData }, { status: 400 });
+        }
+
+        const paymentId = paymentData.id;
+
+        // 4. Obter o QR Code do PIX
+        const qrCodeRes = await fetch(`${ASAAS_API_URL}/payments/${paymentId}/pixQrCode`, {
+            headers: {
+                "access_token": ASAAS_TOKEN
+            }
+        });
+
+        const qrCodeData = await qrCodeRes.json();
+
+        if (!qrCodeRes.ok) {
+            console.error("Erro Asaas (QR Code):", qrCodeData);
+            return NextResponse.json({ error: "Falha ao obter QR Code PIX.", details: qrCodeData }, { status: 400 });
+        }
+
+        const qrCodeImage = `data:image/png;base64,${qrCodeData.encodedImage}`;
+        const qrCodeText = qrCodeData.payload;
+
+        // 5. Salvar o agendamento no Supabase com status pendente
         const { error: dbError } = await supabase
             .from("appointments")
             .insert([
                 {
-                    user_id: userId,
+                    user_id: user.id,
                     service_id: serviceId,
                     date: date,
                     status: "PENDING",
                     payment_status: "PENDING",
-                    payment_id: data.id, // ID do pedido no PagSeguro
+                    payment_id: paymentId, // ID do pedido no Asaas
                 }
             ]);
 
@@ -122,10 +133,10 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             success: true,
-            paymentId: data.id,
-            qrCodeImage: qrCodeLink,
+            paymentId: paymentId,
+            qrCodeImage: qrCodeImage,
             qrCodeText: qrCodeText,
-            message: "Pedido PIX gerado com sucesso."
+            message: "Pedido PIX gerado com sucesso via Asaas."
         });
 
     } catch (error: any) {
