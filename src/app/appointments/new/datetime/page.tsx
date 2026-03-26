@@ -28,8 +28,6 @@ function DateTimeSelection() {
         return d;
     });
 
-    // Select today by default if it's the current month, else null
-    const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]);
