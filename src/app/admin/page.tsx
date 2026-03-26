@@ -33,7 +33,8 @@ export default function AdminHome() {
                     id,
                     date,
                     status,
-                    profiles(name, phone),
+                    user_id,
+                    profiles!appointments_user_id_fkey(name, phone),
                     services(name)
                 `)
                 .gte("date", today.toISOString())
