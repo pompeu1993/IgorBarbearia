@@ -38,13 +38,14 @@ export default function ProfilePage() {
                 setEditCpf(profileData.cpf || "");
             }
 
-            // Fetch Appts count
+            // Fetch Appts count (only CONFIRMED or COMPLETED)
             const { count } = await supabase
                 .from("appointments")
                 .select("*", { count: 'exact', head: true })
-                .eq("user_id", user.id);
+                .eq("user_id", user.id)
+                .in("status", ["CONFIRMED", "COMPLETED"]);
 
-            if (count) {
+            if (count !== null) {
                 setTotalAppointments(count);
             }
 
