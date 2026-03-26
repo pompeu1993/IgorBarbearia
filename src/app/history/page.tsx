@@ -91,8 +91,8 @@ export default function HistoryPage() {
         }
     };
 
-    const isFuture = (isoStr: string, status: string) => {
-        return new Date(isoStr).getTime() > new Date().getTime() && (status === "PENDING" || status === "CONFIRMED");
+    const isFutureAndPending = (isoStr: string, status: string) => {
+        return new Date(isoStr).getTime() > new Date().getTime() && status === "PENDING";
     };
 
     return (
@@ -118,7 +118,7 @@ export default function HistoryPage() {
                     <div className="space-y-4">
                         {appointments.map((item) => {
                             const statusInfo = getStatusText(item.status);
-                            const canCancel = isFuture(item.date, item.status);
+                            const canCancel = isFutureAndPending(item.date, item.status);
 
                             return (
                                 <div key={item.id} className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between opacity-90 transition-opacity shadow-lg relative overflow-hidden group">
