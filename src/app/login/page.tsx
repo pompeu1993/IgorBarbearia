@@ -41,7 +41,11 @@ function LoginContent() {
         });
 
         if (error) {
-            setErrorMsg(error.message);
+            if (error.message.includes("Invalid login credentials")) {
+                setErrorMsg("E-mail ou senha incorretos.");
+            } else {
+                setErrorMsg("Ocorreu um erro ao fazer login. Tente novamente.");
+            }
         }
 
         setAuthLoading(false);

@@ -26,7 +26,15 @@ export default function UpdatePasswordPage() {
         });
 
         if (error) {
-            setMessage({ type: 'error', text: error.message });
+            let errorText = error.message;
+            if (errorText.includes("Password should be")) {
+                errorText = "A senha deve ter pelo menos 6 caracteres.";
+            } else if (errorText.includes("Auth session missing")) {
+                errorText = "Sessão inválida ou expirada. Tente solicitar um novo link de recuperação.";
+            } else {
+                errorText = "Ocorreu um erro ao atualizar a senha. Tente novamente.";
+            }
+            setMessage({ type: 'error', text: errorText });
         } else {
             setMessage({ type: 'success', text: 'Senha atualizada com sucesso! Redirecionando...' });
             setTimeout(() => {
