@@ -62,7 +62,29 @@ export default function AdminAgenda() {
                 <h1 className="text-2xl font-black text-white uppercase tracking-widest mb-4">Agenda</h1>
                 
                 {/* Horizontal Date Picker */}
-                <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+                <div 
+                    className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 cursor-grab active:cursor-grabbing touch-pan-x"
+                    onMouseDown={(e) => {
+                        const ele = e.currentTarget;
+                        let startX = e.pageX - ele.offsetLeft;
+                        let scrollLeft = ele.scrollLeft;
+                        
+                        const handleMouseMove = (e: MouseEvent) => {
+                            e.preventDefault();
+                            const x = e.pageX - ele.offsetLeft;
+                            const walk = (x - startX) * 2;
+                            ele.scrollLeft = scrollLeft - walk;
+                        };
+                        
+                        const handleMouseUp = () => {
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+                        };
+                        
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                >
                     {days.map((d, i) => {
                         const isSelected = d.toDateString() === selectedDate.toDateString();
                         return (
