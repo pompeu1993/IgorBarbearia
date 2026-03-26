@@ -292,9 +292,10 @@ function SummaryContent() {
                                 <button
                                     onClick={() => handleCheckout()}
                                     disabled={checkingOut}
-                                    className="w-full h-16 bg-gradient-to-r from-primary to-[#bfa040] hover:from-[#cfaa33] hover:to-[#dcb650] text-black rounded-2xl shadow-[0_10px_30px_-10px_rgba(212,175,55,0.4)] flex items-center justify-center font-black text-lg uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50"
+                                    className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 disabled:opacity-50 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]"
                                 >
-                                    {checkingOut ? 'Gerando Pix...' : 'Confirmar Agendamento'}
+                                    <span>{checkingOut ? 'Gerando Pix...' : 'Pagar com Pix e Confirmar'}</span>
+                                    {!checkingOut && <span className="material-symbols-outlined font-black">qr_code_2</span>}
                                 </button>
                             </div>
                         </div>
