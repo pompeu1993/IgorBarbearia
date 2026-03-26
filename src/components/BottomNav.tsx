@@ -8,6 +8,11 @@ export function BottomNav() {
     const pathname = usePathname();
     const { isAuthenticated } = useAuth();
 
+    // Hide client BottomNav if the user is in any /admin route
+    if (pathname?.startsWith('/admin')) {
+        return null;
+    }
+
     const navItems = [
         { name: "Início", href: "/", icon: "home" },
         { name: "Agendamentos", href: "/appointments", icon: "calendar_month", fill: true },
