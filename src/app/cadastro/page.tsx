@@ -81,18 +81,12 @@ function CadastroContent() {
                 setErrorMsg(error.message);
             }
         } else {
-            // Em caso de sucesso de sign up sem necessidade de confirmação,
-            // ou se tiver session automática, ele vai redirecionar via useEffect.
-            // Se exigir email config, talvez mostre a mensagem:
             setErrorMsg(null);
-            alert("Conta criada com sucesso!");
-            setTimeout(() => {
-                if (redirectPath) {
-                    router.push(redirectPath);
-                } else {
-                    router.push("/");
-                }
-            }, 1000);
+            if (redirectPath) {
+                router.push(redirectPath);
+            } else {
+                router.push("/");
+            }
         }
 
         setAuthLoading(false);
