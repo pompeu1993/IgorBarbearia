@@ -185,31 +185,31 @@ function SummaryContent() {
                 </div>
             </div>
 
-            <main className="flex-1 w-full px-5 pt-6 pb-48 relative">
+            <main className="flex-1 w-full px-5 pt-6 pb-[160px] relative">
                 <section className="mb-8">
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-4 px-1">Resumo do Agendamento</h3>
-                    <div className="p-5 rounded-3xl bg-zinc-900 border border-white/5 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-[50px] rounded-full -mr-16 -mt-16"></div>
-                        <div className="flex items-start gap-4">
-                            <div className="size-14 rounded-2xl bg-gradient-to-br from-primary to-[#bfa040] flex items-center justify-center shrink-0 shadow-lg">
-                                <span className="material-symbols-outlined text-black text-3xl">content_cut</span>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-4 px-1">Resumo do Agendamento</h3>
+                    <div className="p-5 rounded-2xl bg-[#0a0a0a] border border-white/10 shadow-lg relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                        <div className="flex items-start gap-4 relative z-10">
+                            <div className="size-14 rounded-2xl bg-gradient-to-br from-[#dca715] to-[#8a680b] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)] text-black">
+                                <span className="material-symbols-outlined text-3xl">content_cut</span>
                             </div>
                             <div className="flex-1">
-                                <h4 className="text-white font-extrabold text-xl leading-tight">{service.name}</h4>
-                                <div className="mt-3 space-y-2">
-                                    <div className="flex items-center gap-2 text-slate-400">
+                                <h4 className="text-white font-extrabold text-xl leading-tight mb-3">{service.name}</h4>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-white/90">
                                         <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
                                         <span className="text-sm font-medium">{formattedDate}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 text-slate-400">
+                                    <div className="flex items-center gap-2 text-white/90">
                                         <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
                                         <span className="text-sm font-medium">{formattedTime} • {service.duration} min</span>
                                     </div>
-                                    <div className="flex items-start gap-2 text-slate-400 pt-1 border-t border-white/5">
+                                    <div className="flex items-start gap-2 text-white/90 pt-2 mt-2 border-t border-white/5">
                                         <span className="material-symbols-outlined text-primary text-[18px] mt-0.5">location_on</span>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-semibold text-slate-200">The Barber Elite</span>
-                                            <span className="text-[11px] leading-tight text-slate-500">Av. Paulista, 1200 - Jardins, São Paulo</span>
+                                            <span className="text-sm font-bold text-white">The Barber Elite</span>
+                                            <span className="text-[11px] leading-tight text-white/70">Av. Paulista, 1200 - Jardins, São Paulo</span>
                                         </div>
                                     </div>
                                 </div>
@@ -220,41 +220,49 @@ function SummaryContent() {
 
                 <section className="mb-8">
                     <div className="flex items-center justify-between mb-4 px-1">
-                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Método de Pagamento</h3>
-                        <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Apenas Pix</span>
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Método de Pagamento</h3>
+                        <span className="text-[10px] bg-primary text-black px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Apenas Pix</span>
                     </div>
                     <div className="space-y-3">
-                        <div className="p-5 rounded-2xl bg-zinc-900 border-2 border-primary flex items-center justify-between shadow-xl ring-1 ring-primary/20">
-                            <div className="flex items-center gap-4">
-                                <div className="size-10 rounded-lg bg-[#32BCAD]/10 flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-[#32BCAD]">qr_code_2</span>
-                                </div>
-                                <div>
-                                    <span className="text-white font-bold text-lg block">Pix</span>
-                                    <span className="text-slate-500 text-xs font-medium">Aprovação instantânea</span>
-                                </div>
+                        <div className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center gap-4 relative overflow-hidden shadow-lg group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                            <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#dca715] to-[#8a680b]"></div>
+                            <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-2 shrink-0 relative z-10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                                <img src="https://logospng.org/download/pix/logo-pix-icone-1024.png" alt="Pix" className="w-full h-full object-contain" />
                             </div>
-                            <div className="size-6 rounded-full border-2 border-primary flex items-center justify-center p-1">
-                                <div className="size-full bg-primary rounded-full"></div>
+                            <div className="flex-1 relative z-10">
+                                <span className="text-white font-extrabold block mb-0.5 text-lg">Pix</span>
+                                <span className="text-xs text-white/70 font-medium">Aprovação imediata</span>
                             </div>
+                            <span className="material-symbols-outlined text-primary relative z-10 text-[28px]">radio_button_checked</span>
                         </div>
-                        <p className="text-[11px] text-slate-500 text-center mt-4 font-medium italic">O pagamento via Pix é obrigatório para garantir a exclusividade do horário.</p>
                     </div>
                 </section>
 
-                <section className="mt-10 border-t border-white/5 pt-6">
-                    <div className="flex justify-between items-center mb-2 px-1">
-                        <span className="text-slate-400 font-medium">Subtotal</span>
-                        <span className="text-white font-bold">{formatPrice(service.price)}</span>
-                    </div>
-                    <div className="flex justify-between items-center mb-6 px-1">
-                        <span className="text-slate-400 font-medium">Taxa de Reserva</span>
-                        <span className="text-primary font-bold">Grátis</span>
-                    </div>
-                    <div className="flex justify-between items-end px-1">
-                        <div>
-                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest block mb-1">Valor Total</span>
-                            <span className="text-white text-3xl font-black tracking-tight leading-none">{formatPrice(service.price)}</span>
+                <section>
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white mb-4 px-1">Valores</h3>
+                    <div className="bg-[#0a0a0a] border border-white/10 rounded-3xl p-6 space-y-4 shadow-lg relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                        <div className="relative z-10">
+                            <div className="flex justify-between items-center px-1 mb-4">
+                                <span className="text-white/90 font-medium">{service.name}</span>
+                                <span className="text-white font-bold">{formatPrice(service.price)}</span>
+                            </div>
+                            <div className="w-full h-px bg-white/10 mb-4"></div>
+                            <div className="flex justify-between items-center mb-2 px-1">
+                                <span className="text-white/90 font-medium">Subtotal</span>
+                                <span className="text-white font-bold">{formatPrice(service.price)}</span>
+                            </div>
+                            <div className="flex justify-between items-center mb-6 px-1">
+                                <span className="text-white/90 font-medium">Taxa de Reserva</span>
+                                <span className="text-primary font-bold">Grátis</span>
+                            </div>
+                            <div className="flex justify-between items-end px-1 pt-2">
+                                <div>
+                                    <span className="text-[10px] text-white/70 font-black uppercase tracking-widest block mb-1">Valor Total</span>
+                                    <span className="text-white text-3xl font-black tracking-tight leading-none">{formatPrice(service.price)}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -347,7 +355,7 @@ function SummaryContent() {
 
             </main>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-6 pb-24 z-40 max-w-md mx-auto">
+            <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-6 pb-[90px] z-40 max-w-md mx-auto">
                 <div className="space-y-4">
                     <button onClick={() => handleCheckout()} disabled={checkingOut} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 disabled:opacity-50 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
                         <span>{checkingOut ? "Processando..." : "Pagar com Pix e Confirmar"}</span>

@@ -22,18 +22,28 @@ export default function RecuperarSenha() {
         setLoading(true);
         setMessage(null);
 
-        // Chama a nossa Edge Function do Supabase, que vai gerar o link de Admin e disparar pelo Resend
-        const { error } = await supabase.functions.invoke('send-reset-email', {
-            body: {
-                email: email,
-                redirectTo: `${window.location.origin}/update-password`
-            }
-        });
+        // Utiliza a API route que conecta com o Resend
+        try {
+            const res = await fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    redirectTo: `${window.location.origin}/update-password`
+                }),
+            });
 
-        if (error) {
-            setMessage({ type: 'error', text: error.message });
-        } else {
-            setMessage({ type: 'success', text: 'Link de recuperação enviado! Verifique sua caixa de entrada.' });
+            const data = await res.json();
+
+            if (!res.ok) {
+                setMessage({ type: 'error', text: data.error || 'Erro ao enviar e-mail.' });
+            } else {
+                setMessage({ type: 'success', text: 'Link de recuperação enviado! Verifique sua caixa de entrada.' });
+            }
+        } catch (err) {
+            setMessage({ type: 'error', text: 'Erro de conexão com o servidor.' });
         }
 
         setLoading(false);
@@ -91,7 +101,7 @@ export default function RecuperarSenha() {
                     </button>
                 </form>
 
-                <div className="mt-12 text-center">
+                <div className="mt-12 text-center pb-[100px]">
                     <span className="text-slate-500 text-[10px] font-bold tracking-widest uppercase block mb-1">Não recebeu o e-mail?</span>
                     <button
                         onClick={handleResetPassword}

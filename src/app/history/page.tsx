@@ -102,15 +102,15 @@ export default function HistoryPage() {
                 <div className="w-10"></div>
             </header>
 
-            <main className="flex-1 overflow-y-auto pb-32 hide-scrollbar relative z-10 px-6 py-6 border-t border-transparent">
+            <main className="flex-1 overflow-y-auto pb-[130px] hide-scrollbar relative z-10 px-6 py-6 border-t border-transparent">
                 {!isAuthenticated ? (
-                    <div className="text-center py-20 text-slate-500 text-sm">Faça login para ver seu histórico.</div>
+                    <div className="text-center py-20 text-white text-sm">Faça login para ver seu histórico.</div>
                 ) : loading ? (
                     <div className="flex justify-center p-10">
                         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
                     </div>
                 ) : appointments.length === 0 ? (
-                    <div className="text-center py-20 text-slate-500 text-sm">Você ainda não possui agendamentos.</div>
+                    <div className="text-center py-20 text-white text-sm">Você ainda não possui agendamentos.</div>
                 ) : (
                     <div className="space-y-4">
                         {appointments.map((item) => {
@@ -118,28 +118,33 @@ export default function HistoryPage() {
                             const canCancel = isFuture(item.date, item.status);
 
                             return (
-                                <div key={item.id} className="bg-zinc-900/50 border border-white/5 p-4 rounded-xl flex items-center justify-between opacity-90 transition-opacity">
-                                    <div>
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">
+                                <div key={item.id} className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between opacity-90 transition-opacity shadow-lg relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                                    <div className="relative z-10">
+                                        <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest block mb-1">
                                             {formatDate(item.date)}
                                         </span>
-                                        <h3 className="text-slate-300 font-bold text-base tracking-tight">{item.service?.name}</h3>
-                                        <p className={`text-[11px] font-medium uppercase tracking-wide flex items-center gap-1 mt-1 ${statusInfo.color}`}>
+                                        <h3 className="text-white font-extrabold text-lg tracking-tight mb-1">{item.service?.name}</h3>
+                                        <p className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${statusInfo.color}`}>
                                             <span className="material-symbols-outlined text-[14px]">{statusInfo.icon}</span>
                                             {statusInfo.text}
                                         </p>
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-slate-400 font-bold text-sm tracking-tight">{item.service?.price ? formatPrice(item.service.price) : ''}</span>
+                                    <div className="text-right relative z-10">
+                                        <span className="text-primary font-black text-lg tracking-tight block mb-2">{item.service?.price ? formatPrice(item.service.price) : ''}</span>
                                         {canCancel ? (
-                                            <button onClick={() => handleCancel(item.id)} className="mt-2 text-[10px] text-red-500 font-bold uppercase hover:underline block ml-auto">
-                                                Cancelar
+                                            <button
+                                                onClick={() => handleCancel(item.id)}
+                                                disabled={cancelingId === item.id}
+                                                className="text-[10px] font-bold text-red-400 hover:text-red-300 uppercase tracking-widest disabled:opacity-50 transition-colors bg-red-500/10 px-3 py-1.5 rounded-full border border-red-500/20"
+                                            >
+                                                {cancelingId === item.id ? 'Cancelando...' : 'Cancelar'}
                                             </button>
-                                        ) : (
-                                            <Link href="/appointments/new" className="mt-2 text-[10px] text-primary font-bold uppercase hover:underline block ml-auto">
-                                                Novo Agendamento
-                                            </Link>
-                                        )}
+                                        ) : item.status === 'COMPLETED' ? (
+                                            <button className="text-[10px] font-bold text-primary hover:text-white uppercase tracking-widest transition-colors bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                                                Agendar Novamente
+                                            </button>
+                                        ) : null}
                                     </div>
                                 </div>
                             );

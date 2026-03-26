@@ -28,7 +28,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Usuário não autenticado." }, { status: 401 });
         }
 
-        const { data: profile } = await supabase.from('profiles').select('cpf, full_name').eq('id', user.id).single();
+        const { data: profile } = await supabase.from('profiles').select('cpf, name').eq('id', user.id).single();
         const cpfToUse = profile?.cpf || user?.user_metadata?.cpf;
 
         if (!cpfToUse) {
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         }
 
         // PagSeguro exige que o nome tenha no mínimo duas palavras (Nome e Sobrenome)
-        let customerName = profile?.full_name || user?.user_metadata?.name || "Cliente Teste";
+        let customerName = profile?.name || user?.user_metadata?.name || "Cliente Teste";
         customerName = customerName.trim();
         if (customerName.split(' ').length < 2) {
             customerName = customerName + " Sobrenome";

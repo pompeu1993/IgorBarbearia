@@ -153,7 +153,7 @@ export default function Home() {
 
       {/* Next Appointment Section */}
       {isAuthenticated && !loading && nextAppointment && (
-        <div className="flex-1 overflow-y-auto pb-24 hide-scrollbar relative z-10">
+        <div className="flex-1 overflow-y-auto pb-[130px] hide-scrollbar relative z-10">
           <div className="px-6 mb-8">
             <div className="flex items-center justify-between mb-4 border-l-4 border-primary pl-3">
               <h2 className="text-lg font-bold text-white uppercase tracking-wide">Próximo Horário</h2>
@@ -165,21 +165,25 @@ export default function Home() {
               </Link>
             </div>
 
-            <Link href="/history" className="bg-zinc-900/80 backdrop-blur-sm rounded-sm p-0 border border-white/5 shadow-xl flex items-center overflow-hidden group hover:bg-zinc-900 transition-colors">
-              <div className="bg-gradient-to-b from-zinc-800 to-black text-primary w-20 self-stretch flex flex-col items-center justify-center flex-shrink-0 border-r border-white/5 group-hover:border-primary/50 transition-colors py-4">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{formatMonth(nextAppointment.date)}</span>
-                <span className="text-2xl font-bold text-white">{formatDay(nextAppointment.date)}</span>
+            <Link href="/history" className="bg-[#0a0a0a] rounded-2xl p-5 border border-white/10 shadow-lg flex items-center overflow-hidden group hover:border-primary/50 transition-colors relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+              
+              <div className="bg-gradient-to-br from-[#dca715] to-[#8a680b] text-black w-16 h-16 rounded-xl flex flex-col items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)] relative z-10">
+                <span className="text-[10px] font-black uppercase tracking-widest">{formatMonth(nextAppointment.date).slice(0, 3)}</span>
+                <span className="text-xl font-black leading-none mt-0.5">{formatDay(nextAppointment.date)}</span>
               </div>
-              <div className="flex-1 min-w-0 py-4 px-4 overflow-hidden">
-                <h3 className="font-bold text-white truncate text-base sm:text-lg uppercase tracking-tight">
+              
+              <div className="flex-1 min-w-0 pl-4 overflow-hidden relative z-10">
+                <h3 className="font-extrabold text-white truncate text-lg uppercase tracking-tight mb-1">
                   {nextAppointment.service?.name}
                 </h3>
-                <p className="text-[10px] sm:text-xs font-medium text-slate-400 mt-1 truncate uppercase tracking-wide flex items-center gap-1">
+                <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 inline-flex">
                   <span className="material-symbols-outlined text-[14px] text-primary">schedule</span>
-                  {formatTime(nextAppointment.date)}
-                </p>
+                  <span className="text-[11px] text-white font-bold uppercase tracking-wider">{formatTime(nextAppointment.date)}</span>
+                </div>
               </div>
-              <div className="w-12 h-full flex items-center justify-center text-slate-500 group-hover:text-primary transition-all">
+              
+              <div className="w-8 h-full flex items-center justify-end text-white/50 group-hover:text-primary transition-colors relative z-10">
                 <span className="material-symbols-outlined text-[24px]">chevron_right</span>
               </div>
             </Link>
@@ -188,8 +192,8 @@ export default function Home() {
       )}
 
       {isAuthenticated && !loading && !nextAppointment && (
-        <div className="px-6 pb-24 text-center">
-          <p className="text-slate-500 text-sm opacity-80 py-4">Você ainda não tem horários marcados.</p>
+        <div className="px-6 pb-[130px] text-center">
+          <p className="text-white text-sm py-4">Você ainda não tem horários marcados.</p>
         </div>
       )}
     </>

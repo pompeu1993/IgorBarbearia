@@ -169,7 +169,7 @@ export default function ProfilePage() {
                 <div className="w-10"></div>
             </header>
 
-            <main className="flex-1 overflow-y-auto pb-32 hide-scrollbar relative z-10 px-6 py-6">
+            <main className="flex-1 overflow-y-auto pb-[130px] hide-scrollbar relative z-10 px-6 py-6">
                 <div className="flex flex-col items-center justify-center pt-6 pb-8">
                     <div className="relative mb-5 group">
                         <label htmlFor="avatar-upload" className="cursor-pointer block relative">
@@ -254,37 +254,39 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-4 pt-6 border-t border-white/10">
-                    <div className="bg-zinc-900 border border-white/5 rounded-xl p-4 flex items-center justify-between opacity-50">
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+                    <div className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between shadow-lg relative overflow-hidden group hover:border-primary/50 transition-colors cursor-pointer">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                        <div className="flex items-center gap-4 relative z-10">
+                            <div className="size-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center">
                                 <span className="material-symbols-outlined text-primary">notifications</span>
                             </div>
                             <div>
-                                <span className="text-white font-bold block">Notificações</span>
-                                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Avisos e Lembretes (Em breve)</span>
+                                <span className="text-white font-extrabold block text-base mb-0.5">Notificações</span>
+                                <span className="text-white/70 text-[10px] font-bold uppercase tracking-widest">Avisos e Lembretes (Em breve)</span>
                             </div>
                         </div>
-                        <span className="material-symbols-outlined text-slate-500">chevron_right</span>
+                        <span className="material-symbols-outlined text-white/50 group-hover:text-primary transition-colors relative z-10">chevron_right</span>
                     </div>
 
-                    <div className="bg-zinc-900 border border-white/5 rounded-xl p-4 flex items-center justify-between opacity-50">
-                        <div className="flex items-center gap-4">
-                            <div className="size-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+                    <div className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between shadow-lg relative overflow-hidden group hover:border-primary/50 transition-colors cursor-pointer">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                        <div className="flex items-center gap-4 relative z-10">
+                            <div className="size-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center">
                                 <span className="material-symbols-outlined text-primary">help</span>
                             </div>
                             <div>
-                                <span className="text-white font-bold block">Ajuda e Suporte</span>
-                                <span className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Fale com a Barbearia</span>
+                                <span className="text-white font-extrabold block text-base mb-0.5">Ajuda e Suporte</span>
+                                <span className="text-white/70 text-[10px] font-bold uppercase tracking-widest">Fale com a Barbearia</span>
                             </div>
                         </div>
-                        <span className="material-symbols-outlined text-slate-500">chevron_right</span>
+                        <span className="material-symbols-outlined text-white/50 group-hover:text-primary transition-colors relative z-10">chevron_right</span>
                     </div>
 
                     <div className="flex flex-col gap-3 mt-8">
-                        <button onClick={logout} className="w-full bg-zinc-900 border border-white/10 text-white hover:bg-white/5 font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
+                        <button onClick={logout} className="w-full bg-[#0a0a0a] border border-white/10 text-white hover:bg-[#1a1a1a] font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
                             SAIR DA CONTA
                         </button>
-                        <button onClick={handleDeleteAccount} className="w-full bg-black border border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500 font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
+                        <button onClick={handleDeleteAccount} className="w-full bg-[#0a0a0a] border border-red-500/30 text-red-500 hover:bg-red-500/10 hover:border-red-500 font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
                             DELETAR CONTA PERMANENTEMENTE
                         </button>
                     </div>

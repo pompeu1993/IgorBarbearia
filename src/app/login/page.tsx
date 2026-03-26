@@ -69,7 +69,7 @@ function LoginContent() {
 
                 <div className="mb-10 text-center">
                     <h1 className="text-4xl font-extrabold text-white mb-3 tracking-tight">Bem-vindo<br />de volta</h1>
-                    <p className="text-slate-400 text-sm">
+                    <p className="text-white text-sm">
                         Entre para agendar seu próximo corte
                     </p>
                 </div>
@@ -84,7 +84,7 @@ function LoginContent() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full bg-[#111] border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600"
+                                className="w-full bg-[#111] border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-white"
                                 placeholder="seu@email.com"
                             />
                         </div>
@@ -101,13 +101,13 @@ function LoginContent() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full bg-[#111] border border-white/5 rounded-sm pl-12 pr-12 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600 tracking-[0.2em]"
+                                className="w-full bg-[#111] border border-white/5 rounded-sm pl-12 pr-12 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-white tracking-[0.2em]"
                                 placeholder="••••••••"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-primary transition-colors focus:outline-none"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-primary transition-colors focus:outline-none"
                             >
                                 <span className="material-symbols-outlined text-[20px]">{showPassword ? "visibility_off" : "visibility"}</span>
                             </button>
@@ -132,18 +132,14 @@ function LoginContent() {
                     </button>
                 </form>
 
-                <div className="mt-12 text-center">
-                    <span className="text-slate-400 text-sm block mb-2">Ainda não tem uma conta?</span>
+                <div className="mt-12 text-center pb-[100px]">
+                    <span className="text-white text-sm block mb-2">Ainda não tem uma conta?</span>
                     <Link
                         href={`/cadastro?redirect=${encodeURIComponent(redirectPath)}`}
                         className="text-primary font-bold text-sm tracking-widest hover:text-white transition-colors uppercase"
                     >
                         Cadastre-se Agora
                     </Link>
-                </div>
-
-                <div className="mt-16 text-center pb-8 opacity-40">
-                    <span className="text-[9px] font-black tracking-[0.4em] uppercase text-slate-400">The Gentlemen's Choice</span>
                 </div>
             </div>
         </div>

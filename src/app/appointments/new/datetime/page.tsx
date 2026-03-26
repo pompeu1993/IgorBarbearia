@@ -56,17 +56,15 @@ function DateTimeSelection() {
             const start = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0);
             const end = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 23, 59, 59);
 
-            const { data } = await supabase
-                .from("appointments")
-                .select("date")
-                .gte("date", start.toISOString())
-                .lte("date", end.toISOString())
-                .in("status", ["PENDING", "CONFIRMED"]);
+            const { data } = await supabase.rpc("get_booked_slots", {
+                start_time: start.toISOString(),
+                end_time: end.toISOString()
+            });
 
             if (data) {
                 // Extracts "HH:mm" from local time
-                const slots = data.map(app => {
-                    const d = new Date(app.date);
+                const slots = data.map((app: any) => {
+                    const d = new Date(app.booked_date);
                     return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
                 });
                 setBookedSlots(slots);
@@ -158,7 +156,7 @@ function DateTimeSelection() {
 
         if (disabled) {
             return (
-                <button key={time} disabled className="py-3 rounded-xl border border-white/5 bg-[#111] text-sm font-medium text-slate-500 cursor-not-allowed line-through opacity-60">
+                <button key={time} disabled className="py-3 rounded-xl border border-white/5 bg-[#050505] text-sm font-medium text-white cursor-not-allowed line-through opacity-80">
                     {time}
                 </button>
             );
@@ -166,7 +164,7 @@ function DateTimeSelection() {
 
         if (isSelected) {
             return (
-                <button key={time} onClick={() => setSelectedTime(time)} className="py-3 rounded-xl bg-primary text-black text-sm font-black shadow-[0_0_20px_rgba(212,175,55,0.4)] relative overflow-hidden transition-all duration-300">
+                <button key={time} onClick={() => setSelectedTime(time)} className="py-3 rounded-xl bg-gradient-to-br from-[#dca715] to-[#8a680b] text-black text-sm font-black shadow-[0_0_20px_rgba(212,175,55,0.4)] relative overflow-hidden transition-all duration-300">
                     {time}
                     <div className="absolute top-0 right-0 p-1">
                         <span className="material-symbols-outlined text-[12px] font-black">check_circle</span>
@@ -176,8 +174,9 @@ function DateTimeSelection() {
         }
 
         return (
-            <button key={time} onClick={() => setSelectedTime(time)} className="py-3 rounded-xl border border-white/20 bg-[#1A1A1A] text-sm font-bold text-white hover:bg-white/5 hover:border-primary/50 transition-colors">
-                {time}
+            <button key={time} onClick={() => setSelectedTime(time)} className="py-3 rounded-xl border border-white/10 bg-[#0a0a0a] text-sm font-bold text-white hover:border-primary/50 transition-colors shadow-lg relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/0 group-hover:bg-primary/10 blur-[20px] rounded-full -mr-8 -mt-8 transition-colors duration-500 pointer-events-none"></div>
+                <span className="relative z-10">{time}</span>
             </button>
         );
     };
@@ -203,14 +202,18 @@ function DateTimeSelection() {
                 </div>
             </div>
 
-            <main className="flex-1 w-full px-5 pb-40">
-                <div className="mt-6 p-4 rounded-2xl bg-[#141414] border border-white/10 flex items-center gap-4 shadow-2xl">
-                    <div className="size-12 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.4)]">
-                        <span className="material-symbols-outlined text-black text-2xl">content_cut</span>
+            <main className="flex-1 w-full px-5 pb-[130px]">
+                <div className="mt-6 p-5 rounded-2xl bg-[#0a0a0a] border border-white/10 flex items-center gap-4 shadow-lg relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                    <div className="size-14 rounded-2xl bg-gradient-to-br from-[#dca715] to-[#8a680b] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)] text-black relative z-10">
+                        <span className="material-symbols-outlined text-3xl">content_cut</span>
                     </div>
-                    <div className="flex-1">
-                        <h3 className="text-white font-bold text-lg">{service.name}</h3>
-                        <p className="text-slate-300 text-sm font-medium">{service.duration} min • {formatPrice(service.price)}</p>
+                    <div className="flex-1 relative z-10">
+                        <h3 className="text-white font-extrabold text-lg leading-tight mb-1">{service.name}</h3>
+                        <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-full border border-white/5 inline-flex">
+                            <span className="material-symbols-outlined text-[14px] text-primary">schedule</span>
+                            <span className="text-[11px] text-white font-bold uppercase tracking-wider">{service.duration} min</span>
+                        </div>
                     </div>
                 </div>
 
@@ -218,21 +221,22 @@ function DateTimeSelection() {
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-white text-xl font-bold capitalize">{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</h3>
                         <div className="flex gap-2">
-                            <button onClick={prevMonth} className="p-2 rounded-lg bg-zinc-900 border border-white/10 text-slate-400 hover:text-white transition-colors">
+                            <button onClick={prevMonth} className="p-2 rounded-lg bg-[#0a0a0a] border border-white/10 text-white hover:text-primary hover:border-primary/50 transition-colors shadow-lg">
                                 <span className="material-symbols-outlined">chevron_left</span>
                             </button>
-                            <button onClick={nextMonth} className="p-2 rounded-lg bg-zinc-900 border border-white/10 text-slate-400 hover:text-white transition-colors">
+                            <button onClick={nextMonth} className="p-2 rounded-lg bg-[#0a0a0a] border border-white/10 text-white hover:text-primary hover:border-primary/50 transition-colors shadow-lg">
                                 <span className="material-symbols-outlined">chevron_right</span>
                             </button>
                         </div>
                     </div>
-                    <div className="bg-zinc-900 rounded-2xl p-4 border border-white/5 shadow-xl">
-                        <div className="grid grid-cols-7 mb-4">
+                    <div className="bg-[#0a0a0a] rounded-2xl p-5 border border-white/10 shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 hover:bg-primary/5 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                        <div className="grid grid-cols-7 mb-4 relative z-10">
                             {weekDays.map(w => (
-                                <div key={w} className="text-primary/50 text-[10px] font-black uppercase text-center">{w}</div>
+                                <div key={w} className="text-primary text-[10px] font-black uppercase text-center">{w}</div>
                             ))}
                         </div>
-                        <div className="grid grid-cols-7 gap-1">
+                        <div className="grid grid-cols-7 gap-1 relative z-10">
                             {generateCalendar().map((day, idx) => {
                                 if (!day) return <div key={`empty-${idx}`} className="h-12"></div>;
 
@@ -241,15 +245,15 @@ function DateTimeSelection() {
 
                                 if (isPast) {
                                     return (
-                                        <div key={day.toISOString()} className="h-12 flex items-center justify-center opacity-20">
-                                            <span className="text-sm">{day.getDate()}</span>
+                                        <div key={day.toISOString()} className="h-12 flex items-center justify-center">
+                                            <span className="text-sm text-white line-through decoration-white/50">{day.getDate()}</span>
                                         </div>
                                     );
                                 }
 
                                 if (isSelected) {
                                     return (
-                                        <button key={day.toISOString()} className="h-12 flex flex-col items-center justify-center rounded-xl bg-primary text-black shadow-[0_0_20px_rgba(212,175,55,0.3)] ring-2 ring-primary ring-offset-4 ring-offset-zinc-900">
+                                        <button key={day.toISOString()} className="h-12 flex flex-col items-center justify-center rounded-xl bg-gradient-to-br from-[#dca715] to-[#8a680b] text-black shadow-[0_0_20px_rgba(212,175,55,0.4)] ring-2 ring-primary ring-offset-4 ring-offset-[#0a0a0a] transition-all">
                                             <span className="text-sm font-black">{day.getDate()}</span>
                                             <div className="w-1 h-1 bg-black rounded-full mt-0.5"></div>
                                         </button>
@@ -257,7 +261,7 @@ function DateTimeSelection() {
                                 }
 
                                 return (
-                                    <button onClick={() => setSelectedDate(day)} key={day.toISOString()} className="h-12 flex flex-col items-center justify-center rounded-xl hover:bg-white/5 transition-all">
+                                    <button onClick={() => setSelectedDate(day)} key={day.toISOString()} className="h-12 flex flex-col items-center justify-center rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all">
                                         <span className="text-sm font-bold text-white">{day.getDate()}</span>
                                     </button>
                                 );
@@ -268,13 +272,13 @@ function DateTimeSelection() {
 
                 <div className="mt-8 space-y-8">
                     {loadingSlots ? (
-                        <div className="text-center text-primary/70 text-sm py-10 animate-pulse">Buscando horários disponíveis...</div>
+                        <div className="text-center text-primary text-sm py-10">Buscando horários disponíveis...</div>
                     ) : selectedDate ? (
                         <>
                             <div>
                                 <div className="flex items-center gap-2 mb-4">
                                     <span className="material-symbols-outlined text-primary text-lg">light_mode</span>
-                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Manhã</h4>
+                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white">Manhã</h4>
                                 </div>
                                 <div className="grid grid-cols-3 gap-3">
                                     {morningSlots.map(time => renderTimeBtn(time))}
@@ -283,7 +287,7 @@ function DateTimeSelection() {
                             <div>
                                 <div className="flex items-center gap-2 mb-4">
                                     <span className="material-symbols-outlined text-primary text-lg">wb_twilight</span>
-                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Tarde / Noite</h4>
+                                    <h4 className="text-xs font-black uppercase tracking-[0.2em] text-white">Tarde / Noite</h4>
                                 </div>
                                 <div className="grid grid-cols-3 gap-3">
                                     {afternoonSlots.map(time => renderTimeBtn(time))}
@@ -291,18 +295,18 @@ function DateTimeSelection() {
                             </div>
                         </>
                     ) : (
-                        <div className="text-center text-slate-500 text-sm py-10">Selecione uma data para ver os horários.</div>
+                        <div className="text-center text-white text-sm py-10">Selecione uma data para ver os horários.</div>
                     )}
                 </div>
             </main>
 
-            <div className={`fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-5 pb-safe z-40 max-w-md mx-auto mb-[72px] transition-transform duration-500 ${selectedDate && selectedTime ? 'translate-y-0' : 'translate-y-full'}`}>
+            <div className={`fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-5 pb-safe z-40 max-w-md mx-auto mb-[80px] transition-transform duration-500 ${selectedDate && selectedTime ? 'translate-y-0' : 'translate-y-full'}`}>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-1">
                         <div className="flex flex-col">
-                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Resumo</span>
+                            <span className="text-[10px] text-white font-black uppercase tracking-widest">Resumo</span>
                             <span className="text-white text-sm font-bold">
-                                {selectedDate && weekDays[selectedDate.getDay()]}, {selectedDate?.getDate()} {selectedDate && monthNames[selectedDate.getMonth()].slice(0, 3)} • {selectedTime}
+                                {selectedDate && `${weekDays[selectedDate.getDay()]}, ${selectedDate.getDate()} ${monthNames[selectedDate.getMonth()].slice(0, 3)}`} • {selectedTime}
                             </span>
                         </div>
                         <div className="text-right">

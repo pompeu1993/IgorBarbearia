@@ -111,35 +111,37 @@ export default function AppointmentsPage() {
                     </div>
                 ) : appointments.length > 0 ? (
                     <div className="space-y-4">
-                        {appointments.map((apt) => (
-                            <div key={apt.id} className="bg-zinc-900/80 border border-white/5 p-4 rounded-xl shadow-lg relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 blur-[30px] rounded-full -mr-12 -mt-12 pointer-events-none"></div>
-                                <div className="flex justify-between items-start mb-4">
+                        {appointments.map((apt: any) => (
+                            <div key={apt.id} className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 shadow-lg relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
+                                <div className="flex justify-between items-start mb-4 relative z-10">
                                     <div>
                                         <span className="text-[10px] font-bold text-primary uppercase tracking-widest block mb-1">
                                             {formatDate(apt.date)} • {formatTime(apt.date)}
                                         </span>
-                                        <h3 className="text-white font-bold text-lg uppercase tracking-tight">{apt.service?.name}</h3>
-                                        <p className="text-[11px] text-slate-400 font-medium uppercase tracking-wide flex items-center gap-1 mt-1">
+                                        <h3 className="text-white font-extrabold text-lg uppercase tracking-tight mb-1">{apt.service?.name}</h3>
+                                        <p className="text-[11px] text-white/70 font-medium uppercase tracking-wide flex items-center gap-1">
                                             <span className="material-symbols-outlined text-[14px]">person</span>
                                             Profissional da Casa
                                         </p>
                                     </div>
-                                    <div className={`px-2 py-1 rounded-sm text-[9px] font-black uppercase tracking-wider ${apt.status === "CONFIRMED" ? "bg-primary/20 text-primary border border-primary/30" : "bg-slate-800 text-slate-300 border border-slate-600"
-                                        }`}>
-                                        {apt.status === "CONFIRMED" ? "Confirmado" : "Pendente"}
-                                    </div>
+                                    <span className="text-primary font-black text-lg tracking-tight bg-white/5 px-3 py-1 rounded-lg border border-white/5">
+                                        {apt.service?.price ? formatPrice(apt.service.price) : ''}
+                                    </span>
                                 </div>
-                                <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                                    <span className="text-white font-bold tracking-tight">{apt.service?.price ? formatPrice(apt.service.price) : ''}</span>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => router.push('/appointments/new')} className="px-3 py-1.5 border border-white/20 text-white rounded-md text-[10px] font-bold uppercase transition-colors hover:bg-white/10">
-                                            Reagendar
-                                        </button>
-                                        <button onClick={() => handleCancel(apt.id)} className="px-3 py-1.5 bg-zinc-800 text-red-400 rounded-md text-[10px] font-bold uppercase transition-colors hover:bg-red-500/20">
-                                            Cancelar
-                                        </button>
+                                
+                                <div className="flex items-center justify-between pt-4 mt-2 border-t border-white/5 relative z-10">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`size-2 rounded-full ${apt.status === 'CONFIRMED' ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`}></span>
+                                        <span className="text-[10px] text-white font-bold uppercase tracking-widest">
+                                            {apt.status === 'CONFIRMED' ? 'Confirmado' : 'Aguardando Pagamento'}
+                                        </span>
                                     </div>
+                                    {apt.status === 'PENDING' && apt.payment_status === 'PENDING' && (
+                                        <Link href={`/appointments/new/summary?serviceId=${apt.service_id}&datetime=${apt.date}`} className="text-[10px] bg-primary text-black font-black uppercase tracking-widest px-3 py-1.5 rounded-full hover:bg-primary-dark transition-colors shadow-sm">
+                                            Pagar
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         ))}

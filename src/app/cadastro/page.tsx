@@ -88,8 +88,8 @@ function CadastroContent() {
                     <Link href={`/login?redirect=${encodeURIComponent(redirectPath)}`} className="inline-flex items-center justify-center p-2 -ml-2 mb-6 text-primary hover:bg-white/5 rounded-full transition-colors">
                         <span className="material-symbols-outlined text-xl">arrow_back_ios_new</span>
                     </Link>
-                    <h1 className="text-4xl font-extrabold text-primary mb-2 tracking-tight">Criar Conta</h1>
-                    <p className="text-slate-400 text-sm">
+                    <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">Criar Conta</h1>
+                    <p className="text-white text-sm">
                         Preencha os dados para começar sua experiência premium.
                     </p>
                 </div>
@@ -104,7 +104,7 @@ function CadastroContent() {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
-                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600"
+                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-white"
                                 placeholder="Seu nome completo"
                             />
                         </div>
@@ -119,7 +119,7 @@ function CadastroContent() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
-                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600"
+                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-white"
                                 placeholder="seu@email.com"
                             />
                         </div>
@@ -141,14 +141,14 @@ function CadastroContent() {
                                     }
                                 }}
                                 required
-                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600"
+                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-white"
                                 placeholder="(00) 00000-0000"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-2">CPF <span className="text-slate-500 lowercase font-normal">(Uso exclusivo para PIX)</span></label>
+                        <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-2">CPF <span className="text-white lowercase font-normal">(Uso exclusivo para PIX)</span></label>
                         <div className="relative">
                             <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary text-[20px]">badge</span>
                             <input
@@ -164,7 +164,7 @@ function CadastroContent() {
                                     }
                                 }}
                                 required
-                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600"
+                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-4 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-white"
                                 placeholder="000.000.000-00"
                             />
                         </div>
@@ -179,13 +179,13 @@ function CadastroContent() {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-12 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-slate-600 tracking-[0.2em]"
+                                className="w-full bg-zinc-900 border border-white/5 rounded-sm pl-12 pr-12 py-4 text-white focus:outline-none focus:border-primary focus:bg-zinc-800 transition-colors text-sm placeholder:text-white tracking-[0.2em]"
                                 placeholder="••••••••"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-primary transition-colors focus:outline-none"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-primary transition-colors focus:outline-none"
                             >
                                 <span className="material-symbols-outlined text-[20px]">{showPassword ? "visibility_off" : "visibility"}</span>
                             </button>
@@ -207,8 +207,8 @@ function CadastroContent() {
                     </button>
                 </form>
 
-                <div className="mt-8 text-center pb-8">
-                    <span className="text-slate-400 text-sm">Já tem uma conta? </span>
+                <div className="mt-8 text-center pb-[100px]">
+                    <span className="text-white text-sm">Já tem uma conta? </span>
                     <Link
                         href={`/login?redirect=${encodeURIComponent(redirectPath)}`}
                         className="text-primary font-bold text-sm tracking-wider hover:text-white transition-colors uppercase"
