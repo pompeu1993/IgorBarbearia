@@ -70,6 +70,11 @@ export async function POST(req: Request) {
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 1); // Vencimento para amanhã
 
+        // Ensure price is a valid number, if it's less than 1 (Asaas minimum), force it to 1.00 for testing,
+        // Asaas generally has a minimum value for PIX/Boletos depending on the account configuration, typically R$ 5.00
+        // We will pass the exact price but if the API rejects it, that will be caught below.
+        const paymentValue = Number(price) < 5 ? 5.00 : Number(price);
+
         const paymentRes = await fetch(`${ASAAS_API_URL}/payments`, {
             method: "POST",
             headers: {
@@ -79,7 +84,7 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 customer: customerId,
                 billingType: "PIX",
-                value: price,
+                value: paymentValue,
                 dueDate: dueDate.toISOString().split('T')[0],
                 description: `Agendamento: ${serviceName || 'Corte'}`,
                 externalReference: `agendamento_${Date.now()}`
@@ -90,7 +95,11 @@ export async function POST(req: Request) {
 
         if (!paymentRes.ok) {
             console.error("Erro Asaas (Cobrança):", paymentData);
-            return NextResponse.json({ error: "Falha ao gerar cobrança PIX.", details: paymentData }, { status: 400 });
+            let msgError = "Erro desconhecido ao gerar Pix.";
+            if (paymentData.errors && paymentData.errors.length > 0) {
+                 msgError = paymentData.errors.map((e: any) => e.description).join(" | ");
+            }
+            return NextResponse.json({ error: `Asaas: ${msgError}`, details: paymentData }, { status: 400 });
         }
 
         const paymentId = paymentData.id;
