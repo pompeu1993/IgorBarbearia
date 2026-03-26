@@ -111,9 +111,9 @@ function SummaryContent() {
         }
     };
 
-    const handleConfirmPayment = async () => {
+    const handleConfirmPayment = async (silent = false) => {
         if (!paymentId) return;
-        setConfirming(true);
+        if (!silent) setConfirming(true);
 
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -135,15 +135,30 @@ function SummaryContent() {
                 router.replace("/");
                 router.refresh(); // optionally force refresh
             } else {
-                alert(data.message || "Não foi possível confirmar o pagamento. Ele pode ainda estar sendo processado.");
+                if (!silent) {
+                    alert(data.message || "Não foi possível confirmar o pagamento. Ele pode ainda estar sendo processado.");
+                }
             }
         } catch (err) {
             console.error(err);
         } finally {
-            setConfirming(false);
-            // Optionally close the modal
+            if (!silent) setConfirming(false);
         }
     };
+
+    // Auto-check payment status every 10 seconds while pix section is visible
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout;
+        if (showPixSection && paymentId) {
+            intervalId = setInterval(() => {
+                handleConfirmPayment(true);
+            }, 10000); // 10 seconds
+        }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [showPixSection, paymentId]);
 
     const handleSaveCpf = async () => {
         if (!user) return;
@@ -330,7 +345,7 @@ function SummaryContent() {
                                 </div>
                                 
                                 <div className="w-full space-y-4">
-                                    <button onClick={handleConfirmPayment} disabled={confirming} className="w-full h-16 bg-gradient-to-r from-primary via-[#bfa040] to-primary text-black rounded-xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center hover:bg-[100%_0] duration-500 uppercase tracking-widest">
+                                    <button onClick={() => handleConfirmPayment(false)} disabled={confirming} className="w-full h-16 bg-gradient-to-r from-primary via-[#bfa040] to-primary text-black rounded-xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center hover:bg-[100%_0] duration-500 uppercase tracking-widest">
                                         {confirming ? "Confirmando..." : "Já fiz o pagamento"}
                                     </button>
                                     <button onClick={() => setShowPixSection(false)} disabled={confirming} className="text-slate-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest px-4 py-3 disabled:opacity-50 w-full rounded-xl hover:bg-white/5">
