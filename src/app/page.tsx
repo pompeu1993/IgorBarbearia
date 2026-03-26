@@ -19,6 +19,7 @@ export default function Home() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [nextAppointment, setNextAppointment] = useState<NextAppointment | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -30,15 +31,17 @@ export default function Home() {
       // Fetch Profile
       const { data: profile } = await supabase
         .from("profiles")
-        .select("name, avatar_url")
+        .select("name, avatar_url, role")
         .eq("id", user.id)
         .maybeSingle();
 
       if (profile) {
         setProfileName(profile.name || user.email?.split('@')[0] || "Cliente");
         setAvatarUrl(profile.avatar_url);
+        setIsAdmin(profile.role === 'admin' || user.email === 'rafaelmiguelalonso@gmail.com');
       } else {
         setProfileName(user.email?.split('@')[0] || "Cliente");
+        setIsAdmin(user.email === 'rafaelmiguelalonso@gmail.com');
       }
 
       // Auto-complete past confirmed appointments before fetching
@@ -98,7 +101,14 @@ export default function Home() {
     <>
       {/* Header */}
       <header className="grid grid-cols-3 items-center px-4 py-5 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-primary/20">
-        <div className="flex items-center"></div>
+        <div className="flex items-center">
+          {isAdmin && (
+            <Link href="/admin" className="text-[10px] font-bold tracking-widest text-primary uppercase border border-primary/30 px-2 py-1 rounded bg-primary/10 flex items-center gap-1 hover:bg-primary hover:text-black transition-colors">
+              <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+              Admin
+            </Link>
+          )}
+        </div>
         <div className="flex justify-center">
           <div className="text-[10px] font-bold tracking-[0.2em] text-primary uppercase border border-primary/30 px-3 py-1.5 rounded bg-primary/10 whitespace-nowrap">
             IGOR BARBEARIA
