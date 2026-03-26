@@ -41,8 +41,16 @@ export default function Home() {
         setProfileName(user.email?.split('@')[0] || "Cliente");
       }
 
-      // Fetch Next Appointment
+      // Auto-complete past confirmed appointments before fetching
       const now = new Date().toISOString();
+      await supabase
+        .from("appointments")
+        .update({ status: "COMPLETED" })
+        .eq("user_id", user.id)
+        .eq("status", "CONFIRMED")
+        .lt("date", now);
+
+      // Fetch Next Appointment
       const { data: appointment } = await supabase
         .from("appointments")
         .select(`

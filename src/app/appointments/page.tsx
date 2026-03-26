@@ -31,6 +31,15 @@ export default function AppointmentsPage() {
         const fetchAppointments = async () => {
             setLoading(true);
             const now = new Date().toISOString();
+            
+            // Auto-complete past confirmed appointments before fetching
+            await supabase
+                .from("appointments")
+                .update({ status: "COMPLETED" })
+                .eq("user_id", user.id)
+                .eq("status", "CONFIRMED")
+                .lt("date", now);
+
             const { data } = await supabase
                 .from("appointments")
                 .select(`

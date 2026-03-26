@@ -26,6 +26,16 @@ export default function HistoryPage() {
 
         const fetchHistory = async () => {
             setLoading(true);
+            
+            // Auto-complete past confirmed appointments before fetching
+            const nowIso = new Date().toISOString();
+            await supabase
+                .from("appointments")
+                .update({ status: "COMPLETED" })
+                .eq("user_id", user.id)
+                .eq("status", "CONFIRMED")
+                .lt("date", nowIso);
+
             const { data, error } = await supabase
                 .from("appointments")
                 .select(`
@@ -169,14 +179,12 @@ export default function HistoryPage() {
                                                 <span className="material-symbols-outlined text-slate-400 text-[14px]">info</span>
                                                 <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-tight">Reagendamentos permitidos com até 24h de antecedência</span>
                                             </div>
-                                            <a
-                                                href={`https://wa.me/5512996397448?text=Olá, gostaria de reagendar meu horário de ${item.service?.name} marcado para ${formatDate(item.date)}.`}
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
+                                            <Link
+                                                href={`/appointments/reschedule?appointmentId=${item.id}`}
                                                 className="text-[10px] font-bold text-black uppercase tracking-widest transition-colors bg-primary hover:bg-[#cfaa33] px-4 py-2 rounded-full flex items-center gap-1 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                                             >
                                                 Reagendar
-                                            </a>
+                                            </Link>
                                         </div>
                                     )}
                                 </div>
