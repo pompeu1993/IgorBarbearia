@@ -45,7 +45,7 @@ function CadastroContent() {
         setErrorMsg(null);
 
         // Pre-check if CPF already exists in profiles
-        const { data: existingCpf } = await supabase.from('profiles').select('id').eq('cpf', unmaskedCpf).single();
+        const { data: existingCpf } = await supabase.from('profiles').select('id').eq('cpf', unmaskedCpf).maybeSingle();
         if (existingCpf) {
             setErrorMsg("Este CPF já está em uso.");
             setAuthLoading(false);

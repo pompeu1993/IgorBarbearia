@@ -28,7 +28,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Usuário não autenticado." }, { status: 401 });
         }
 
-        const { data: profile } = await supabase.from('profiles').select('cpf, name').eq('id', user.id).single();
+        const { data: profile } = await supabase.from('profiles').select('cpf, name').eq('id', user.id).maybeSingle();
         const cpfToUse = profile?.cpf || user?.user_metadata?.cpf;
 
         if (!cpfToUse) {

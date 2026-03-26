@@ -37,7 +37,7 @@ function DateTimeSelection() {
     useEffect(() => {
         if (!serviceId) return;
         const fetchService = async () => {
-            const { data } = await supabase.from("services").select("*").eq("id", serviceId).single();
+            const { data } = await supabase.from("services").select("*").eq("id", serviceId).maybeSingle();
             if (data) setService(data);
             setLoadingService(false);
         };

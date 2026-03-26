@@ -32,7 +32,7 @@ export default function Home() {
         .from("profiles")
         .select("name, avatar_url")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       if (profile) {
         setProfileName(profile.name || user.email?.split('@')[0] || "Cliente");
@@ -55,7 +55,7 @@ export default function Home() {
         .gte("date", now)
         .order("date", { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (appointment) {
         setNextAppointment({

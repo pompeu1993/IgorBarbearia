@@ -40,12 +40,12 @@ function SummaryContent() {
     useEffect(() => {
         if (!serviceId) return;
         const fetchService = async () => {
-            const { data } = await supabase.from("services").select("*").eq("id", serviceId).single();
+            const { data } = await supabase.from("services").select("*").eq("id", serviceId).maybeSingle();
             if (data) setService(data);
             setLoadingService(false);
 
             if (user?.id) {
-                const { data: profileData } = await supabase.from("profiles").select("cpf").eq("id", user.id).single();
+                const { data: profileData } = await supabase.from("profiles").select("cpf").eq("id", user.id).maybeSingle();
                 if (profileData?.cpf) {
                     setUserCpf(profileData.cpf);
                 }
