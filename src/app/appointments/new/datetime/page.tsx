@@ -29,19 +29,31 @@ function DateTimeSelection() {
     });
 
     // Select today by default if it's the current month, else null
+    const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [bookedSlots, setBookedSlots] = useState<string[]>([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
+    
+    // Configurações de dias de funcionamento
+    const [operatingDays, setOperatingDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
+    const [disabledDates, setDisabledDates] = useState<string[]>([]);
 
     useEffect(() => {
         if (!serviceId) return;
-        const fetchService = async () => {
+        const fetchServiceAndSettings = async () => {
             const { data } = await supabase.from("services").select("*").eq("id", serviceId).maybeSingle();
             if (data) setService(data);
+            
+            const { data: settings } = await supabase.from("settings").select("operating_days, disabled_dates").eq("id", 1).maybeSingle();
+            if (settings) {
+                if (settings.operating_days) setOperatingDays(settings.operating_days);
+                if (settings.disabled_dates) setDisabledDates(settings.disabled_dates);
+            }
+            
             setLoadingService(false);
         };
-        fetchService();
+        fetchServiceAndSettings();
     }, [serviceId]);
 
     // Fetch appointments for the selected date
@@ -125,6 +137,17 @@ function DateTimeSelection() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         return d.getTime() < today.getTime();
+    };
+
+    const isDayDisabled = (d: Date) => {
+        // Verifica se o dia da semana não está nos dias de funcionamento
+        if (!operatingDays.includes(d.getDay())) return true;
+        
+        // Verifica se a data exata está na lista de datas bloqueadas
+        const dateString = d.toLocaleDateString('en-CA'); // YYYY-MM-DD local format
+        if (disabledDates.includes(dateString)) return true;
+        
+        return false;
     };
 
     // Combine Date and Time
@@ -241,12 +264,13 @@ function DateTimeSelection() {
                                 if (!day) return <div key={`empty-${idx}`} className="h-12"></div>;
 
                                 const isPast = isPastDay(day);
+                                const isDisabled = isPast || isDayDisabled(day);
                                 const isSelected = selectedDate && isSameDay(selectedDate, day);
 
-                                if (isPast) {
+                                if (isDisabled) {
                                     return (
                                         <div key={day.toISOString()} className="h-12 flex items-center justify-center">
-                                            <span className="text-sm text-white line-through decoration-white/50">{day.getDate()}</span>
+                                            <span className="text-sm text-white/50 line-through decoration-white/50">{day.getDate()}</span>
                                         </div>
                                     );
                                 }
