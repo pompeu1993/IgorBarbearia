@@ -89,6 +89,16 @@ export default function AppointmentsPage() {
         return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
     };
 
+    const canReschedule = (isoStr: string, status: string) => {
+        // Pode reagendar se for CONFIRMADO e estiver no futuro
+        if (status !== "CONFIRMED") return false;
+        
+        const apptDate = new Date(isoStr).getTime();
+        const now = new Date().getTime();
+        
+        return apptDate > now;
+    };
+
     return (
         <>
             <header className="flex items-center justify-between p-4 pt-6 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-primary/20">
@@ -143,6 +153,21 @@ export default function AppointmentsPage() {
                                         </Link>
                                     )}
                                 </div>
+                                
+                                {canReschedule(apt.date, apt.status) && (
+                                    <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between relative z-10">
+                                        <div className="flex items-center gap-1.5 max-w-[65%]">
+                                            <span className="material-symbols-outlined text-slate-400 text-[14px]">info</span>
+                                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-tight">Reagendamentos permitidos com até 24h de antecedência</span>
+                                        </div>
+                                        <Link
+                                            href={`/appointments/reschedule?appointmentId=${apt.id}`}
+                                            className="text-[10px] font-bold text-black uppercase tracking-widest transition-colors bg-primary hover:bg-[#cfaa33] px-4 py-2 rounded-full flex items-center gap-1 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+                                        >
+                                            Reagendar
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
