@@ -254,7 +254,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-4 pt-6 border-t border-white/10">
-                    <div className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between shadow-lg relative overflow-hidden group hover:border-primary/50 transition-colors cursor-pointer">
+                    <a href="https://wa.me/5512996397448" target="_blank" rel="noopener noreferrer" className="block bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between shadow-lg relative overflow-hidden group hover:border-primary/50 transition-colors cursor-pointer">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
                         <div className="flex items-center gap-4 relative z-10">
                             <div className="size-12 rounded-xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/5 flex items-center justify-center">
@@ -266,7 +266,7 @@ export default function ProfilePage() {
                             </div>
                         </div>
                         <span className="material-symbols-outlined text-white/50 group-hover:text-primary transition-colors relative z-10">chevron_right</span>
-                    </div>
+                    </a>
 
                     <div className="flex flex-col gap-3 mt-8">
                         <button onClick={logout} className="w-full bg-[#0a0a0a] border border-white/10 text-white hover:bg-[#1a1a1a] font-extrabold py-4 rounded-xl uppercase tracking-widest transition-all">
