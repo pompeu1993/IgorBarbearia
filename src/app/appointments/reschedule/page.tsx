@@ -32,9 +32,9 @@ function DateTimeSelection() {
 
     // Select today by default if it's the current month, else null
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const [service, setService] = useState<Service | null>(null);
-    const [originalDate, setOriginalDate] = useState<Date | null>(null);
-    const [loadingService, setLoadingService] = useState(true);
+    const [selectedTime, setSelectedTime] = useState<string | null>(null);
+    const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+    const [loadingSlots, setLoadingSlots] = useState(false);
 
     // Configurações de dias de funcionamento
     const [operatingDays, setOperatingDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
