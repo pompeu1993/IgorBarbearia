@@ -19,6 +19,7 @@ export default function HistoryPage() {
     const { user, isAuthenticated } = useAuth();
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
+    const [cancelingId, setCancelingId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) return;
@@ -55,6 +56,7 @@ export default function HistoryPage() {
     const handleCancel = async (id: string) => {
         if (!confirm("Deseja realmente cancelar este agendamento?")) return;
 
+        setCancelingId(id);
         const { error } = await supabase
             .from("appointments")
             .update({ status: "CANCELLED" })
@@ -65,6 +67,7 @@ export default function HistoryPage() {
         } else {
             alert("Erro ao cancelar o agendamento.");
         }
+        setCancelingId(null);
     };
 
     const formatPrice = (price: number) => {

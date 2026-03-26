@@ -44,7 +44,15 @@ function CadastroContent() {
         setAuthLoading(true);
         setErrorMsg(null);
 
-        const { error } = await supabase.auth.signUp({
+        // Pre-check if CPF already exists in profiles
+        const { data: existingCpf } = await supabase.from('profiles').select('id').eq('cpf', unmaskedCpf).single();
+        if (existingCpf) {
+            setErrorMsg("Este CPF já está em uso.");
+            setAuthLoading(false);
+            return;
+        }
+
+        const { error, data } = await supabase.auth.signUp({
             email,
             password,
             options: {
@@ -57,15 +65,32 @@ function CadastroContent() {
         });
 
         if (error) {
-            setErrorMsg(error.message);
+            console.error("Signup error:", error);
+            // Translate common Supabase error messages to Portuguese
+            if (error.status === 422) {
+                if (error.message.includes("Password")) {
+                    setErrorMsg("A senha deve ter pelo menos 6 caracteres.");
+                } else if (error.message.includes("User already registered")) {
+                    setErrorMsg("Este e-mail já está cadastrado.");
+                } else {
+                    setErrorMsg("Erro de validação. Verifique os dados e tente novamente.");
+                }
+            } else if (error.status === 500) {
+                setErrorMsg("Erro interno no servidor ao criar o perfil. Tente novamente mais tarde.");
+            } else {
+                setErrorMsg(error.message);
+            }
         } else {
             // Em caso de sucesso de sign up sem necessidade de confirmação,
             // ou se tiver session automática, ele vai redirecionar via useEffect.
             // Se exigir email config, talvez mostre a mensagem:
-            setErrorMsg("Conta criada com sucesso! Redirecionando...");
+            setErrorMsg(null);
+            alert("Conta criada com sucesso!");
             setTimeout(() => {
                 if (redirectPath) {
                     router.push(redirectPath);
+                } else {
+                    router.push("/");
                 }
             }, 1000);
         }
