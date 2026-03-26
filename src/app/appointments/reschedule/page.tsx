@@ -164,6 +164,7 @@ function DateTimeSelection() {
 
     // Combine Date and Time
     const finalDateTimeStr = (() => {
+        if (!selectedDate || !selectedTime) return null;
         const [hours, minutes] = selectedTime.split(":").map(Number);
         const dt = new Date(selectedDate);
         dt.setHours(hours, minutes, 0, 0);
