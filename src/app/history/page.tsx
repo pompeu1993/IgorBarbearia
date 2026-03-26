@@ -95,6 +95,17 @@ export default function HistoryPage() {
         return new Date(isoStr).getTime() > new Date().getTime() && status === "PENDING";
     };
 
+    const canReschedule = (isoStr: string, status: string) => {
+        // Pode reagendar se for CONFIRMADO, estiver no futuro e faltar mais de 24h para o agendamento
+        if (status !== "CONFIRMED") return false;
+        
+        const apptDate = new Date(isoStr).getTime();
+        const now = new Date().getTime();
+        const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+        
+        return apptDate > now && (apptDate - now) > twentyFourHoursInMs;
+    };
+
     return (
         <>
             <header className="flex items-center justify-between p-4 pt-6 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10">
@@ -119,6 +130,7 @@ export default function HistoryPage() {
                         {appointments.map((item) => {
                             const statusInfo = getStatusText(item.status);
                             const canCancel = isFutureAndPending(item.date, item.status);
+                            const allowReschedule = canReschedule(item.date, item.status);
 
                             return (
                                 <div key={item.id} className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between opacity-90 transition-opacity shadow-lg relative overflow-hidden group">
@@ -133,8 +145,8 @@ export default function HistoryPage() {
                                             {statusInfo.text}
                                         </p>
                                     </div>
-                                    <div className="text-right relative z-10">
-                                        <span className="text-primary font-black text-lg tracking-tight block mb-2">{item.service?.price ? formatPrice(item.service.price) : ''}</span>
+                                    <div className="text-right relative z-10 flex flex-col items-end gap-2">
+                                        <span className="text-primary font-black text-lg tracking-tight block mb-1">{item.service?.price ? formatPrice(item.service.price) : ''}</span>
                                         {canCancel ? (
                                             <button
                                                 onClick={() => handleCancel(item.id)}
@@ -143,6 +155,15 @@ export default function HistoryPage() {
                                             >
                                                 {cancelingId === item.id ? 'Cancelando...' : 'Cancelar'}
                                             </button>
+                                        ) : allowReschedule ? (
+                                            <a
+                                                href={`https://wa.me/5512996397448?text=Olá, gostaria de reagendar meu horário de ${item.service?.name} marcado para ${formatDate(item.date)}.`}
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="text-[10px] font-bold text-primary hover:text-white uppercase tracking-widest transition-colors bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20 flex items-center gap-1"
+                                            >
+                                                Reagendar
+                                            </a>
                                         ) : item.status === 'COMPLETED' ? (
                                             <button className="text-[10px] font-bold text-primary hover:text-white uppercase tracking-widest transition-colors bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
                                                 Agendar Novamente
