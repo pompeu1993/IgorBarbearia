@@ -133,43 +133,53 @@ export default function HistoryPage() {
                             const allowReschedule = canReschedule(item.date, item.status);
 
                             return (
-                                <div key={item.id} className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex items-center justify-between opacity-90 transition-opacity shadow-lg relative overflow-hidden group">
+                                <div key={item.id} className="bg-[#0a0a0a] border border-white/10 p-5 rounded-2xl flex flex-col opacity-90 transition-opacity shadow-lg relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
-                                    <div className="relative z-10">
-                                        <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest block mb-1">
-                                            {formatDate(item.date)}
-                                        </span>
-                                        <h3 className="text-white font-extrabold text-lg tracking-tight mb-1">{item.service?.name}</h3>
-                                        <p className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${statusInfo.color}`}>
-                                            <span className="material-symbols-outlined text-[14px]">{statusInfo.icon}</span>
-                                            {statusInfo.text}
-                                        </p>
+                                    <div className="flex items-center justify-between mb-3 relative z-10">
+                                        <div>
+                                            <span className="text-[10px] font-bold text-white/70 uppercase tracking-widest block mb-1">
+                                                {formatDate(item.date)}
+                                            </span>
+                                            <h3 className="text-white font-extrabold text-lg tracking-tight mb-1">{item.service?.name}</h3>
+                                            <p className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${statusInfo.color}`}>
+                                                <span className="material-symbols-outlined text-[14px]">{statusInfo.icon}</span>
+                                                {statusInfo.text}
+                                            </p>
+                                        </div>
+                                        <div className="text-right flex flex-col items-end gap-2">
+                                            <span className="text-primary font-black text-lg tracking-tight block mb-1">{item.service?.price ? formatPrice(item.service.price) : ''}</span>
+                                            {canCancel ? (
+                                                <button
+                                                    onClick={() => handleCancel(item.id)}
+                                                    disabled={cancelingId === item.id}
+                                                    className="text-[10px] font-bold text-red-400 hover:text-red-300 uppercase tracking-widest disabled:opacity-50 transition-colors bg-red-500/10 px-3 py-1.5 rounded-full border border-red-500/20"
+                                                >
+                                                    {cancelingId === item.id ? 'Cancelando...' : 'Cancelar'}
+                                                </button>
+                                            ) : item.status === 'COMPLETED' ? (
+                                                <button className="text-[10px] font-bold text-primary hover:text-white uppercase tracking-widest transition-colors bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                                                    Agendar Novamente
+                                                </button>
+                                            ) : null}
+                                        </div>
                                     </div>
-                                    <div className="text-right relative z-10 flex flex-col items-end gap-2">
-                                        <span className="text-primary font-black text-lg tracking-tight block mb-1">{item.service?.price ? formatPrice(item.service.price) : ''}</span>
-                                        {canCancel ? (
-                                            <button
-                                                onClick={() => handleCancel(item.id)}
-                                                disabled={cancelingId === item.id}
-                                                className="text-[10px] font-bold text-red-400 hover:text-red-300 uppercase tracking-widest disabled:opacity-50 transition-colors bg-red-500/10 px-3 py-1.5 rounded-full border border-red-500/20"
-                                            >
-                                                {cancelingId === item.id ? 'Cancelando...' : 'Cancelar'}
-                                            </button>
-                                        ) : allowReschedule ? (
+                                    
+                                    {allowReschedule && (
+                                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between relative z-10">
+                                            <div className="flex items-center gap-1.5 max-w-[65%]">
+                                                <span className="material-symbols-outlined text-slate-400 text-[14px]">info</span>
+                                                <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-tight">Reagendamentos permitidos com até 24h de antecedência</span>
+                                            </div>
                                             <a
                                                 href={`https://wa.me/5512996397448?text=Olá, gostaria de reagendar meu horário de ${item.service?.name} marcado para ${formatDate(item.date)}.`}
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
-                                                className="text-[10px] font-bold text-primary hover:text-white uppercase tracking-widest transition-colors bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20 flex items-center gap-1"
+                                                className="text-[10px] font-bold text-black uppercase tracking-widest transition-colors bg-primary hover:bg-[#cfaa33] px-4 py-2 rounded-full flex items-center gap-1 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
                                             >
                                                 Reagendar
                                             </a>
-                                        ) : item.status === 'COMPLETED' ? (
-                                            <button className="text-[10px] font-bold text-primary hover:text-white uppercase tracking-widest transition-colors bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                                                Agendar Novamente
-                                            </button>
-                                        ) : null}
-                                    </div>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
