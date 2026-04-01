@@ -41,7 +41,7 @@ export async function POST(req: Request) {
         const resetLink = linkData.properties.action_link;
 
         // Send email via Resend
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
             from: 'Igor Barbearia <onboarding@resend.dev>', // Resend test domain
             to: [email],
             subject: 'Recuperação de Senha - Igor Barbearia',

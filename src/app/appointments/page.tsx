@@ -4,27 +4,35 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
 
 type Appointment = {
     id: string;
     date: string;
     status: string;
+    payment_status?: string;
+    service_id?: string;
     service: {
         name: string;
         price: number;
-    };
+    } | null;
+};
+
+type AppointmentRow = {
+    id: string;
+    date: string;
+    status: string;
+    payment_status?: string;
+    service_id?: string;
+    service: Appointment["service"] | Appointment["service"][];
 };
 
 export default function AppointmentsPage() {
     const { user, isAuthenticated } = useAuth();
-    const router = useRouter();
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!user || !isAuthenticated) {
-            setLoading(false);
             return;
         }
 
@@ -49,16 +57,18 @@ export default function AppointmentsPage() {
                     service:services (name, price)
                 `)
                 .eq("user_id", user.id)
-                .in("status", ["PENDING", "CONFIRMED"])
+                .eq("status", "CONFIRMED") // Modificado de .in("status", ["PENDING", "CONFIRMED"]) para apenas "CONFIRMED"
                 .gte("date", now)
                 .order("date", { ascending: true });
 
             if (data) {
-                const formattedData: Appointment[] = data.map((item: any) => ({
+                const formattedData: Appointment[] = (data as AppointmentRow[]).map((item) => ({
                     id: item.id,
                     date: item.date,
                     status: item.status,
-                    service: Array.isArray(item.service) ? item.service[0] : item.service
+                    payment_status: item.payment_status,
+                    service_id: item.service_id,
+                    service: Array.isArray(item.service) ? item.service[0] : item.service,
                 }));
                 setAppointments(formattedData);
             }
@@ -67,21 +77,6 @@ export default function AppointmentsPage() {
 
         fetchAppointments();
     }, [user, isAuthenticated]);
-
-    const handleCancel = async (id: string) => {
-        if (!confirm("Deseja realmente cancelar este agendamento?")) return;
-
-        const { error } = await supabase
-            .from("appointments")
-            .update({ status: "CANCELLED" })
-            .eq("id", id);
-
-        if (!error) {
-            setAppointments(prev => prev.filter(app => app.id !== id));
-        } else {
-            alert("Erro ao cancelar o agendamento.");
-        }
-    };
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -130,7 +125,7 @@ export default function AppointmentsPage() {
                     </div>
                 ) : appointments.length > 0 ? (
                     <div className="space-y-4">
-                        {appointments.map((apt: any) => (
+                        {appointments.map((apt) => (
                             <div key={apt.id} className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 shadow-lg relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
                                 <div className="flex justify-between items-start mb-4 relative z-10">

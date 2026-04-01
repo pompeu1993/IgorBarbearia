@@ -52,7 +52,7 @@ function CadastroContent() {
             return;
         }
 
-        const { error, data } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
             email,
             password,
             options: {
@@ -70,16 +70,20 @@ function CadastroContent() {
             if (error.status === 422) {
                 if (error.message.includes("Password")) {
                     setErrorMsg("A senha deve ter pelo menos 6 caracteres.");
-                } else if (error.message.includes("User already registered")) {
-                    setErrorMsg("Este e-mail já está cadastrado.");
+                } else if (error.message.includes("User already registered") || error.message.includes("already exists")) {
+                    setErrorMsg("Este e-mail já está cadastrado no sistema.");
                 } else {
                     setErrorMsg("Erro de validação. Verifique os dados e tente novamente.");
                 }
+            } else if (error.message && (error.message.includes("User already registered") || error.message.includes("already exists"))) {
+                setErrorMsg("Este e-mail já está cadastrado no sistema. Tente fazer login.");
             } else if (error.status === 500) {
                 setErrorMsg("Erro interno no servidor ao criar o perfil. Tente novamente mais tarde.");
             } else {
                 setErrorMsg(error.message);
             }
+            setAuthLoading(false);
+            return;
         } else {
             setErrorMsg(null);
             if (redirectPath) {

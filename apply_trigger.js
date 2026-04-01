@@ -1,29 +1,30 @@
-const { createClient } = require('@supabase/supabase-js');
-const fs = require('fs');
-
-const envFile = fs.readFileSync('.env.local', 'utf-8');
-const lines = envFile.split('\n');
-let supabaseUrl = '';
-let supabaseKey = '';
-
-lines.forEach(line => {
-    if (line.startsWith('NEXT_PUBLIC_SUPABASE_URL=')) {
-        supabaseUrl = line.split('=')[1].trim();
-    }
-    if (line.startsWith('SUPABASE_SERVICE_ROLE_KEY=')) {
-        supabaseKey = line.split('=')[1].trim();
-    }
-});
-
-const supabase = createClient(supabaseUrl, supabaseKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
-});
-
 async function run() {
+    const [{ createClient }, fs] = await Promise.all([
+        import("@supabase/supabase-js"),
+        import("node:fs"),
+    ]);
+    const envFile = fs.readFileSync(".env.local", "utf-8");
+    const lines = envFile.split("\n");
+    let supabaseUrl = "";
+    let supabaseKey = "";
+
+    lines.forEach((line) => {
+        if (line.startsWith("NEXT_PUBLIC_SUPABASE_URL=")) {
+            supabaseUrl = line.split("=")[1].trim();
+        }
+        if (line.startsWith("SUPABASE_SERVICE_ROLE_KEY=")) {
+            supabaseKey = line.split("=")[1].trim();
+        }
+    });
+
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+    });
+
     console.log("Applying fix to Supabase profiles trigger...");
     
     // Create an RPC to execute raw SQL because Supabase API doesn't support it directly
-    const { data: rpcData, error: rpcError } = await supabase.rpc('exec_sql', { 
+    const { error: rpcError } = await supabase.rpc('exec_sql', { 
         sql: `
         CREATE OR REPLACE FUNCTION public.handle_new_user()
         RETURNS trigger AS $$

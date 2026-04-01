@@ -8,17 +8,17 @@ import { supabase } from "@/lib/supabase";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const [isAdmin, setIsAdmin] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (!isAuthenticated || !user) {
-            setLoading(false);
+        if (authLoading || !isAuthenticated || !user) {
             return;
         }
 
         const checkAdmin = async () => {
+            setLoading(true);
             const { data } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
             if (data?.role === 'admin' || user.email === 'rafaelmiguelalonso@gmail.com') {
                 setIsAdmin(true);
@@ -26,9 +26,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             setLoading(false);
         };
         checkAdmin();
-    }, [user, isAuthenticated]);
+    }, [authLoading, user, isAuthenticated]);
 
-    if (loading) {
+    if (authLoading || loading) {
         return (
             <div className="flex-1 flex items-center justify-center min-h-screen bg-black">
                 <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>

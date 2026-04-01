@@ -1,0 +1,1289 @@
+[
+  {
+    "id": "TC001",
+    "title": "Sign in with valid credentials redirects to home dashboard",
+    "description": "Verifies a user can sign in and land on the home dashboard.",
+    "category": "Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the home dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Sign in with wrong password shows authentication error",
+    "description": "Verifies invalid credentials are rejected with an authentication error state.",
+    "category": "Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill an invalid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an authentication error is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Registration creates account and authenticates user",
+    "description": "Verifies a new user can register and becomes authenticated, landing on the home dashboard.",
+    "category": "Authentication",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /cadastro"
+      },
+      {
+        "type": "action",
+        "description": "Fill Test User into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid phone number into the phone field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid CPF into the CPF field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a unique email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the home dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Password recovery request submits successfully",
+    "description": "Verifies a user can request a password recovery email from the recovery page.",
+    "category": "Authentication",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /recuperar-senha"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password recovery request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a recovery request confirmation is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Password reset completion updates password and allows sign in",
+    "description": "Verifies a user can define a new password on the reset page and then sign in with it.",
+    "category": "Authentication",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /update-password"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid new password into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same new password into the password confirmation field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password reset form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the new password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the home dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Password recovery with non-existent account shows error",
+    "description": "Verifies requesting recovery for an unknown email shows an error state.",
+    "category": "Authentication",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /recuperar-senha"
+      },
+      {
+        "type": "action",
+        "description": "Fill a non-existent email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password recovery request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an error state for the recovery request is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Service booking: choose service, select date/time, proceed to summary",
+    "description": "Verifies the core booking flow from service selection to date/time selection and reaching the summary page.",
+    "category": "Service Booking",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /appointments/new"
+      },
+      {
+        "type": "action",
+        "description": "Open the service catalog"
+      },
+      {
+        "type": "action",
+        "description": "Choose a service"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the date and time selection step"
+      },
+      {
+        "type": "action",
+        "description": "Select an available date"
+      },
+      {
+        "type": "action",
+        "description": "Select an available time slot"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the summary step"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the booking summary is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Service booking: disabled date cannot be selected and alternative date works",
+    "description": "Verifies disabled dates are blocked and user can select an alternative date to proceed.",
+    "category": "Service Booking",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /appointments/new"
+      },
+      {
+        "type": "action",
+        "description": "Open the service catalog"
+      },
+      {
+        "type": "action",
+        "description": "Choose a service"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the date and time selection step"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to select a disabled date"
+      },
+      {
+        "type": "action",
+        "description": "Select an alternative available date"
+      },
+      {
+        "type": "action",
+        "description": "Select an available time slot"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the summary step"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the booking summary is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Service booking: unavailable time slot is blocked and another slot can be chosen",
+    "description": "Verifies a blocked/unavailable time slot cannot be selected and another slot can be used to continue.",
+    "category": "Service Booking",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /appointments/new"
+      },
+      {
+        "type": "action",
+        "description": "Open the service catalog"
+      },
+      {
+        "type": "action",
+        "description": "Choose a service"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the date and time selection step"
+      },
+      {
+        "type": "action",
+        "description": "Select a date with limited availability"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to select an unavailable time slot"
+      },
+      {
+        "type": "action",
+        "description": "Select a different available time slot"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the summary step"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the booking summary is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Service selection page loads and displays service catalog entry point",
+    "description": "Verifies the new appointment service selection page loads its primary content.",
+    "category": "Service Booking",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /appointments/new"
+      },
+      {
+        "type": "action",
+        "description": "Open the service catalog"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify available services are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Date/time selection page shows date picker and time slots after selecting a service",
+    "description": "Verifies the date/time selection step loads primary widgets after a service is chosen.",
+    "category": "Service Booking",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /appointments/new"
+      },
+      {
+        "type": "action",
+        "description": "Open the service catalog"
+      },
+      {
+        "type": "action",
+        "description": "Choose a service"
+      },
+      {
+        "type": "action",
+        "description": "Continue to the date and time selection step"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify date selection and available time slots are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Appointment History loads and shows history list with filters and pagination controls",
+    "description": "Verifies the history page loads with a list area and controls to filter and paginate.",
+    "category": "Appointment History",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open appointment history"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the appointment history list is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify filter controls and pagination controls are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Appointment History filter by period and service and navigate between pages",
+    "description": "Verifies that applying period and service filters updates the history list and that pagination navigation works.",
+    "category": "Appointment History",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open appointment history"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid start date into the from date field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid end date into the to date field"
+      },
+      {
+        "type": "action",
+        "description": "Select a service in the service filter"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to apply filters"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to go to the next page of results"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the history list updates to reflect the selected filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the history list changes when navigating to another page"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Appointment History invalid date range shows validation or empty results and can be corrected",
+    "description": "Verifies that an invalid period filter is blocked or results in no results, and correcting the range restores results.",
+    "category": "Appointment History",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open appointment history"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid end date into the from date field that is after the to date"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid start date into the to date field that is before the from date"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to apply filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a date range validation error is visible or an empty results state is visible"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the from and to dates to a valid range"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to apply filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the history list is displayed for the corrected filter range"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Appointment History pagination boundary does not navigate beyond available pages",
+    "description": "Verifies the UI prevents navigating past the last page or keeps the list stable when at the end.",
+    "category": "Appointment History",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open appointment history"
+      },
+      {
+        "type": "action",
+        "description": "Repeatedly click the control to go to the next page until it is no longer available"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the next-page control is disabled or unavailable at the end of pagination"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the history list remains displayed and does not break"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Appointment History inspect an individual history item details",
+    "description": "Verifies that a user can expand or open a history item to view its details.",
+    "category": "Appointment History",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open appointment history"
+      },
+      {
+        "type": "action",
+        "description": "Click a history item to view its details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected appointment's details are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the appointment status information is displayed for the selected item"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Appointment History cancel pending future appointment when available",
+    "description": "Verifies that cancelling is possible for an eligible pending future appointment and the UI updates accordingly.",
+    "category": "Appointment History",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open appointment history"
+      },
+      {
+        "type": "action",
+        "description": "If available, locate a future appointment item with pending payment status"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to cancel the pending appointment"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the cancellation in the UI confirmation step"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the appointment is removed from the list or its status is updated to a canceled state"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a cancellation confirmation is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Appointment History start reschedule flow for a confirmed future appointment",
+    "description": "Verifies that rescheduling can be initiated from an eligible confirmed future appointment and navigates to reschedule page.",
+    "category": "Appointment History",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open appointment history"
+      },
+      {
+        "type": "action",
+        "description": "If available, locate a confirmed future appointment item"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to start rescheduling"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the reschedule page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify rescheduling date and time selection controls are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Appointment Management loads appointments list and allows inspecting details",
+    "description": "Verifies the appointments page loads and a user can open an appointment to view details.",
+    "category": "Appointment Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open current appointments"
+      },
+      {
+        "type": "action",
+        "description": "Click an appointment item to inspect details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify appointment details are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify follow-up actions for the appointment are available when applicable"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Appointment Management reschedule an appointment to a new valid date and time",
+    "description": "Verifies the end-to-end reschedule flow updates the appointment and shows the updated schedule in the list.",
+    "category": "Appointment Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open current appointments"
+      },
+      {
+        "type": "action",
+        "description": "Click an appointment item to inspect details"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to start the reschedule flow"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid new date allowed by the operating rules"
+      },
+      {
+        "type": "action",
+        "description": "Select an available time slot"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the reschedule"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a reschedule confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the appointment list shows the updated date and time for the rescheduled appointment"
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Appointment Management reschedule blocked when selecting a forbidden lead-time date",
+    "description": "Verifies that selecting a date within the forbidden reschedule window is prevented with validation feedback.",
+    "category": "Appointment Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open current appointments"
+      },
+      {
+        "type": "action",
+        "description": "Click an appointment item to inspect details"
+      },
+      {
+        "type": "action",
+        "description": "Click the action to start the reschedule flow"
+      },
+      {
+        "type": "action",
+        "description": "Select a date that is within the minimum-notice forbidden window"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to proceed to time selection or confirm reschedule"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a minimum-notice validation message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the reschedule cannot be confirmed with the forbidden date"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Profile Management update name, phone, and CPF and persist changes",
+    "description": "Verifies saving profile changes shows confirmation and the new values remain visible after reload.",
+    "category": "Profile Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the profile page"
+      },
+      {
+        "type": "action",
+        "description": "Fill Test User Updated into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid phone number into the phone field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid CPF into the CPF field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the profile changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a profile update confirmation is visible"
+      },
+      {
+        "type": "action",
+        "description": "Refresh the page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the name field value is Test User Updated"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Profile Management invalid CPF prevents saving",
+    "description": "Verifies CPF validation blocks saving and provides feedback to correct the CPF.",
+    "category": "Profile Management",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the profile page"
+      },
+      {
+        "type": "action",
+        "description": "Fill 12345678900 into the CPF field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the profile changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a CPF validation error is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the profile changes are not saved"
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Admin dashboard loads and shows today's appointments overview",
+    "description": "Verifies an authenticated admin can access the admin dashboard and see the primary daily overview content.",
+    "category": "Admin Operations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the daily appointments overview is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify quick stats for today are displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "Admin agenda loads and allows browsing schedule by date",
+    "description": "Verifies an authenticated admin can open the agenda view and change the inspected date.",
+    "category": "Admin Operations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the agenda view"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid date in the agenda date selector"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the schedule for the selected date is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "Open an appointment in agenda and view its details panel",
+    "description": "Verifies an authenticated admin can open appointment details from the agenda list when items exist.",
+    "category": "Admin Operations",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open the agenda view"
+      },
+      {
+        "type": "action",
+        "description": "Click an appointment item in the schedule list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify appointment details are displayed for the selected item"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "Update operating days in admin settings and save",
+    "description": "Verifies an authenticated admin can change operating day settings and persist changes through a save action.",
+    "category": "Admin Operations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open admin settings"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the operating days selection"
+      },
+      {
+        "type": "action",
+        "description": "Save the settings changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "Add a disabled date in admin settings and verify it blocks booking availability",
+    "description": "Verifies an authenticated admin can add a disabled date and that the booking datetime page reflects the restriction.",
+    "category": "Admin Operations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open admin settings"
+      },
+      {
+        "type": "action",
+        "description": "Add a new disabled date using a valid date selection"
+      },
+      {
+        "type": "action",
+        "description": "Save the settings changes"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /appointments/new/datetime"
+      },
+      {
+        "type": "action",
+        "description": "Select the same disabled date in the date selector"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify time slots are not available for the selected disabled date"
+      }
+    ]
+  },
+  {
+    "id": "TC029",
+    "title": "Change service settings and rescheduling rules and save",
+    "description": "Verifies an authenticated admin can modify service-related settings or rescheduling rules and save them.",
+    "category": "Admin Operations",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to open admin settings"
+      },
+      {
+        "type": "action",
+        "description": "Adjust a service setting or rescheduling rule"
+      },
+      {
+        "type": "action",
+        "description": "Save the settings changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ]
+  },
+  {
+    "id": "TC030",
+    "title": "Leave the admin area to a non-admin page",
+    "description": "Verifies an authenticated admin can exit admin pages using normal navigation.",
+    "category": "Admin Operations",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to leave the admin area"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on a non-admin page"
+      }
+    ]
+  },
+  {
+    "id": "TC031",
+    "title": "Non-admin access attempt to admin routes is blocked",
+    "description": "Verifies a non-admin user cannot access admin routes and is redirected or shown an access denied state.",
+    "category": "Admin Operations",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an access denied state is displayed or the user is redirected away from the admin area"
+      }
+    ]
+  }
+]

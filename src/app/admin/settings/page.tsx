@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -11,6 +12,22 @@ export default function AdminSettings() {
     const [newDisabledDate, setNewDisabledDate] = useState("");
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [feedback, setFeedback] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+    const [priceError, setPriceError] = useState<string | null>(null);
+
+    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let value = e.target.value;
+        setPrice(value);
+
+        const numPrice = parseFloat(value);
+        if (isNaN(numPrice)) {
+            setPriceError("Preço inválido.");
+        } else if (numPrice < 5.00) {
+            setPriceError("O preço mínimo permitido é R$ 5,00.");
+        } else {
+            setPriceError(null);
+        }
+    };
 
     const weekDays = [
         { id: 0, label: "Dom" },
@@ -54,31 +71,61 @@ export default function AdminSettings() {
     }, []);
 
     const handleSave = async () => {
+        if (priceError) {
+            setFeedback({ type: 'error', message: "Corrija os erros no formulário antes de salvar." });
+            return;
+        }
+        
         setSaving(true);
+        setFeedback(null);
         try {
             // Update Price
             const numPrice = parseFloat(price);
             if (!isNaN(numPrice)) {
-                await supabase
+                const { data: serviceData, error: serviceError } = await supabase
                     .from("services")
                     .update({ price: numPrice })
-                    .eq("name", "Corte Tradicional");
+                    .eq("name", "Corte Tradicional")
+                    .select();
+
+                if (serviceError) {
+                    console.error("[Admin Settings] Erro ao atualizar preço:", serviceError);
+                    throw new Error(`Erro do banco: ${serviceError.message}`);
+                }
+                
+                if (!serviceData || serviceData.length === 0) {
+                    throw new Error("Falha de permissão (RLS): Você não tem privilégios de 'admin' no banco de dados para alterar o preço do serviço.");
+                }
             }
 
             // Update Settings
-            await supabase
+            const { data: settingsData, error: settingsError } = await supabase
                 .from("settings")
                 .update({
                     allow_rescheduling: allowRescheduling,
                     operating_days: operatingDays,
                     disabled_dates: disabledDates
                 })
-                .eq("id", 1);
+                .eq("id", 1)
+                .select();
 
-            alert("Configurações salvas com sucesso!");
-        } catch (error) {
-            console.error(error);
-            alert("Erro ao salvar configurações.");
+            if (settingsError) {
+                console.error("[Admin Settings] Erro ao atualizar settings:", settingsError);
+                throw new Error(`Erro do banco: ${settingsError.message}`);
+            }
+            
+            if (!settingsData || settingsData.length === 0) {
+                throw new Error("Falha de permissão (RLS): Você não tem privilégios de 'admin' para alterar as configurações do sistema.");
+            }
+
+            setFeedback({ type: 'success', message: "Configurações salvas com sucesso!" });
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => setFeedback(null), 3000);
+            
+        } catch (error: any) {
+            console.error("[Admin Settings] Erro geral:", error);
+            setFeedback({ type: 'error', message: error.message || "Erro ao salvar configurações. Verifique o console." });
         } finally {
             setSaving(false);
         }
@@ -116,9 +163,9 @@ export default function AdminSettings() {
         <main className="flex-1 w-full relative pb-24">
             <header className="px-6 py-8 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10 flex items-start justify-between">
                 <h1 className="text-2xl font-black text-white uppercase tracking-widest">Configurações</h1>
-                <a href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
+                <Link href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
                     <span className="material-symbols-outlined text-[20px]">logout</span>
-                </a>
+                </Link>
             </header>
 
             <div className="px-6 pt-6 space-y-8">
@@ -131,13 +178,23 @@ export default function AdminSettings() {
                             <label className="block text-[10px] text-white/70 font-bold uppercase tracking-widest mb-2">
                                 Preço do Corte Tradicional (R$)
                             </label>
-                            <input
-                                type="number"
-                                step="0.01"
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-bold focus:outline-none focus:border-primary transition-colors"
-                            />
+                            <div className="relative">
+                                <span className="absolute left-4 top-3 text-white/50 font-bold">R$</span>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="5.00"
+                                    value={price}
+                                    onChange={handlePriceChange}
+                                    className={`w-full bg-white/5 border ${priceError ? 'border-red-500/50' : 'border-white/10'} rounded-xl pl-12 pr-4 py-3 text-white font-bold focus:outline-none ${priceError ? 'focus:border-red-500' : 'focus:border-primary'} transition-colors`}
+                                />
+                            </div>
+                            {priceError && (
+                                <p className="text-red-400 text-xs font-bold mt-2 animate-in fade-in slide-in-from-top-1">
+                                    <span className="material-symbols-outlined text-[14px] align-middle mr-1">error</span>
+                                    {priceError}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -237,14 +294,36 @@ export default function AdminSettings() {
                     </div>
                 </section>
 
+                {feedback && (
+                    <div className={`p-4 rounded-xl text-sm font-bold flex items-center gap-3 ${
+                        feedback.type === 'success' 
+                        ? 'bg-green-500/10 border border-green-500/30 text-green-400' 
+                        : 'bg-red-500/10 border border-red-500/30 text-red-400'
+                    }`}>
+                        <span className="material-symbols-outlined text-[20px]">
+                            {feedback.type === 'success' ? 'check_circle' : 'error'}
+                        </span>
+                        <p>{feedback.message}</p>
+                    </div>
+                )}
+
                 {/* Salvar */}
-                <button
-                    onClick={handleSave}
+                <button 
+                    onClick={handleSave} 
                     disabled={saving}
                     className="w-full h-14 bg-gradient-to-r from-primary to-[#bfa040] hover:from-[#cfaa33] hover:to-[#dcb650] text-black rounded-xl font-black text-sm uppercase tracking-widest transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_10px_30px_-10px_rgba(212,175,55,0.4)]"
                 >
-                    {saving ? 'Salvando...' : 'Salvar Configurações'}
-                    <span className="material-symbols-outlined text-xl">save</span>
+                    {saving ? (
+                        <>
+                            Salvando...
+                            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                        </>
+                    ) : (
+                        <>
+                            Salvar Configurações
+                            <span className="material-symbols-outlined text-xl">save</span>
+                        </>
+                    )}
                 </button>
             </div>
         </main>

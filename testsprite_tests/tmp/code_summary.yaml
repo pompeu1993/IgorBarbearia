@@ -1,0 +1,201 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - Next.js App Router
+  - React
+  - Tailwind CSS
+  - Supabase
+  - Vitest
+  - Asaas API
+  - Resend
+routes:
+  - path: /
+    file: src/app/page.tsx
+    auth_required: false
+    description: Home page with greeting, next appointment summary, and entry to booking flow
+  - path: /login
+    file: src/app/login/page.tsx
+    auth_required: false
+    description: User sign-in page with email and password
+  - path: /cadastro
+    file: src/app/cadastro/page.tsx
+    auth_required: false
+    description: User registration page with name, phone, CPF, email, and password
+  - path: /recuperar-senha
+    file: src/app/recuperar-senha/page.tsx
+    auth_required: false
+    description: Password recovery request page
+  - path: /update-password
+    file: src/app/update-password/page.tsx
+    auth_required: false
+    description: Password reset completion page
+  - path: /appointments
+    file: src/app/appointments/page.tsx
+    auth_required: true
+    description: List of user appointments with status and actions
+  - path: /appointments/new
+    file: src/app/appointments/new/page.tsx
+    auth_required: false
+    description: Service selection page for new booking
+  - path: /appointments/new/datetime
+    file: src/app/appointments/new/datetime/page.tsx
+    auth_required: false
+    description: Date and time selection page with availability checks
+  - path: /appointments/new/summary
+    file: src/app/appointments/new/summary/page.tsx
+    auth_required: true
+    description: Booking summary and Pix checkout page
+  - path: /appointments/reschedule
+    file: src/app/appointments/reschedule/page.tsx
+    auth_required: true
+    description: Appointment rescheduling page with operating day validation
+  - path: /history
+    file: src/app/history/page.tsx
+    auth_required: true
+    description: Paginated appointment history with filters
+  - path: /profile
+    file: src/app/profile/page.tsx
+    auth_required: true
+    description: User profile management page
+  - path: /admin
+    file: src/app/admin/page.tsx
+    auth_required: true
+    description: Admin dashboard with daily appointments overview
+  - path: /admin/agenda
+    file: src/app/admin/agenda/page.tsx
+    auth_required: true
+    description: Admin agenda and calendar-style appointment list
+  - path: /admin/settings
+    file: src/app/admin/settings/page.tsx
+    auth_required: true
+    description: Admin settings for services, rescheduling, operating days, and disabled dates
+features:
+  - name: Authentication
+    description: Allows users to sign in, register, recover password, and maintain session state
+    files:
+      - src/app/login/page.tsx
+      - src/app/cadastro/page.tsx
+      - src/app/recuperar-senha/page.tsx
+      - src/app/update-password/page.tsx
+      - src/contexts/AuthContext.tsx
+      - src/components/RouteGuard.tsx
+    entry_route: /login
+    user_interactions:
+      - Fill email and password fields to sign in
+      - Fill registration form with personal data and create an account
+      - Request a recovery email
+      - Define a new password after opening the recovery link
+    api_calls:
+      - method: POST
+        endpoint: /api/auth/reset-password
+    auth_required: false
+  - name: Service Booking
+    description: Lets users choose a service, date, and time for a new appointment
+    files:
+      - src/app/appointments/new/page.tsx
+      - src/app/appointments/new/datetime/page.tsx
+      - src/lib/supabase.ts
+    entry_route: /appointments/new
+    user_interactions:
+      - Open the service catalog
+      - Choose a service card
+      - Select an available date
+      - Select an available time slot
+      - Continue to the summary page
+    api_calls: []
+    auth_required: false
+  - name: Pix Checkout
+    description: Generates dynamic Pix charges, displays QR code, confirms payment, and cancels unpaid charges
+    files:
+      - src/app/appointments/new/summary/page.tsx
+      - src/app/api/checkout/route.ts
+      - src/app/api/checkout/confirm/route.ts
+      - src/app/api/checkout/cancel/route.ts
+    entry_route: /appointments/new/summary
+    user_interactions:
+      - Review booking summary
+      - Save CPF if missing
+      - Generate Pix payment
+      - Copy Pix key or scan QR code
+      - Confirm payment status manually
+      - Cancel unpaid booking from the Pix screen
+    api_calls:
+      - method: POST
+        endpoint: /api/checkout
+      - method: POST
+        endpoint: /api/checkout/confirm
+      - method: POST
+        endpoint: /api/checkout/cancel
+    auth_required: true
+  - name: Appointment History
+    description: Shows all user appointments with pagination, filters, and status labels
+    files:
+      - src/app/history/page.tsx
+      - src/app/history/components/HistoryCard.tsx
+      - src/app/history/components/HistoryFilters.tsx
+      - src/app/api/history/route.ts
+      - src/lib/history/service.ts
+      - src/lib/history/utils.ts
+    entry_route: /history
+    user_interactions:
+      - Open history page
+      - Filter by period
+      - Filter by service
+      - Navigate between pages
+      - Cancel pending future appointments
+      - Open reschedule flow for confirmed future appointments
+    api_calls:
+      - method: GET
+        endpoint: /api/history
+    auth_required: true
+  - name: Appointment Management
+    description: Lists current appointments and supports follow-up actions such as rescheduling
+    files:
+      - src/app/appointments/page.tsx
+      - src/app/appointments/reschedule/page.tsx
+    entry_route: /appointments
+    user_interactions:
+      - Open appointments list
+      - Inspect appointment details
+      - Start the reschedule flow
+      - Pick a new valid date and time
+    api_calls: []
+    auth_required: true
+  - name: Profile Management
+    description: Lets users update personal information, CPF, avatar, logout, and delete the account
+    files:
+      - src/app/profile/page.tsx
+    entry_route: /profile
+    user_interactions:
+      - Update name, phone, and CPF
+      - Upload an avatar image
+      - Open support link
+      - Log out
+      - Permanently delete the account
+    api_calls: []
+    auth_required: true
+  - name: Admin Operations
+    description: Gives administrators visibility and control over agenda, appointments, and system settings
+    files:
+      - src/app/admin/layout.tsx
+      - src/app/admin/page.tsx
+      - src/app/admin/agenda/page.tsx
+      - src/app/admin/settings/page.tsx
+    entry_route: /admin
+    user_interactions:
+      - Open daily dashboard
+      - View appointments in agenda mode
+      - Inspect schedule by date
+      - Adjust operating days and disabled dates
+      - Change service settings and rescheduling rules
+      - Leave the admin area
+    api_calls: []
+    auth_required: true
+known_limitations:
+  - issue: Frontend end-to-end login requires a valid Supabase user account and environment-backed services
+    location: src/app/login/page.tsx
+    impact: Fully automated authenticated journeys need configured credentials or seeded users
+  - issue: Pix checkout depends on live external services
+    location: src/app/api/checkout/route.ts
+    impact: Automated payment flows require reachable Asaas and valid API credentials

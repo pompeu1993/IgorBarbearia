@@ -1,0 +1,84 @@
+# PRD - Barbearia Igor Web App
+
+## 1. Visão Geral do Produto
+O aplicativo web da Barbearia do Igor é uma plataforma onde clientes podem agendar cortes de cabelo, visualizar seus agendamentos ativos, histórico e perfil, gerenciando sua experiência na barbearia ("Exclusive Barbershop"). O sistema também conta com um painel administrativo para controle total da agenda, configuração de preços e horários de funcionamento.
+
+## 2. Tecnologias e Arquitetura
+- **Frontend**: Next.js (App Router), React, Tailwind CSS
+- **Estilização**: Tailwind (Dark mode predominante, Acentos em Dourado `#D4AF37`, Fonte "Plus Jakarta Sans")
+- **Ícones**: Material Symbols Outlined
+- **Backend/Banco de Dados**: Supabase (PostgreSQL) com suporte a Row Level Security (RLS) e Supabase Auth.
+- **Pagamentos**: Integração exclusiva com a API do **Asaas** para geração e confirmação de pagamentos via Pix dinâmico.
+- **Testes**: Vitest (Unitários e Integração).
+
+## 3. Estrutura de Rotas e Páginas (Frontend)
+
+### Área Pública / Autenticação
+- `/` - **Página Inicial (Dashboard)**: Redireciona ou mostra agendamentos rápidos dependendo do estado de autenticação.
+- `/login` - Tela de autenticação de usuários (Email e Senha).
+- `/cadastro` - Tela de registro de novos usuários.
+- `/recuperar-senha` - Fluxo para envio de email de recuperação.
+- `/update-password` - Tela para definição de nova senha pós-recuperação.
+
+### Área do Cliente (Requer Autenticação)
+- `/profile` - Gerenciamento de perfil do usuário (Nome, Telefone, CPF, Foto).
+- `/appointments` - Listagem dos agendamentos futuros confirmados.
+- `/appointments/new` - Início do fluxo de novo agendamento (Seleção de Serviço).
+- `/appointments/new/datetime` - Seleção de data e hora (verificando horários já ocupados e dias de funcionamento).
+- `/appointments/new/summary` - Resumo do pedido e **Integração com Asaas** (Geração do Pix, exibição do QR Code/Copia e Cola, e verificação automática de pagamento a cada 10 segundos).
+- `/appointments/reschedule` - Tela para reagendamento de um horário existente (permitido até 24h de antecedência).
+- `/history` - Histórico completo de agendamentos do cliente (Pendentes, Confirmados, Cancelados, Concluídos), consumindo a API paginada de histórico.
+
+### Área Administrativa (Requer Perfil `admin`)
+- `/admin` - Dashboard do administrador. Mostra agendamentos do dia em ordem cronológica.
+- `/admin/agenda` - Visualização em formato de calendário, permitindo ver detalhes e gerenciar todos os agendamentos.
+- `/admin/settings` - Configurações do sistema: alteração de preço de serviços, habilitar/desabilitar reagendamentos, configurar dias da semana de funcionamento e bloquear dias específicos no calendário.
+
+## 4. Estrutura de Rotas de API (Backend / Next.js API Routes)
+- `POST /api/auth/reset-password` - Rota auxiliar para disparo de e-mails de recuperação via Supabase.
+- `POST /api/checkout` - Rota que se comunica com a API do **Asaas** (`api.asaas.com/v3`). Verifica se o cliente existe no Asaas (pelo CPF), cria o cliente se necessário, gera a cobrança Pix e o QR Code, e salva o agendamento no Supabase com status `PENDING`.
+- `POST /api/checkout/cancel` - Rota para cancelar uma cobrança Pix gerada no Asaas caso o usuário desista.
+- `POST /api/checkout/confirm` - Rota que verifica no Asaas o status do pagamento. Se pago, atualiza o status do agendamento no Supabase para `CONFIRMED`.
+- `GET /api/history` - Endpoint robusto que retorna o histórico de agendamentos do usuário autenticado. Suporta paginação (`page`, `pageSize`) e filtros (`from`, `to`, `serviceId`). Garante que agendamentos passados sejam marcados automaticamente como `COMPLETED`.
+
+## 5. Integração Supabase e Banco de Dados (PostgreSQL)
+
+O sistema abandonou o Prisma/SQLite em favor do Supabase (PostgreSQL). Todo o acesso a dados é feito via Supabase Client (no cliente ou no servidor) com segurança baseada em RLS.
+
+### Entidades Principais
+1. **`profiles`**: Estende o Auth nativo do Supabase. Armazena `id` (referência ao auth.users), `name`, `phone`, `cpf`, `avatar_url`, e `role` (`'admin'` ou `'client'`).
+2. **`services`**: Catálogo de serviços (`Corte Tradicional`, `Barba`, etc) com seus respectivos preços e duração.
+3. **`appointments`**: Registro de agendamentos contendo `date`, `status` (`PENDING`, `CONFIRMED`, `CANCELLED`, `COMPLETED`), `payment_status`, `payment_id` (ID da transação no Asaas), `user_id` e `service_id`.
+4. **`settings`**: Tabela de configuração global (Apenas ID 1) para gerenciar `allow_rescheduling`, `operating_days` (JSON array) e `disabled_dates` (JSON array).
+
+### Row Level Security (RLS)
+- **Profiles**: Usuários podem ler e atualizar apenas o próprio perfil. Admins podem ler todos.
+- **Appointments**: Usuários podem ler, inserir e atualizar apenas os próprios agendamentos. Admins têm acesso total (SELECT, UPDATE, INSERT, DELETE).
+- **Services**: Leitura pública. Apenas admins podem atualizar (ex: alterar preços).
+- **Settings**: Leitura pública. Apenas admins podem atualizar.
+
+### Automações (Triggers)
+- Criação automática de registro na tabela `profiles` quando um usuário se cadastra no Supabase Auth.
+- Definição automática de `role = 'admin'` para o e-mail predefinido (`rafaelmiguelalonso@gmail.com`).
+
+## 6. Fluxo de Pagamento Asaas
+1. O cliente escolhe serviço, data e hora.
+2. Na tela de resumo (`/appointments/new/summary`), se o usuário não tem CPF salvo, um modal o solicita (obrigatório para o Asaas).
+3. O frontend chama `/api/checkout`.
+4. A API valida o CPF, busca ou cria o `Customer` no Asaas, cria a `Payment` (Pix) e obtém o `PixQrCode`.
+5. O agendamento é salvo no banco como `PENDING`.
+6. O frontend exibe o QR Code / Copia e Cola. O botão de confirmar verifica o status no Asaas chamando `/api/checkout/confirm`. Um intervalo automático (10s) também verifica em background.
+7. Quando o Asaas retorna `RECEIVED` ou `CONFIRMED`, a API atualiza o agendamento no Supabase e redireciona o cliente para a Home.
+8. Se o cliente clicar em "Cancelar Agendamento", a rota `/api/checkout/cancel` é chamada para cancelar a cobrança no Asaas e ocultar o Pix na tela.
+
+## 7. Reagendamento e Cancelamento
+- **Cancelamento**: Permitido apenas se o agendamento está pendente de pagamento. Agendamentos confirmados (pagos) não podem ser cancelados pelo cliente, apenas reagendados.
+- **Reagendamento**: Permitido em até 24 horas antes do horário marcado (configurável pelo admin). O usuário seleciona um novo horário disponível e a data é atualizada no banco.
+
+## 8. Funcionalidades Administrativas
+O menu admin fica oculto para usuários comuns. O administrador visualiza um menu de rodapé diferente contendo Inicio, Agenda, Configurações e um ícone de "Sair" (Logout).
+Na configuração, o admin define quais dias da semana a barbearia abre e seleciona dias específicos do mês para fechar (ex: feriados), regras que são aplicadas instantaneamente no calendário do cliente.
+
+## 9. Manutenção e Regras de Negócio
+- Agendamentos anteriores à data atual que possuam status `CONFIRMED` são automaticamente marcados como `COMPLETED` quando o histórico é consultado.
+- Os preços dos serviços podem ser ajustados (ex: R$ 1,00 para testes), e as alterações refletem no Asaas. Valores menores que R$ 5,00 são convertidos ou submetidos de acordo com as regras mínimas do Asaas.

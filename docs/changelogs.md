@@ -9,19 +9,47 @@ Todas as modificações do sistema devem ser registradas aqui.
   - Criação de um mock context para autenticação (`AuthContext`).
   - Criação do componente `RouteGuard` para impedir acesso a rotas privadas.
   - Tela `/login` adicionada para simulação de Login/Cadastro.
-- **Implementação Real de Backend (Supabase + PagSeguro + Resend):**
+- **Implementação Real de Backend (Supabase + Asaas + Resend):**
   - Criação de migração SQL (`profiles`, `services`, `appointments`) no Supabase MCP.
   - Criação do banco de dados na Postgres Function + Trigger Automático via SQL (`on_auth_user_created`) para auto-preencher a tabela `profiles` com `name` e `phone` do usuário ao se cadastrar.
   - Deploy da Edge Function `send-reset-email` integrada à API do **Resend** para disparar e-mails de recuperação de senha com link mágico de administrador e template HTML premium.
   - Autenticação real integrada via `AuthContext` manipulando sessões do Supabase.
-  - Adicionadas credenciais de ambiente em `.env.local` incluindo Token do PagSeguro.
+  - Adicionadas credenciais de ambiente em `.env.local` incluindo Token do Asaas.
   - Tela de login `/login/page.tsx` refatorada e Tela de cadastro separada (`/cadastro/page.tsx`) com os dados Nome, E-mail, Telefone e Senha (design premium dark).
-  - Rota de API POST `/api/checkout/route.ts` preparada para receber payload e gerar Ordens de pagamento no PagSeguro e salvar no banco de dados.
-  - Rota de API POST `/api/checkout/confirm/route.ts` criada para receber a confirmação de pagamento simulando os Webhooks do PagSeguro (alterando o status do agendamento para `CONFIRMED` e `PAID`).
+  - Rota de API POST `/api/checkout/route.ts` preparada para receber payload e gerar Ordens de pagamento PIX no Asaas e salvar no banco de dados.
+  - Rota de API POST `/api/checkout/confirm/route.ts` criada para verificar status do Pix e alterar status do agendamento para `CONFIRMED`.
   - Preenchimento real da tabela de `services` no banco de dados para puxar o fluxo dinamicamente.
   - Adição de RPC Function criptografada `delete_user` no Supabase para remoção segura de conta pelo próprio usuário.
-  - Criação de bloqueio com validação de CPF obrigatório (`profiles.cpf`) exigido pelo gateway PagSeguro.
+  - Criação de bloqueio com validação de CPF obrigatório (`profiles.cpf`) exigido pelo gateway Asaas.
   - Melhorias de SEO (Share Image `og-image.png` estilo Premium, e tags Meta no `layout.tsx`).
+- **Ambiente Administrativo:**
+  - Criação da tabela `settings` para configuração de funcionamento.
+  - Páginas de Dashboard (`/admin`), Agenda (`/admin/agenda`) e Configurações (`/admin/settings`).
+  - Lógica de permissões baseada no campo `role` na tabela `profiles`.
+- **Histórico paginado por API:**
+  - Criação do endpoint autenticado `GET /api/history` com paginação, filtros por período e serviço e retorno de todos os status.
+  - Criação de documentação dedicada em `docs/history-api.md` com exemplos de resposta.
+  - Adição de testes automatizados para parsing, paginação e autenticação do histórico.
+- **Performance de histórico:**
+  - Criação da migração `10_history_indexes.sql` com índices por `user_id`, `date` e `service_id`.
+- **Correções Críticas de Banco e Interface:**
+  - Criação da migração `11_force_admin_permissions.sql` para corrigir permissões de RLS do admin na tabela `services` e `settings`.
+  - Refatoração do salvamento no perfil e no admin para aplicar "Retry Mechanism", capturar erros RLS do Supabase (`maybeSingle()` vs `.select()`), exibir feedback visual com toasts verdes/vermelhos, e validação rigorosa (Client-side e Server-side).
+  - Implementação da tática *Stale-While-Revalidate* (SWR) com `sessionStorage` na tela `/page.tsx` (Home) para remover o texto "null" piscando na tela e usar um *Skeleton Loader* moderno.
+  - Correção global de ícones quebrados (mudança da importação da fonte Material Symbols para tags `<link>` diretas no `<head>` em `layout.tsx`).
+  - Simplificação do Histórico: Remoção de filtro de "Serviços" e limpeza da listagem para exibir apenas agendamentos `CONFIRMED` e `COMPLETED` (excluindo ruído visual de cancelados).
+  - Otimização de Performance (LCP) na tela de Resumo do Agendamento (adicionado `priority loading="eager"` na logo do Pix e no Avatar).
+  - Correção da API de Checkout (`/api/checkout/route.ts`) para tratar exceções da API do Asaas que não retornavam JSON (evitando status 400 silencioso) e exibir o erro em português (ex: "CPF já cadastrado").
+  - Verificação e validação do fluxo de auto-preenchimento do CPF no momento de gerar o Pix (se o usuário já tem o CPF no banco, o sistema ignora o pop-up e gera a cobrança de forma invisível).
+  - Correção definitiva do erro HTTP 500 no endpoint `POST /api/checkout` que impedia a geração da chave PIX, implementando validação de payload rigorosa e tratamento seguro (try/catch no `.json()`) para respostas não-JSON (como 502 Bad Gateway ou 401 HTML) da API do Asaas.
+  - Criação de testes unitários abrangentes (`tests/checkout/checkout-api.test.ts` e `tests/checkout/checkout-confirm-api.test.ts`) validando cenários de sucesso, falta de dados e falhas de comunicação com a API de pagamento.
+  - Criação de extensa bateria de testes unitários para a tela de Perfil, Validação de CPF e Painel de Admin (Vitest).
+- **Split/Transferência PIX Automática (Asaas):**
+  - Criação do endpoint de Webhook `POST /api/webhooks/asaas` para escutar eventos de pagamento `PAYMENT_RECEIVED` e `PAYMENT_CONFIRMED`.
+  - Implementação da lógica de cálculo de repasse subtraindo a taxa fixa (R$ 1,25) do valor total pago.
+  - Integração com a API de Transferências do Asaas para enviar automaticamente o valor líquido via PIX para a chave celular (12997036922).
+  - Adição de mecanismo de idempotência verificando o `payment_status` no Supabase antes da transferência, prevenindo processamento duplicado.
+  - Criação de testes unitários em `tests/webhooks/asaas-webhook.test.ts` cobrindo validação de payload, idempotência e sucesso na transferência.
 ### Modified
 - **`src/app/login/page.tsx`:** O layout da tela de login foi inteiramente reconstruído para refletir com exatidão o "Premium" design estabelecido pelo novo mockup. O texto "Premium" foi alterado para "Igor Barbearia". O botão "Esqueci minha senha" foi reposicionado para baixo do input de senha e linkado corretamente para a nova tela de recuperação (`/recuperar-senha`).
 - **`src/app/recuperar-senha/page.tsx`:** Nova tela construída seguindo fielmente o mockup UI premium. Ela invoca a Edge Function `send-reset-email` do Supabase bypassando os limites nativos de SMTP do Supabase e utilizando o Resend para enviar a recuperação de senha.
@@ -32,6 +60,7 @@ Todas as modificações do sistema devem ser registradas aqui.
 - **`src/app/appointments/new/datetime/page.tsx`:** Calendário complexo implementado do zero para varrer o mês atual e permitir seleção interativa. A seleção do dia busca e bloqueia horários específicos que já foram ocupados na tabela `appointments`.
 - **`src/app/appointments/new/summary/page.tsx`:** A tela final do fluxo agora gera e consome callbacks virtuais de pagamentos para efetivar agendamentos e marcá-los oficialmente confirmados.
 - **`src/app/history/page.tsx`:** Histórico consome agendamentos passados e futuros com join da tabela `services`. Permite o **cancelamento em tempo real** alterando o status no Supabase.
+- **`src/app/history/page.tsx`:** Passa a consumir `GET /api/history`, exibir todos os status, aplicar filtros opcionais e paginação por página.
 - **`src/app/profile/page.tsx`:** Busca o total bruto de agendamentos para gerar a estatística, possibilita a edição de `Nome`, `Telefone`, `CPF` atualizando a entry oficial em `profiles`, e permite a exclusão permanente da conta.
-- **`src/app/api/checkout/route.ts`:** Integração PagSeguro API com tratamento de erros (CPF inválido, Formato de Nome com 2 strings) impedindo crash do checkout no client e emitindo erros descritivos.
+- **`src/app/api/checkout/route.ts`:** Integração Asaas API com tratamento de erros (CPF inválido) impedindo crash do checkout no client e emitindo erros descritivos.
 - **`src/app/layout.tsx`:** Adicionadas tags vitais Open Graph e Twitter Cards usando `og-image.png` renderizada por IA.

@@ -21,7 +21,6 @@ function DateTimeSelection() {
     const router = useRouter();
 
     const [service, setService] = useState<Service | null>(null);
-    const [originalDate, setOriginalDate] = useState<Date | null>(null);
     const [loadingService, setLoadingService] = useState(true);
 
     const [currentMonth, setCurrentMonth] = useState(() => {
@@ -40,6 +39,10 @@ function DateTimeSelection() {
     const [operatingDays, setOperatingDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
     const [disabledDates, setDisabledDates] = useState<string[]>([]);
 
+    type BookedSlotRow = {
+        booked_date: string;
+    };
+
     useEffect(() => {
         if (!appointmentId) return;
         const fetchAppointmentAndSettings = async () => {
@@ -51,7 +54,6 @@ function DateTimeSelection() {
 
             if (aptData) {
                 setService(Array.isArray(aptData.service) ? aptData.service[0] : aptData.service);
-                setOriginalDate(new Date(aptData.date));
             }
             
             const { data: settings } = await supabase.from("settings").select("operating_days, disabled_dates").eq("id", 1).maybeSingle();
@@ -68,7 +70,6 @@ function DateTimeSelection() {
     // Fetch appointments for the selected date
     useEffect(() => {
         if (!selectedDate) {
-            setBookedSlots([]);
             return;
         }
 
@@ -84,7 +85,7 @@ function DateTimeSelection() {
 
             if (data) {
                 // Extracts "HH:mm" from local time
-                const slots = data.map((app: any) => {
+                const slots = (data as BookedSlotRow[]).map((app) => {
                     const d = new Date(app.booked_date);
                     return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
                 });
@@ -377,7 +378,7 @@ function DateTimeSelection() {
                             <span className="material-symbols-outlined font-black">calendar_check</span>
                         </button>
                     ) : (
-                        <Link href={`/login?redirect=/appointments/new/summary?serviceId=${serviceId}&datetime=${finalDateTimeStr}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform">
+                        <Link href={`/login?redirect=/appointments/reschedule?appointmentId=${appointmentId}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform">
                             <span>Fazer Login para Confirmar</span>
                             <span className="material-symbols-outlined font-black">lock</span>
                         </Link>

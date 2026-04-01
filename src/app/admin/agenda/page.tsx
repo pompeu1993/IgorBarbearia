@@ -4,9 +4,31 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
+type AgendaAppointment = {
+    id: string;
+    date: string;
+    status: string;
+    profiles: {
+        name: string;
+        phone: string;
+    } | null;
+    services: {
+        name: string;
+        duration: number;
+    } | null;
+};
+
+type AgendaAppointmentRow = {
+    id: string;
+    date: string;
+    status: string;
+    profiles: AgendaAppointment["profiles"] | AgendaAppointment["profiles"][];
+    services: AgendaAppointment["services"] | AgendaAppointment["services"][];
+};
+
 export default function AdminAgenda() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const [appointments, setAppointments] = useState<any[]>([]);
+    const [appointments, setAppointments] = useState<AgendaAppointment[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -33,7 +55,7 @@ export default function AdminAgenda() {
                 .order("date", { ascending: true });
 
             if (data) {
-                const formatted = data.map((d: any) => ({
+                const formatted: AgendaAppointment[] = (data as AgendaAppointmentRow[]).map((d) => ({
                     ...d,
                     profiles: Array.isArray(d.profiles) ? d.profiles[0] : d.profiles,
                     services: Array.isArray(d.services) ? d.services[0] : d.services,
@@ -63,9 +85,9 @@ export default function AdminAgenda() {
             <header className="px-6 py-6 bg-black/90 backdrop-blur-md sticky top-0 z-30 border-b border-white/10 shrink-0">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-black text-white uppercase tracking-widest">Agenda</h1>
-                    <a href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
+                    <Link href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
                         <span className="material-symbols-outlined text-[20px]">logout</span>
-                    </a>
+                    </Link>
                 </div>
                 
                 {/* Horizontal Date Picker */}
@@ -73,8 +95,8 @@ export default function AdminAgenda() {
                     className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 cursor-grab active:cursor-grabbing touch-pan-x"
                     onMouseDown={(e) => {
                         const ele = e.currentTarget;
-                        let startX = e.pageX - ele.offsetLeft;
-                        let scrollLeft = ele.scrollLeft;
+                        const startX = e.pageX - ele.offsetLeft;
+                        const scrollLeft = ele.scrollLeft;
                         
                         const handleMouseMove = (e: MouseEvent) => {
                             e.preventDefault();

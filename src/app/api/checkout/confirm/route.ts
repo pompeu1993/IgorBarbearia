@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const ASAAS_API_URL = "https://api.asaas.com/v3";
-const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmVmMjE3MThmLTgwMTAtNDAyZS1iNmYzLWM5Y2U0YjQ0NjI4Mjo6JGFhY2hfYjQxNzk5ZGEtMjg3ZC00MGMzLWFhMTUtM2I5NWQ2NGI4YzY2";
+const ASAAS_API_URL = process.env.ASAAS_API_URL || "https://api.asaas.com/v3";
+const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjRmNDhlMGRiLTA4MjgtNGU4OS05Y2RjLWQ2N2U1YWZiMTVmZDo6JGFhY2hfNzc0YzAyMTMtOTUwZi00ZjY3LTg5YWQtYzdiOTFjZTI3NTZj";
 
 export async function POST(req: Request) {
     try {
@@ -22,11 +22,19 @@ export async function POST(req: Request) {
         // Consultar status do pagamento no Asaas
         const paymentRes = await fetch(`${ASAAS_API_URL}/payments/${paymentId}`, {
             headers: {
-                "access_token": ASAAS_TOKEN
+                "access_token": ASAAS_TOKEN,
+                "Accept": "application/json"
             }
         });
 
-        const paymentData = await paymentRes.json();
+        const paymentRawText = await paymentRes.text();
+        let paymentData;
+        try {
+            paymentData = JSON.parse(paymentRawText);
+        } catch (err) {
+            console.error("[Checkout Confirm] Resposta não JSON do Asaas:", paymentRawText);
+            return NextResponse.json({ error: "Erro de formatação na resposta do Asaas." }, { status: 502 });
+        }
 
         if (!paymentRes.ok) {
             console.error("Erro ao consultar Asaas:", paymentData);

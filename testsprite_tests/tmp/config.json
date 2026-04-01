@@ -1,0 +1,20 @@
+{
+  "status": "init",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3001/",
+  "loginUser": "rafaelmiguelalonso@gmail.com",
+  "loginPassword": "rafael123778",
+  "executionArgs": {
+    "projectName": "Barbearia Igor",
+    "projectPath": "c:\\Users\\Usuario\\Desktop\\Barbearia Igor",
+    "testIds": [],
+    "additionalInstruction": "Valide os fluxos principais do app, incluindo home, autenticação, histórico, agendamentos, área administrativa e renderização dos ícones. Se autenticação completa depender de credenciais, cubra o máximo possível com rotas públicas e verificações estruturais.",
+    "serverMode": "production",
+    "envs": {
+      "API_KEY": "sk-user-w_lWjpSweZEx4dmcI8jgdVkCPU390cU8Bu8wbEWVvWCwofS7u4TxT_Qh2145YEQB_RVc6E_UwlAk2xbrLJJbj3yZHrQm6cieCvUC2dTA6qI_UxSQ4laEoE3_JRSyH1qkxgc"
+    }
+  },
+  "serverPort": 60595,
+  "proxy": "http://56aa0d95-7257-4553-b113-52d1332838bd:Bv8sk7a0SdmoW4UzJq2R6bBKmgZken3v@tun.testsprite.com:8080"
+}

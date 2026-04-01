@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 
@@ -14,6 +14,8 @@ type Service = {
     duration: number;
 };
 
+const remoteImageLoader = ({ src }: { src: string }) => src;
+
 function SummaryContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -23,7 +25,6 @@ function SummaryContent() {
 
     const [service, setService] = useState<Service | null>(null);
     const [loadingService, setLoadingService] = useState(true);
-    const [showPixModal, setShowPixModal] = useState(false);
 
     // Payment Processing States
     const [checkingOut, setCheckingOut] = useState(false);
@@ -52,8 +53,8 @@ function SummaryContent() {
                 }
             }
         };
-        fetchService();
-    }, [serviceId]);
+        void fetchService();
+    }, [serviceId, user?.id]);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
@@ -83,6 +84,15 @@ function SummaryContent() {
                 headers["Authorization"] = `Bearer ${session.access_token}`;
             }
 
+            console.log("Iniciando requisição para /api/checkout com payload:", {
+                serviceId: service.id,
+                serviceName: service.name,
+                price: service.price,
+                date: datetimeStr,
+                userId: user.id,
+                cpf: actCpf // Garantir que sabemos qual CPF está indo
+            });
+
             const res = await fetch("/api/checkout", {
                 method: "POST",
                 headers,
@@ -91,11 +101,13 @@ function SummaryContent() {
                     serviceName: service.name,
                     price: service.price,
                     date: datetimeStr,
-                    userId: user.id
+                    userId: user.id,
+                    cpf: actCpf // Enviando o CPF ativamente no body também para garantir
                 })
             });
 
             const data = await res.json();
+            console.log("Resposta do /api/checkout:", data);
             if (res.ok && data.paymentId) {
                 setPaymentId(data.paymentId);
                 setPixData({ image: data.qrCodeImage, text: data.qrCodeText });
@@ -150,7 +162,7 @@ function SummaryContent() {
         }
     };
 
-    const handleConfirmPayment = async (silent = false) => {
+    const handleConfirmPayment = useCallback(async (silent = false) => {
         if (!paymentId) return;
         if (!silent) setConfirming(true);
 
@@ -183,7 +195,7 @@ function SummaryContent() {
         } finally {
             if (!silent) setConfirming(false);
         }
-    };
+    }, [paymentId, router]);
 
     // Auto-check payment status every 10 seconds while pix section is visible
     useEffect(() => {
@@ -197,7 +209,7 @@ function SummaryContent() {
         return () => {
             if (intervalId) clearInterval(intervalId);
         };
-    }, [showPixSection, paymentId]);
+    }, [handleConfirmPayment, showPixSection, paymentId]);
 
     const handleSaveCpf = async () => {
         if (!user) return;
@@ -287,7 +299,7 @@ function SummaryContent() {
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
                                     <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#dca715] to-[#8a680b]"></div>
                                     <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center p-2 shrink-0 relative z-10 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                                        <img src="https://logospng.org/download/pix/logo-pix-icone-1024.png" alt="Pix" className="w-full h-full object-contain" />
+                                        <Image priority loading="eager" src="https://logospng.org/download/pix/logo-pix-icone-1024.png" alt="Pix" className="w-full h-full object-contain" width={56} height={56} unoptimized loader={remoteImageLoader} />
                                     </div>
                                     <div className="flex-1 relative z-10">
                                         <span className="text-white font-extrabold block mb-0.5 text-lg">Pix</span>
@@ -358,7 +370,7 @@ function SummaryContent() {
                                 
                                 <div className="bg-white p-4 rounded-3xl mb-8 shadow-[0_0_40px_rgba(255,255,255,0.1)] w-56 h-56 flex items-center justify-center relative overflow-hidden group">
                                     {pixData?.image || pixData?.text ? (
-                                        <img alt="Pix QR Code" className="w-[105%] h-[105%] object-cover block rounded-xl contrast-125 mix-blend-multiply group-hover:scale-105 transition-transform duration-500" src={pixData?.image || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(pixData?.text || '')}`} />
+                                        <Image priority loading="eager" alt="Pix QR Code" className="w-[105%] h-[105%] object-cover block rounded-xl contrast-125 mix-blend-multiply group-hover:scale-105 transition-transform duration-500" src={pixData?.image || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(pixData?.text || '')}`} width={250} height={250} unoptimized loader={remoteImageLoader} />
                                     ) : (
                                         <div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
                                     )}
@@ -441,20 +453,23 @@ function SummaryContent() {
 
             </main>
 
-            <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-6 pb-[90px] z-40 max-w-md mx-auto">
-                <div className="space-y-4">
-                    <button onClick={() => handleCheckout()} disabled={checkingOut} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 disabled:opacity-50 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
-                        <span>{checkingOut ? "Processando..." : "Pagar com Pix e Confirmar"}</span>
-                        {!checkingOut && <span className="material-symbols-outlined font-black">qr_code_2</span>}
-                    </button>
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="material-symbols-outlined text-slate-500 text-[16px]">info</span>
-                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">
-                            Cancelamentos não permitidos, apenas reagendamentos
-                        </p>
+            {/* Checkout button só renderiza se não estiver na seção de Pix */}
+            {!showPixSection && (
+                <div className="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-6 pb-[90px] z-40 max-w-md mx-auto transition-opacity duration-300">
+                    <div className="space-y-4">
+                        <button onClick={() => handleCheckout()} disabled={checkingOut} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] hover:bg-[100%_0] transition-all duration-500 disabled:opacity-50 text-black rounded-2xl font-black text-lg shadow-[0_15px_35px_-10px_rgba(220,167,21,0.5)] flex items-center justify-center gap-3 active:scale-[0.98]">
+                            <span>{checkingOut ? "Processando..." : "Pagar com Pix e Confirmar"}</span>
+                            {!checkingOut && <span className="material-symbols-outlined font-black">qr_code_2</span>}
+                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                            <span className="material-symbols-outlined text-slate-500 text-[16px]">info</span>
+                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider text-center">
+                                Cancelamentos não permitidos, apenas reagendamentos
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </>
     );
 }

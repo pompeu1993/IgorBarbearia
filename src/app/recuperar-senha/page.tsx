@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function RecuperarSenha() {
@@ -42,7 +40,7 @@ export default function RecuperarSenha() {
             } else {
                 setMessage({ type: 'success', text: 'Link de recuperação enviado! Verifique sua caixa de entrada.' });
             }
-        } catch (err) {
+        } catch {
             setMessage({ type: 'error', text: 'Erro de conexão com o servidor.' });
         }
 

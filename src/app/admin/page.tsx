@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -15,6 +16,14 @@ interface AdminAppointment {
         name: string;
     };
 }
+
+type AdminAppointmentRow = {
+    id: string;
+    date: string;
+    status: string;
+    profiles: AdminAppointment["profiles"] | AdminAppointment["profiles"][];
+    services: AdminAppointment["services"] | AdminAppointment["services"][];
+};
 
 export default function AdminHome() {
     const [appointments, setAppointments] = useState<AdminAppointment[]>([]);
@@ -43,8 +52,7 @@ export default function AdminHome() {
                 .order("date", { ascending: true });
 
             if (data) {
-                // Ensure arrays are flattened if necessary based on relationship
-                const formatted = data.map((d: any) => ({
+                const formatted: AdminAppointment[] = (data as AdminAppointmentRow[]).map((d) => ({
                     id: d.id,
                     date: d.date,
                     status: d.status,
@@ -73,9 +81,9 @@ export default function AdminHome() {
                         {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
                     </p>
                 </div>
-                <a href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all">
+                <Link href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all">
                     <span className="material-symbols-outlined text-[20px]">logout</span>
-                </a>
+                </Link>
             </header>
 
             <div className="px-6 pt-6 pb-20">

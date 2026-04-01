@@ -37,6 +37,10 @@ function DateTimeSelection() {
     const [operatingDays, setOperatingDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
     const [disabledDates, setDisabledDates] = useState<string[]>([]);
 
+    type BookedSlotRow = {
+        booked_date: string;
+    };
+
     useEffect(() => {
         if (!serviceId) return;
         const fetchServiceAndSettings = async () => {
@@ -57,7 +61,6 @@ function DateTimeSelection() {
     // Fetch appointments for the selected date
     useEffect(() => {
         if (!selectedDate) {
-            setBookedSlots([]);
             return;
         }
 
@@ -73,7 +76,7 @@ function DateTimeSelection() {
 
             if (data) {
                 // Extracts "HH:mm" from local time
-                const slots = data.map((app: any) => {
+                const slots = (data as BookedSlotRow[]).map((app) => {
                     const d = new Date(app.booked_date);
                     return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
                 });

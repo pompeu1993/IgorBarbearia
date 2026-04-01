@@ -1,9 +1,21 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { updateUserProfile } from "@/lib/profile/service";
+
+const remoteImageLoader = ({ src }: { src: string }) => src;
+
+function getErrorMessage(error: unknown) {
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    return "Erro ao conectar com o servidor.";
+}
 
 export default function ProfilePage() {
     const { user, logout, isAuthenticated } = useAuth();
@@ -17,6 +29,8 @@ export default function ProfilePage() {
     const [editPhone, setEditPhone] = useState("");
     const [editCpf, setEditCpf] = useState("");
     const [saving, setSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -35,7 +49,15 @@ export default function ProfilePage() {
                 setProfile(profileData);
                 setEditName(profileData.name || "");
                 setEditPhone(profileData.phone || "");
-                setEditCpf(profileData.cpf || "");
+                
+                // Formatar CPF ao carregar
+                let cpfFormatado = profileData.cpf || "";
+                if (cpfFormatado && cpfFormatado.length === 11) {
+                    cpfFormatado = cpfFormatado.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+                }
+                setEditCpf(cpfFormatado);
+            } else {
+                setEditName(user.email?.split('@')[0] || "");
             }
 
             // Fetch Appts count (only CONFIRMED or COMPLETED)
@@ -57,27 +79,91 @@ export default function ProfilePage() {
 
     const handleSave = async () => {
         if (!user) return;
+        
+        setSaveError(null);
+        setSaveSuccess(false);
         setSaving(true);
-        const unmaskedCpf = editCpf.replace(/\D/g, "");
+        console.log("[Profile] Iniciando salvamento para usuário:", user.id);
 
-        if (editCpf && unmaskedCpf.length !== 11) {
-            alert("CPF inválido.");
+        try {
+            // Validações de campos obrigatórios
+            const trimmedName = editName.trim() || profile?.name?.trim() || "";
+            if (!trimmedName) {
+                setSaveError("O campo Nome é obrigatório.");
+                setSaving(false);
+                return;
+            }
+
+            const unmaskedPhone = editPhone.replace(/\D/g, "") || profile?.phone?.replace(/\D/g, "") || "";
+            if (!unmaskedPhone || unmaskedPhone.length < 10) {
+                setSaveError("O campo Telefone é obrigatório e deve ter um formato válido.");
+                setSaving(false);
+                return;
+            }
+
+            // Validação de CPF (Opcional, mas se preenchido deve ser válido)
+            const unmaskedCpf = editCpf.replace(/\D/g, "");
+            if (unmaskedCpf && unmaskedCpf.length !== 11) {
+                setSaveError("O CPF informado é inválido. Digite 11 números ou deixe em branco.");
+                setSaving(false);
+                return;
+            }
+
+            console.log("[Profile] Dados validados com sucesso. Atualizando Supabase com retry mechanism...");
+
+            const updateData = {
+                name: trimmedName,
+                phone: unmaskedPhone,
+                cpf: unmaskedCpf || null
+            };
+
+            const { success, data, error } = await updateUserProfile(supabase, user.id, updateData);
+
+            if (!success) {
+                // O serviço já logou o detalhamento, apenas lançamos para o catch do frontend
+                throw error;
+            }
+
+            console.log("[Profile] Perfil atualizado com sucesso no Supabase:", data);
+            
+            // Sucesso
+            setProfile(prev => prev ? { 
+                ...prev, 
+                name: trimmedName, 
+                phone: unmaskedPhone, 
+                cpf: unmaskedCpf || undefined 
+            } : { 
+                name: trimmedName, 
+                phone: unmaskedPhone, 
+                cpf: unmaskedCpf || undefined 
+            });
+            
+            setSaveSuccess(true);
+            setTimeout(() => {
+                setIsEditing(false);
+                setSaveSuccess(false);
+            }, 1500);
+
+        } catch (error: any) {
+            console.error("[Profile] Catch bloqueou um erro detalhado na atualização:", {
+                message: error?.message || "Erro desconhecido",
+                code: error?.code || "N/A",
+                details: error?.details || "N/A"
+            });
+            
+            // Tratamento específico de erros para feedback visual do usuário
+            if (error?.code === '23505' && error?.message?.includes('profiles_cpf_key')) {
+                setSaveError("Este CPF já está cadastrado em outra conta.");
+            } else if (error?.code === '42501' || error?.code === 'NO_DATA') {
+                setSaveError("Erro de sincronização. Perfil não encontrado ou sem permissão (RLS).");
+            } else if (error?.message === 'Failed to fetch' || error?.message?.includes('fetch')) {
+                setSaveError("Erro de conexão. Verifique sua internet e tente novamente.");
+            } else {
+                setSaveError(`Erro interno ao atualizar o perfil: ${error?.message || 'Tente novamente.'}`);
+            }
+        } finally {
             setSaving(false);
-            return;
         }
-
-        const { error } = await supabase
-            .from("profiles")
-            .update({ name: editName, phone: editPhone, cpf: unmaskedCpf || null })
-            .eq("id", user.id);
-
-        if (!error) {
-            setProfile(prev => prev ? { ...prev, name: editName, phone: editPhone, cpf: unmaskedCpf } : { name: editName, phone: editPhone, cpf: unmaskedCpf });
-            setIsEditing(false);
-        } else {
-            alert("Erro ao atualizar o perfil. Talvez o CPF já esteja em uso.");
-        }
-        setSaving(false);
     };
 
     const handleDeleteAccount = async () => {
@@ -95,8 +181,8 @@ export default function ProfilePage() {
                 alert("Sua conta foi deletada com sucesso.");
                 logout();
             }
-        } catch (err: any) {
-            alert("Erro ao conectar com o servidor.");
+        } catch (error: unknown) {
+            alert(getErrorMessage(error));
         } finally {
             setLoading(false);
         }
@@ -136,8 +222,8 @@ export default function ProfilePage() {
             // Update state
             setProfile(prev => prev ? { ...prev, avatar_url: publicUrl } : null);
 
-        } catch (error: any) {
-            alert(error.message || "Erro ao fazer upload da imagem.");
+        } catch (error: unknown) {
+            alert(getErrorMessage(error));
         } finally {
             setLoading(false);
         }
@@ -176,7 +262,7 @@ export default function ProfilePage() {
                         <label htmlFor="avatar-upload" className="cursor-pointer block relative">
                             <div className="w-28 h-28 rounded-full p-1 border-2 border-primary bg-black relative shadow-[0_0_20px_rgba(212,175,55,0.15)] overflow-hidden flex items-center justify-center">
                                 {profile?.avatar_url ? (
-                                    <img src={profile.avatar_url} alt="Avatar" className="w-full h-full rounded-full object-cover" />
+                                    <Image src={profile.avatar_url} alt="Avatar" className="w-full h-full rounded-full object-cover" width={112} height={112} unoptimized loader={remoteImageLoader} />
                                 ) : (
                                     <span className="material-symbols-outlined text-6xl text-primary">person</span>
                                 )}
@@ -200,8 +286,8 @@ export default function ProfilePage() {
                                 type="text"
                                 value={editName}
                                 onChange={e => setEditName(e.target.value)}
-                                className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center"
-                                placeholder="Seu Nome"
+                                className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center placeholder:text-white/20"
+                                placeholder={profile?.name || user?.email?.split('@')[0] || "Seu Nome"}
                             />
                             <input
                                 type="text"
@@ -214,8 +300,8 @@ export default function ProfilePage() {
                                         setEditPhone(val);
                                     }
                                 }}
-                                className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center"
-                                placeholder="Seu Telefone"
+                                className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center placeholder:text-white/20"
+                                placeholder={profile?.phone || "Seu Telefone"}
                             />
                             <input
                                 type="text"
@@ -229,12 +315,25 @@ export default function ProfilePage() {
                                         setEditCpf(val);
                                     }
                                 }}
-                                className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center"
-                                placeholder="Seu CPF (opcional)"
+                                className="w-full bg-[#111] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary focus:outline-none text-center placeholder:text-white/20"
+                                placeholder={profile?.cpf ? profile.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4") : "Seu CPF (opcional)"}
                             />
+                            {saveError && (
+                                <p className="text-red-500 text-xs text-center font-bold">{saveError}</p>
+                            )}
+                            {saveSuccess && (
+                                <p className="text-green-500 text-xs text-center font-bold">Perfil salvo com sucesso!</p>
+                            )}
                             <div className="flex gap-2 justify-center">
-                                <button onClick={() => setIsEditing(false)} className="text-xs uppercase text-slate-400 p-2">Cancelar</button>
-                                <button onClick={handleSave} disabled={saving} className="text-xs uppercase text-primary font-bold p-2">{saving ? "Salvando..." : "Salvar"}</button>
+                                <button onClick={() => {
+                                    setIsEditing(false);
+                                    setSaveError(null);
+                                    setSaveSuccess(false);
+                                }} className="text-xs uppercase text-slate-400 p-2 hover:text-white transition-colors">Cancelar</button>
+                                <button onClick={handleSave} disabled={saving} className="text-xs uppercase text-primary font-bold p-2 flex items-center gap-2 hover:text-white transition-colors disabled:opacity-50">
+                                    {saving && <span className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>}
+                                    {saving ? "Salvando..." : "Salvar"}
+                                </button>
                             </div>
                         </div>
                     ) : (

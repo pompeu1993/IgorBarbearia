@@ -18,7 +18,7 @@ export default function ServicesPage() {
 
     useEffect(() => {
         const fetchServices = async () => {
-            const { data, error } = await supabase.from("services").select("*").order("price", { ascending: true });
+            const { data } = await supabase.from("services").select("*").order("price", { ascending: true });
             if (data) {
                 // Filter to show only "Corte Tradicional"
                 const filteredData = data.filter((service) => 
