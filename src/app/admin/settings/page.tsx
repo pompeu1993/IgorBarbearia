@@ -22,8 +22,8 @@ export default function AdminSettings() {
         const numPrice = parseFloat(value);
         if (isNaN(numPrice)) {
             setPriceError("Preço inválido.");
-        } else if (numPrice < 5.00) {
-            setPriceError("O preço mínimo permitido é R$ 5,00.");
+        } else if (numPrice < 2.00) {
+            setPriceError("O preço mínimo permitido é R$ 2,00.");
         } else {
             setPriceError(null);
         }
@@ -183,7 +183,7 @@ export default function AdminSettings() {
                                 <input
                                     type="number"
                                     step="0.01"
-                                    min="5.00"
+                                    min="2.00"
                                     value={price}
                                     onChange={handlePriceChange}
                                     className={`w-full bg-white/5 border ${priceError ? 'border-red-500/50' : 'border-white/10'} rounded-xl pl-12 pr-4 py-3 text-white font-bold focus:outline-none ${priceError ? 'focus:border-red-500' : 'focus:border-primary'} transition-colors`}
