@@ -46,7 +46,7 @@ export default function AdminAgenda() {
                     date,
                     status,
                     user_id,
-                    profiles!appointments_user_id_fkey(name, phone),
+                    profiles(name, phone),
                     services(name, duration)
                 `)
                 .gte("date", startOfDay.toISOString())
