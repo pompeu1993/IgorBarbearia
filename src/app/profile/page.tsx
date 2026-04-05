@@ -83,7 +83,6 @@ export default function ProfilePage() {
         setSaveError(null);
         setSaveSuccess(false);
         setSaving(true);
-        console.log("[Profile] Iniciando salvamento para usuário:", user.id);
 
         try {
             // Validações de campos obrigatórios
@@ -109,8 +108,6 @@ export default function ProfilePage() {
                 return;
             }
 
-            console.log("[Profile] Dados validados com sucesso. Atualizando Supabase com retry mechanism...");
-
             const updateData = {
                 name: trimmedName,
                 phone: unmaskedPhone,
@@ -123,8 +120,6 @@ export default function ProfilePage() {
                 // O serviço já logou o detalhamento, apenas lançamos para o catch do frontend
                 throw error;
             }
-
-            console.log("[Profile] Perfil atualizado com sucesso no Supabase:", data);
             
             // Sucesso
             setProfile(prev => prev ? { 

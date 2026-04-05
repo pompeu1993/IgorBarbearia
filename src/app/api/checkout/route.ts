@@ -37,8 +37,6 @@ function getErrorMessage(error: unknown) {
 
 export async function POST(req: Request) {
     try {
-        console.log("=== INICIO CHECKOUT API ===");
-        
         // --- 1. Rate Limiting (Anti-Bot) ---
         if (ratelimit) {
             const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
@@ -65,7 +63,6 @@ export async function POST(req: Request) {
         );
 
         const body = await req.json();
-        console.log("Body Recebido:", body);
         
         const { serviceId, date, price, serviceName, cpf: bodyCpf } = body;
 
@@ -105,17 +102,14 @@ export async function POST(req: Request) {
 
         const customerName = profile?.name || user?.user_metadata?.name || "Cliente";
         const cleanCpf = cpfToUse.replace(/\D/g, "");
-        console.log("CPF processado:", cleanCpf, " | Cliente:", customerName);
 
         // 1. Buscar se o cliente já existe no Asaas pelo CPF
         let customerId = "";
         const searchCustomerRes = await fetch(`${asaasConfig.API_URL}/customers?cpfCnpj=${cleanCpf}`, {
             headers: getAsaasHeaders()
         });
-        
+
         const searchRawText = await searchCustomerRes.text();
-        console.log("Asaas Search Customer Response Status:", searchCustomerRes.status);
-        console.log("Asaas Search Customer Raw Body:", searchRawText.substring(0, 300));
         let searchCustomerData;
         try {
             searchCustomerData = JSON.parse(searchRawText);
@@ -181,16 +175,13 @@ export async function POST(req: Request) {
                 customer: customerId,
                 billingType: "PIX",
                 value: paymentValue,
-                dueDate: dueDate.toISOString().split('T')[0],
-                description: `Agendamento: ${serviceName || 'Corte'}`,
-                externalReference: `agendamento_${Date.now()}`
+                dueDate: new Date().toISOString().split("T")[0],
+                description: `Agendamento - ${serviceName || 'Serviço'} - ${customerName}`
             })
         });
 
         // Safe JSON parsing for Asaas Payment errors
         const paymentRawText = await paymentRes.text();
-        console.log("Asaas Payment Response Status:", paymentRes.status);
-        console.log("Asaas Payment Raw Body:", paymentRawText.substring(0, 300));
         let paymentData: any;
         try {
             paymentData = JSON.parse(paymentRawText);
@@ -217,8 +208,6 @@ export async function POST(req: Request) {
         });
 
         const qrCodeRawText = await qrCodeRes.text();
-        console.log("Asaas QRCode Response Status:", qrCodeRes.status);
-        console.log("Asaas QRCode Raw Body:", qrCodeRawText.substring(0, 300));
         let qrCodeData;
         try {
             qrCodeData = JSON.parse(qrCodeRawText);

@@ -84,15 +84,6 @@ function SummaryContent() {
                 headers["Authorization"] = `Bearer ${session.access_token}`;
             }
 
-            console.log("Iniciando requisição para /api/checkout com payload:", {
-                serviceId: service.id,
-                serviceName: service.name,
-                price: service.price,
-                date: datetimeStr,
-                userId: user.id,
-                cpf: actCpf // Garantir que sabemos qual CPF está indo
-            });
-
             const res = await fetch("/api/checkout", {
                 method: "POST",
                 headers,
@@ -107,7 +98,6 @@ function SummaryContent() {
             });
 
             const data = await res.json();
-            console.log("Resposta do /api/checkout:", data);
             if (res.ok && data.paymentId) {
                 setPaymentId(data.paymentId);
                 setPixData({ image: data.qrCodeImage, text: data.qrCodeText });
@@ -197,13 +187,13 @@ function SummaryContent() {
         }
     }, [paymentId, router]);
 
-    // Auto-check payment status every 10 seconds while pix section is visible
+    // Auto-check payment status every 5 seconds while pix section is visible
     useEffect(() => {
         let intervalId: NodeJS.Timeout;
         if (showPixSection && paymentId) {
             intervalId = setInterval(() => {
                 handleConfirmPayment(true);
-            }, 10000); // 10 seconds
+            }, 5000); // 5 seconds
         }
 
         return () => {
