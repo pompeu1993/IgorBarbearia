@@ -48,7 +48,7 @@ export default function AdminHome() {
                 `)
                 .gte("date", today.toISOString())
                 .lt("date", tomorrow.toISOString())
-                .in("status", ["CONFIRMED", "COMPLETED"])
+                .in("status", ["CONFIRMED", "COMPLETED", "PENDING"])
                 .order("date", { ascending: true });
 
             if (data) {
