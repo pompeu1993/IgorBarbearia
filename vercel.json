@@ -1,1 +1,8 @@
-{"rewrites":[{"source":"/(.*)","destination":"/index.html"}]}
+{
+  "crons": [
+    {
+      "path": "/api/appointments/cleanup",
+      "schedule": "*/10 * * * *"
+    }
+  ]
+}

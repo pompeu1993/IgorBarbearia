@@ -1,6 +1,23 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { asaasConfig, getAsaasHeaders } from "@/config/asaas";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// Inicializa o limitador apenas se as chaves estiverem configuradas
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : null;
+
+const ratelimit = redis
+    ? new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 tentativas de Pix por minuto por IP/Usuário
+      })
+    : null;
 
 type AsaasErrorDetail = {
     description: string;
@@ -22,6 +39,19 @@ export async function POST(req: Request) {
     try {
         console.log("=== INICIO CHECKOUT API ===");
         
+        // --- 1. Rate Limiting (Anti-Bot) ---
+        if (ratelimit) {
+            const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
+            const { success, limit, reset, remaining } = await ratelimit.limit(ip);
+            if (!success) {
+                console.warn(`[Checkout RateLimit] Bloqueado IP: ${ip}`);
+                return NextResponse.json(
+                    { error: "Muitas tentativas de agendamento. Tente novamente em alguns instantes." },
+                    { status: 429 }
+                );
+            }
+        }
+
         if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
             console.error("[Checkout API] Variáveis de ambiente do Supabase ausentes.");
             return NextResponse.json({ error: "Configuração do servidor incompleta. Contate o suporte." }, { status: 500 });

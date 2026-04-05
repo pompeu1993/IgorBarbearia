@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { asaasConfig, getAsaasHeaders } from "@/config/asaas";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     try {
@@ -43,14 +46,58 @@ export async function POST(req: Request) {
 
         if (paymentData.status === "RECEIVED" || paymentData.status === "CONFIRMED") {
             // Pagamento efetuado, atualiza o banco de dados
-            const { error: dbError } = await supabase
+            const supabaseAdmin = createClient(
+                process.env.NEXT_PUBLIC_SUPABASE_URL,
+                process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+            );
+
+            const { data: dbData, error: dbError } = await supabaseAdmin
                 .from("appointments")
                 .update({ status: "CONFIRMED", payment_status: "PAID" })
-                .eq("payment_id", paymentId);
+                .eq("payment_id", paymentId)
+                .select("*, services(name), profiles!appointments_user_id_fkey(name)")
+                .single();
 
             if (dbError) {
                 console.error("Erro banco de dados:", dbError);
                 return NextResponse.json({ error: "Falha ao marcar como pago." }, { status: 500 });
+            }
+
+            // Disparar e-mail de notificação de forma assíncrona
+            if (process.env.RESEND_API_KEY && dbData) {
+                try {
+                    const { data: userAuth } = await supabaseAdmin.auth.admin.getUserById(dbData.user_id);
+                    const email = userAuth?.user?.email;
+                    
+                    if (email) {
+                        const serviceName = Array.isArray(dbData.services) ? dbData.services[0]?.name : dbData.services?.name;
+                        const clientName = Array.isArray(dbData.profiles) ? dbData.profiles[0]?.name : dbData.profiles?.name;
+                        const appointmentDate = new Date(dbData.date).toLocaleString('pt-BR', { 
+                            dateStyle: 'short', timeStyle: 'short' 
+                        });
+
+                        await resend.emails.send({
+                            from: "Barbearia Igor <nao-responda@barbeariaigor.com.br>", // Configure o domínio verificado na Resend
+                            to: email,
+                            subject: "Agendamento Confirmado! 💈",
+                            html: `
+                                <div style="font-family: sans-serif; color: #111;">
+                                    <h2>Olá, ${clientName || 'Cliente'}!</h2>
+                                    <p>Seu pagamento via Pix foi recebido e seu agendamento está <strong>confirmado</strong>.</p>
+                                    <div style="background: #f4f4f4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                        <p><strong>Serviço:</strong> ${serviceName || 'Corte'}</p>
+                                        <p><strong>Data e Hora:</strong> ${appointmentDate}</p>
+                                    </div>
+                                    <p>Te esperamos lá!</p>
+                                    <p><strong>Barbearia Igor</strong></p>
+                                </div>
+                            `
+                        });
+                    }
+                } catch (emailErr) {
+                    console.error("[Checkout Confirm] Erro ao enviar e-mail via Resend:", emailErr);
+                    // Não falha o request se o e-mail der erro
+                }
             }
 
             return NextResponse.json({ success: true, message: "Pagamento e agendamento confirmados." });
