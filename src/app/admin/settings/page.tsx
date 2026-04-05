@@ -160,7 +160,28 @@ export default function AdminSettings() {
     }
 
     const handleLogout = async () => {
+        // Obter os dados do ghost user local antes de deslogar o admin
+        const ghostEmail = localStorage.getItem("ghostEmail");
+        const ghostPassword = localStorage.getItem("ghostPassword");
+        const guestName = localStorage.getItem("guestName");
+        
         await supabase.auth.signOut();
+        
+        // Se houver dados de um ghost user salvos, logar de volta silenciosamente
+        if (ghostEmail && ghostPassword) {
+            try {
+                await supabase.auth.signInWithPassword({
+                    email: ghostEmail,
+                    password: ghostPassword
+                });
+                if (guestName) {
+                    sessionStorage.setItem("cachedProfileName", guestName);
+                }
+            } catch (err) {
+                console.error("Falha ao restaurar sessão ghost:", err);
+            }
+        }
+        
         window.location.href = "/";
     };
 

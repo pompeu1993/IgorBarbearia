@@ -181,7 +181,16 @@ function DateTimeSelection() {
             alert("Erro ao reagendar horário. Tente novamente.");
         } else {
             alert("Horário reagendado com sucesso!");
-            router.push("/appointments");
+            
+            // Check if user is admin
+            const { data: { session } } = await supabase.auth.getSession();
+            const isAdmin = session?.user?.email === 'rafaelmiguelalonso@gmail.com';
+            
+            if (isAdmin) {
+                router.push("/admin/agenda");
+            } else {
+                router.push("/appointments");
+            }
         }
     };
 

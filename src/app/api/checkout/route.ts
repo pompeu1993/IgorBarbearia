@@ -99,26 +99,27 @@ export async function POST(req: Request) {
             if (authError || !authData.user) {
                 console.error("[Checkout API] Erro ao criar Ghost User:", authError);
                 return NextResponse.json({ error: "Erro interno ao processar agendamento. O serviço de autenticação está temporariamente indisponível." }, { status: 500 });
-            } else {
-                targetUserId = authData.user.id;
-
-                // Esperar um breve momento para garantir que a autenticação foi concluída
-                await new Promise(resolve => setTimeout(resolve, 500));
-
-                // Insere/Atualiza o profile garantindo que ele exista para satisfazer a Foreign Key
-                const { error: profileError } = await supabase.from('profiles').upsert([{
-                    id: targetUserId,
-                    name: userName,
-                    phone: null,
-                    cpf: null
-                }]);
-
-                if (profileError) {
-                    console.error("[Checkout API] Erro ao atualizar/inserir Ghost Profile:", profileError);
-                }
-
-                newGhostToken = { email: ghostEmail, password: ghostPassword };
             }
+
+            targetUserId = authData.user.id;
+
+            // Esperar um breve momento para garantir que a autenticação foi concluída
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Insere/Atualiza o profile garantindo que ele exista para satisfazer a Foreign Key
+            const { error: profileError } = await supabase.from('profiles').upsert({
+                id: targetUserId,
+                name: userName,
+                phone: null,
+                cpf: null
+            });
+
+            if (profileError) {
+                console.error("[Checkout API] Erro ao atualizar/inserir Ghost Profile:", profileError);
+                return NextResponse.json({ error: "Erro interno ao registrar perfil do usuário." }, { status: 500 });
+            }
+
+            newGhostToken = { email: ghostEmail, password: ghostPassword };
         } else {
             // Tenta buscar o nome do usuário existente se não foi enviado
             const { data: profile } = await supabase.from('profiles').select('name').eq('id', targetUserId).maybeSingle();

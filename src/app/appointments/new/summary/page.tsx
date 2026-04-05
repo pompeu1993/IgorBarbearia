@@ -113,8 +113,11 @@ function SummaryContent() {
                     sessionStorage.setItem("cachedProfileName", guestName.trim());
                 }
 
-                // Se foi gerado um ghost user NOVO, loga no background
+                // Se foi gerado um ghost user NOVO, loga no background e salva os dados para recuperação
                 if (data.ghostToken) {
+                    localStorage.setItem("ghostEmail", data.ghostToken.email);
+                    localStorage.setItem("ghostPassword", data.ghostToken.password);
+                    
                     // Esperar o login para garantir que a sessão seja criada antes de navegar
                     await supabase.auth.signInWithPassword({
                         email: data.ghostToken.email,
