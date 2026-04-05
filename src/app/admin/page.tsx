@@ -51,6 +51,12 @@ export default function AdminHome() {
                 .in("status", ["CONFIRMED", "COMPLETED", "PENDING"])
                 .order("date", { ascending: true });
 
+            if (error) {
+                console.error("Erro ao buscar appointments:", error);
+                setLoading(false);
+                return;
+            }
+
             if (data) {
                 const formatted: AdminAppointment[] = (data as AdminAppointmentRow[]).map((d) => ({
                     id: d.id,

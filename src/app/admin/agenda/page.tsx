@@ -54,6 +54,12 @@ export default function AdminAgenda() {
                 .in("status", ["CONFIRMED", "COMPLETED", "PENDING"])
                 .order("date", { ascending: true });
 
+            if (error) {
+                console.error("Erro ao buscar appointments:", error);
+                setLoading(false);
+                return;
+            }
+
             if (data) {
                 const formatted: AgendaAppointment[] = (data as AgendaAppointmentRow[]).map((d) => ({
                     ...d,
