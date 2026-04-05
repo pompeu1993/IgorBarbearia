@@ -134,8 +134,8 @@ export async function POST(req: Request) {
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 1); // Vencimento para amanhã
 
-        // Ensure price is a valid number.
-        const paymentValue = Number(price) < 2 ? 2.00 : Number(price);
+        // Ensure price is a valid number. Asaas exige mínimo de R$ 5.00 para gerar cobrança via API
+        const paymentValue = Math.max(5.00, Number(price) || 0);
 
         const paymentRes = await fetch(`${ASAAS_API_URL}/payments`, {
             method: "POST",

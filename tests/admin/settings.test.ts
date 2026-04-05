@@ -14,8 +14,8 @@ async function saveAdminSettings(
     if (isNaN(numPrice)) {
         throw new Error("Preço inválido.");
     }
-    if (numPrice < 2.00) {
-        throw new Error("O preço mínimo permitido é R$ 2,00.");
+    if (numPrice < 5.00) {
+        throw new Error("O Asaas exige um valor mínimo de R$ 5,00 para cobranças.");
     }
     
     const { data, error } = await supabaseMock
@@ -87,7 +87,7 @@ describe("Admin Settings Service & RLS Validations", () => {
         );
     });
 
-    it("should reject price updates below 2.00", async () => {
+    it("should reject price updates below 5.00", async () => {
         const mockSupabase = {
             from: vi.fn().mockReturnThis(),
             update: vi.fn().mockReturnThis(),
@@ -95,8 +95,8 @@ describe("Admin Settings Service & RLS Validations", () => {
             select: vi.fn().mockResolvedValue({ data: [{ id: 1 }], error: null })
         };
 
-        await expect(saveAdminSettings(mockSupabase, "1.99", true, [1,2], [])).rejects.toThrow(
-            "O preço mínimo permitido é R$ 2,00."
+        await expect(saveAdminSettings(mockSupabase, "4.99", true, [1,2], [])).rejects.toThrow(
+            "O Asaas exige um valor mínimo de R$ 5,00 para cobranças."
         );
         expect(mockSupabase.update).not.toHaveBeenCalled();
     });
