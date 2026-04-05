@@ -8,12 +8,15 @@ interface AdminAppointment {
     id: string;
     date: string;
     status: string;
+    created_at: string;
     profiles: {
         name: string;
         phone: string;
+        cpf: string;
     };
     services: {
         name: string;
+        price: number;
     };
 }
 
@@ -21,6 +24,7 @@ type AdminAppointmentRow = {
     id: string;
     date: string;
     status: string;
+    created_at: string;
     profiles: AdminAppointment["profiles"] | AdminAppointment["profiles"][];
     services: AdminAppointment["services"] | AdminAppointment["services"][];
 };
@@ -43,8 +47,9 @@ export default function AdminHome() {
                     date,
                     status,
                     user_id,
-                    profiles(name, phone),
-                    services(name)
+                    created_at,
+                    profiles(name, phone, cpf),
+                    services(name, price)
                 `)
                 .gte("date", today.toISOString())
                 .lt("date", tomorrow.toISOString())
@@ -114,8 +119,17 @@ export default function AdminHome() {
                                 </div>
                                 
                                 <div className="flex-1 relative z-10">
-                                    <h3 className="text-white font-extrabold text-base tracking-tight mb-0.5">{apt.profiles?.name || 'Cliente'}</h3>
-                                    <p className="text-primary text-xs font-bold uppercase tracking-widest mb-2">{apt.services?.name}</p>
+                                    <div className="flex justify-between items-start mb-0.5">
+                                        <h3 className="text-white font-extrabold text-base tracking-tight">{apt.profiles?.name || 'Cliente'}</h3>
+                                        <span className="text-primary font-black text-sm tracking-tight">
+                                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(apt.services?.price || 0)}
+                                        </span>
+                                    </div>
+                                    <p className="text-primary text-xs font-bold uppercase tracking-widest mb-1">{apt.services?.name}</p>
+                                    <p className="text-slate-500 text-[10px] font-medium mb-3">
+                                        Feito em: {new Date(apt.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                                        {apt.profiles?.cpf && ` • CPF: ${apt.profiles.cpf}`}
+                                    </p>
                                     <div className="flex items-center gap-3">
                                         {apt.profiles?.phone && (
                                             <a href={`https://wa.me/55${apt.profiles.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-green-400 transition-colors uppercase tracking-widest font-bold">
@@ -123,8 +137,12 @@ export default function AdminHome() {
                                                 WhatsApp
                                             </a>
                                         )}
-                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${apt.status === 'COMPLETED' ? 'bg-primary/20 text-primary' : 'bg-green-500/20 text-green-500'}`}>
-                                            {apt.status === 'COMPLETED' ? 'Realizado' : 'Confirmado'}
+                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                                            apt.status === 'COMPLETED' ? 'bg-primary/20 text-primary' : 
+                                            apt.status === 'PENDING' ? 'bg-red-500/20 text-red-500' :
+                                            'bg-green-500/20 text-green-500'
+                                        }`}>
+                                            {apt.status === 'COMPLETED' ? 'Realizado' : apt.status === 'PENDING' ? 'Aguardando Pagamento' : 'Confirmado'}
                                         </span>
                                     </div>
                                 </div>

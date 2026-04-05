@@ -8,13 +8,16 @@ type AgendaAppointment = {
     id: string;
     date: string;
     status: string;
+    created_at: string;
     profiles: {
         name: string;
         phone: string;
+        cpf: string;
     } | null;
     services: {
         name: string;
         duration: number;
+        price: number;
     } | null;
 };
 
@@ -22,6 +25,7 @@ type AgendaAppointmentRow = {
     id: string;
     date: string;
     status: string;
+    created_at: string;
     profiles: AgendaAppointment["profiles"] | AgendaAppointment["profiles"][];
     services: AgendaAppointment["services"] | AgendaAppointment["services"][];
 };
@@ -46,8 +50,9 @@ export default function AdminAgenda() {
                     date,
                     status,
                     user_id,
-                    profiles(name, phone),
-                    services(name, duration)
+                    created_at,
+                    profiles(name, phone, cpf),
+                    services(name, duration, price)
                 `)
                 .gte("date", startOfDay.toISOString())
                 .lt("date", endOfDay.toISOString())
@@ -165,16 +170,29 @@ export default function AdminAgenda() {
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
                                     <div className="flex justify-between items-start mb-2 relative z-10">
                                         <span className="text-primary font-black text-xl tracking-tight">{formatTime(apt.date)}</span>
-                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${apt.status === 'COMPLETED' ? 'bg-primary/20 text-primary' : 'bg-green-500/20 text-green-500'}`}>
-                                            {apt.status === 'COMPLETED' ? 'Realizado' : 'Confirmado'}
+                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
+                                            apt.status === 'COMPLETED' ? 'bg-primary/20 text-primary' : 
+                                            apt.status === 'PENDING' ? 'bg-red-500/20 text-red-500' :
+                                            'bg-green-500/20 text-green-500'
+                                        }`}>
+                                            {apt.status === 'COMPLETED' ? 'Realizado' : apt.status === 'PENDING' ? 'Aguardando Pagamento' : 'Confirmado'}
                                         </span>
                                     </div>
                                     <div className="relative z-10 mb-4">
-                                        <h3 className="text-white font-extrabold text-base tracking-tight mb-0.5">{apt.profiles?.name || 'Cliente'}</h3>
-                                        <p className="text-white/70 text-xs font-bold uppercase tracking-widest">{apt.services?.name}</p>
+                                        <div className="flex justify-between items-start mb-0.5">
+                                            <h3 className="text-white font-extrabold text-base tracking-tight">{apt.profiles?.name || 'Cliente'}</h3>
+                                            <span className="text-primary font-black text-sm tracking-tight">
+                                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(apt.services?.price || 0)}
+                                            </span>
+                                        </div>
+                                        <p className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">{apt.services?.name}</p>
+                                        <p className="text-slate-500 text-[10px] font-medium mb-3">
+                                            Feito em: {new Date(apt.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                                            {apt.profiles?.cpf && ` • CPF: ${apt.profiles.cpf}`}
+                                        </p>
                                         
                                         {apt.profiles?.phone && (
-                                            <a href={`https://wa.me/55${apt.profiles.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-green-400 transition-colors uppercase tracking-widest font-bold mt-2 inline-flex">
+                                            <a href={`https://wa.me/55${apt.profiles.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-green-400 transition-colors uppercase tracking-widest font-bold inline-flex">
                                                 <span className="material-symbols-outlined text-[14px]">chat</span>
                                                 WhatsApp
                                             </a>
