@@ -134,8 +134,8 @@ export async function POST(req: Request) {
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 1); // Vencimento para amanhã
 
-        // Ensure price is a valid number. Asaas requires minimum R$ 5.00 for PIX
-        const paymentValue = Number(price) < 5 ? 5.00 : Number(price);
+        // Ensure price is a valid number.
+        const paymentValue = Number(price) < 2 ? 2.00 : Number(price);
 
         const paymentRes = await fetch(`${ASAAS_API_URL}/payments`, {
             method: "POST",
