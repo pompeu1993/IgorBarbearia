@@ -27,7 +27,7 @@ O cliente gera o Pix e o sistema valida o pagamento em tempo real.
 
 Quando a barbearia estiver com a agenda lotada e muito tráfego.
 
-- [ ] **Rate Limiting no Checkout**: Adicionar proteção com Redis (Upstash) ou Vercel KV para evitar que bots tentem gerar múltiplos Pix falsos de uma vez.
-- [ ] **Monitoramento (Sentry ou Datadog)**: Rastrear erros silenciosos do frontend em produção.
-- [ ] **Otimização de SEO (Next.js)**: Configurar Metatags e OpenGraph para a página principal da barbearia indexar bem no Google ("Barbearia perto de mim").
+- [x] **Rate Limiting no Checkout**: Adicionado proteção com Redis (Upstash) para evitar que bots tentem gerar múltiplos Pix falsos de uma vez.
+- [ ] **Monitoramento (Sentry ou Datadog)**: Rastrear erros silenciosos do frontend em produção. (*Requer configuração manual de credenciais rodando `npx @sentry/wizard@latest -i nextjs`*).
+- [x] **Otimização de SEO (Next.js)**: Configurado Metatags e OpenGraph para a página principal da barbearia indexar bem no Google.
 

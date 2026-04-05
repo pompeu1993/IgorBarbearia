@@ -19,7 +19,9 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             "/recuperar-senha",
             "/update-password",
             "/appointments/new",
-            "/appointments/new/datetime"
+            "/appointments/new/datetime",
+            "/appointments/new/summary",
+            "/admin-login"
         ];
         // Retirar query params para checagem exata, se necessário:
         const currentPath = pathname.split('?')[0];
@@ -38,6 +40,8 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
         "/update-password",
         "/appointments/new",
         "/appointments/new/datetime",
+        "/appointments/new/summary",
+        "/admin-login"
     ];
     const currentPath = pathname.split("?")[0];
     const isPublicPath = publicPaths.includes(currentPath);

@@ -15,32 +15,22 @@ const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_RE
 const ratelimit = redis
     ? new Ratelimit({
         redis: redis,
-        limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 tentativas de Pix por minuto por IP/Usuário
+        limiter: Ratelimit.slidingWindow(5, "1 m"),
       })
     : null;
-
-type AsaasErrorDetail = {
-    description: string;
-};
-
-type AsaasErrorResponse = {
-    errors?: AsaasErrorDetail[];
-};
 
 function getErrorMessage(error: unknown) {
     if (error instanceof Error) {
         return error.message;
     }
-
     return "Erro interno do servidor.";
 }
 
 export async function POST(req: Request) {
     try {
-        // --- 1. Rate Limiting (Anti-Bot) ---
         if (ratelimit) {
             const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
-            const { success, limit, reset, remaining } = await ratelimit.limit(ip);
+            const { success } = await ratelimit.limit(ip);
             if (!success) {
                 console.warn(`[Checkout RateLimit] Bloqueado IP: ${ip}`);
                 return NextResponse.json(
@@ -50,42 +40,25 @@ export async function POST(req: Request) {
             }
         }
 
-        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
             console.error("[Checkout API] Variáveis de ambiente do Supabase ausentes.");
             return NextResponse.json({ error: "Configuração do servidor incompleta. Contate o suporte." }, { status: 500 });
         }
 
-        const authHeader = req.headers.get("Authorization");
+        // Usamos SERVICE_ROLE para poder criar contas fantasmas e manipular perfis/agendamentos
         const supabase = createClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-            { global: { headers: { Authorization: authHeader || "" } } }
+            process.env.SUPABASE_SERVICE_ROLE_KEY
         );
 
         const body = await req.json();
-        
-        const { serviceId, date, price, serviceName, cpf: bodyCpf } = body;
+        const { serviceId, date, price, serviceName, userName, userId, ghostToken } = body;
 
         if (!serviceId || !date || price === undefined) {
             return NextResponse.json({ error: "Dados inválidos: serviceId, date e price são obrigatórios." }, { status: 400 });
         }
 
-        // Pega os detalhes do usuário logado
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            return NextResponse.json({ error: "Usuário não autenticado." }, { status: 401 });
-        }
-
-        const { data: profile } = await supabase.from('profiles').select('cpf, name').eq('id', user.id).maybeSingle();
-        
-        // Prefere o CPF enviado ativamente pelo frontend, se não, tenta o do banco de dados
-        const cpfToUse = bodyCpf || profile?.cpf || user?.user_metadata?.cpf;
-
-        if (!cpfToUse) {
-            return NextResponse.json({ error: "CPF obrigatório para pagamento Pix no Asaas." }, { status: 400 });
-        }
-
-        // 0. Verificar se o horário ainda está disponível antes de prosseguir
+        // 0. Verificar disponibilidade do horário
         const { data: bookedSlots, error: bookedError } = await supabase.rpc("get_booked_slots", {
             start_time: date,
             end_time: date
@@ -100,12 +73,89 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "O horário selecionado não está mais disponível ou expirou." }, { status: 409 });
         }
 
-        const customerName = profile?.name || user?.user_metadata?.name || "Cliente";
-        const cleanCpf = cpfToUse.replace(/\D/g, "");
+        let targetUserId = userId;
+        let customerName = userName || "Cliente Anônimo";
+        let newGhostToken = null;
 
-        // 1. Buscar se o cliente já existe no Asaas pelo CPF
+        // 1. Se não enviou userId, precisamos criar um Ghost User
+        if (!targetUserId) {
+            if (!userName) {
+                return NextResponse.json({ error: "Nome é obrigatório para agendamentos anônimos." }, { status: 400 });
+            }
+
+            const ghostUuid = crypto.randomUUID();
+            const ghostEmail = `ghost_${ghostUuid}@barbeariaigor.com`;
+            const ghostPassword = ghostUuid;
+
+            const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+                email: ghostEmail,
+                password: ghostPassword,
+                email_confirm: true
+            });
+
+            if (authError || !authData.user) {
+                console.error("[Checkout API] Erro ao criar Ghost User:", authError);
+                return NextResponse.json({ error: "Erro interno ao processar cadastro simplificado." }, { status: 500 });
+            }
+
+            targetUserId = authData.user.id;
+
+            // Insere o profile com o nome do cliente e CPF nulo (já que usaremos um fixo pro Asaas)
+            const { error: profileError } = await supabase.from('profiles').insert([{
+                id: targetUserId,
+                name: userName,
+                cpf: null
+            }]);
+
+            if (profileError) {
+                console.error("[Checkout API] Erro ao criar Ghost Profile:", profileError);
+                // Não falha aqui para não quebrar a expêriencia, tenta seguir
+            }
+
+            newGhostToken = { email: ghostEmail, password: ghostPassword };
+        } else {
+            // Tenta buscar o nome do usuário existente se não foi enviado
+            const { data: profile } = await supabase.from('profiles').select('name').eq('id', targetUserId).maybeSingle();
+            if (profile?.name) customerName = profile.name;
+        }
+
+        // 2. Verificar se precisa de pagamento (Horários antes das 09:00 ou depois/igual às 18:00)
+        const appointmentDate = new Date(date);
+        const hour = appointmentDate.getHours();
+        const requiresPayment = hour < 9 || hour >= 18;
+
+        // Regra de negócio: "todos os cpfs devem ser com o mesmo CPF 00483932159 dentro do sistema para nao barrar no asaas"
+        const FIXED_ASAAS_CPF = "00483932159";
+
+        if (!requiresPayment) {
+            // Agendamento GRATUITO
+            const { error: dbError } = await supabase
+                .from("appointments")
+                .insert([{
+                    user_id: targetUserId,
+                    service_id: serviceId,
+                    date: date,
+                    status: "CONFIRMED",
+                    payment_status: "CONFIRMED",
+                    payment_id: `FREE_${crypto.randomUUID().split('-')[0]}`
+                }]);
+
+            if (dbError) {
+                console.error("Erro Supabase:", dbError);
+                return NextResponse.json({ error: "Falha ao registrar agendamento no banco." }, { status: 500 });
+            }
+
+            return NextResponse.json({
+                success: true,
+                requiresPayment: false,
+                message: "Agendamento confirmado com sucesso.",
+                ghostToken: newGhostToken
+            });
+        }
+
+        // 3. Requer Pagamento: Buscar/Criar cliente no Asaas
         let customerId = "";
-        const searchCustomerRes = await fetch(`${asaasConfig.API_URL}/customers?cpfCnpj=${cleanCpf}`, {
+        const searchCustomerRes = await fetch(`${asaasConfig.API_URL}/customers?cpfCnpj=${FIXED_ASAAS_CPF}`, {
             headers: getAsaasHeaders()
         });
 
@@ -126,46 +176,35 @@ export async function POST(req: Request) {
         if (searchCustomerData.data && searchCustomerData.data.length > 0) {
             customerId = searchCustomerData.data[0].id;
         } else {
-            // 2. Criar cliente no Asaas
+            // Criar cliente no Asaas
             const createCustomerRes = await fetch(`${asaasConfig.API_URL}/customers`, {
                 method: "POST",
                 headers: getAsaasHeaders(),
                 body: JSON.stringify({
-                    name: customerName,
-                    cpfCnpj: cleanCpf,
-                    email: user.email || "cliente@teste.com"
+                    name: "Cliente Sistema", // Nome fixo genérico para este CPF no Asaas
+                    cpfCnpj: FIXED_ASAAS_CPF,
+                    email: "cliente@barbeariaigor.com"
                 })
             });
             
-            // Tratamento de falhas HTTP que não retornam JSON válido
             const createRawText = await createCustomerRes.text();
             let createCustomerData;
             try {
                 createCustomerData = JSON.parse(createRawText);
             } catch (err) {
-                console.error("[Checkout API] Falha ao criar cliente no Asaas. Resposta não é JSON:", createRawText);
                 return NextResponse.json({ error: "Erro de comunicação com o gateway de pagamento (Asaas) ao criar cliente.", details: createRawText }, { status: 502 });
             }
 
             if (!createCustomerRes.ok) {
-                console.error("[Checkout API] Erro Asaas (Criar Cliente):", createCustomerData);
-                
-                // Tratar erro específico de CPF Duplicado que o Asaas retorna
                 const errorMessage = typeof createCustomerData === 'object' && createCustomerData?.errors?.[0]?.description
                     ? createCustomerData.errors[0].description
                     : "Falha ao criar cliente no Asaas.";
-                    
                 return NextResponse.json({ error: errorMessage, details: createCustomerData }, { status: 400 });
             }
-            
             customerId = createCustomerData.id;
         }
 
-        // 3. Criar cobrança PIX
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 1); // Vencimento para amanhã
-
-        // Ensure price is a valid number. Asaas exige mínimo de R$ 5.00 para gerar cobrança via API
+        // 4. Criar cobrança PIX
         const paymentValue = Math.max(5.00, Number(price) || 0);
 
         const paymentRes = await fetch(`${asaasConfig.API_URL}/payments`, {
@@ -180,18 +219,15 @@ export async function POST(req: Request) {
             })
         });
 
-        // Safe JSON parsing for Asaas Payment errors
         const paymentRawText = await paymentRes.text();
         let paymentData: any;
         try {
             paymentData = JSON.parse(paymentRawText);
         } catch {
-            console.error("[Checkout API] Asaas retornou formato inválido ao criar cobrança:", paymentRawText);
             return NextResponse.json({ error: "Erro de formatação na resposta do Asaas." }, { status: 502 });
         }
 
         if (!paymentRes.ok) {
-            console.error("[Checkout API] Erro Asaas (Cobrança):", paymentData);
             let msgError = "Erro desconhecido ao gerar Pix no Asaas.";
             if (paymentData.errors && Array.isArray(paymentData.errors) && paymentData.errors.length > 0) {
                  msgError = paymentData.errors.map((e: any) => e.description).join(" | ");
@@ -199,10 +235,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: msgError, details: paymentData }, { status: 400 });
         }
 
-        // Fix missing paymentId before QR code fetch
         const paymentId = paymentData.id;
 
-        // 4. Obter o QR Code do PIX
+        // 5. Obter o QR Code do PIX
         const qrCodeRes = await fetch(`${asaasConfig.API_URL}/payments/${paymentId}/pixQrCode`, {
             headers: getAsaasHeaders()
         });
@@ -212,31 +247,27 @@ export async function POST(req: Request) {
         try {
             qrCodeData = JSON.parse(qrCodeRawText);
         } catch (err) {
-            console.error("[Checkout API] Asaas retornou formato inválido ao buscar QR Code:", qrCodeRawText);
             return NextResponse.json({ error: "Erro de formatação na resposta do Asaas ao buscar QR Code." }, { status: 502 });
         }
 
         if (!qrCodeRes.ok) {
-            console.error("Erro Asaas (QR Code):", qrCodeData);
             return NextResponse.json({ error: "Falha ao obter QR Code PIX.", details: qrCodeData }, { status: 400 });
         }
 
         const qrCodeImage = `data:image/png;base64,${qrCodeData.encodedImage}`;
         const qrCodeText = qrCodeData.payload;
 
-        // 5. Salvar o agendamento no Supabase com status pendente
+        // 6. Salvar o agendamento no Supabase com status pendente
         const { error: dbError } = await supabase
             .from("appointments")
-            .insert([
-                {
-                    user_id: user.id,
-                    service_id: serviceId,
-                    date: date,
-                    status: "PENDING",
-                    payment_status: "PENDING",
-                    payment_id: paymentId, // ID do pedido no Asaas
-                }
-            ]);
+            .insert([{
+                user_id: targetUserId,
+                service_id: serviceId,
+                date: date,
+                status: "PENDING",
+                payment_status: "PENDING",
+                payment_id: paymentId,
+            }]);
 
         if (dbError) {
             console.error("Erro Supabase:", dbError);
@@ -245,10 +276,12 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             success: true,
+            requiresPayment: true,
             paymentId: paymentId,
             qrCodeImage: qrCodeImage,
             qrCodeText: qrCodeText,
-            message: "Pedido PIX gerado com sucesso via Asaas."
+            message: "Pedido PIX gerado com sucesso via Asaas.",
+            ghostToken: newGhostToken
         });
 
     } catch (error: unknown) {

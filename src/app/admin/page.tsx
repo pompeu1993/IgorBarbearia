@@ -67,6 +67,7 @@ export default function AdminHome() {
                     id: d.id,
                     date: d.date,
                     status: d.status,
+                    created_at: d.created_at,
                     profiles: Array.isArray(d.profiles) ? d.profiles[0] : d.profiles,
                     services: Array.isArray(d.services) ? d.services[0] : d.services,
                 }));
@@ -83,6 +84,11 @@ export default function AdminHome() {
         return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
     };
 
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        window.location.href = "/";
+    };
+
     return (
         <main className="flex-1 w-full relative">
             <header className="px-6 py-8 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10 flex items-start justify-between">
@@ -92,9 +98,9 @@ export default function AdminHome() {
                         {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
                     </p>
                 </div>
-                <Link href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all">
+                <button onClick={handleLogout} className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all">
                     <span className="material-symbols-outlined text-[20px]">logout</span>
-                </Link>
+                </button>
             </header>
 
             <div className="px-6 pt-6 pb-20">

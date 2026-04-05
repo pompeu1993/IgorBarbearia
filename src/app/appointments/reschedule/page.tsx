@@ -194,9 +194,9 @@ function DateTimeSelection() {
         return dt.toISOString();
     })();
 
-    // Generate timeslots (simple 30 minute jumps)
-    const morningSlots = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30"];
-    const afternoonSlots = ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"];
+    // Generate timeslots (1 hour jumps)
+    const morningSlots = ["08:00", "09:00", "10:00", "11:00"];
+    const afternoonSlots = ["13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00"];
 
     const renderTimeBtn = (time: string) => {
         const isBooked = bookedSlots.includes(time);

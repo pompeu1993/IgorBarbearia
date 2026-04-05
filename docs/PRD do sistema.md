@@ -1,7 +1,26 @@
 # PRD - Barbearia Igor Web App
 
 ## 1. Visão Geral do Produto
-O aplicativo web da Barbearia do Igor é uma plataforma onde clientes podem agendar cortes de cabelo, visualizar seus agendamentos ativos, histórico e perfil, gerenciando sua experiência na barbearia ("Exclusive Barbershop"). O sistema também conta com um painel administrativo para controle total da agenda, configuração de preços e horários de funcionamento.
+O aplicativo "Barbearia Igor" é uma plataforma Premium (focada no público masculino e com design Dark/Gold) desenvolvida para digitalizar e simplificar agendamentos de cortes de cabelo e tratamentos de barba. A ideia é eliminar o atrito de comunicação entre o barbeiro e o cliente via WhatsApp, oferecendo uma experiência de agendamento ágil, anônima na maioria dos horários, e com pagamento PIX antecipado apenas em horários de pico (antes das 09h ou a partir das 18h).
+
+## 2. Personas e Casos de Uso
+1. **O Cliente (Usuário final):** 
+   - Quer acessar o aplicativo de forma rápida, escolher um horário e serviço, e confirmar.
+   - Pode fazer agendamentos apenas informando o nome (sem necessidade de cadastro completo) para horários entre 09:00 e 17:00.
+   - Para horários antes das 09:00 e após as 18:00, o sistema gera e exige pagamento Pix antecipado.
+   - Após o primeiro acesso, o aplicativo mantém seus dados salvos localmente e realiza auto-login silencioso ("Ghost Login") para que o cliente consiga consultar seu histórico na próxima visita.
+2. **O Administrador (Barbeiro / Igor):**
+   - Quer gerenciar seu faturamento, cancelar clientes que não pagaram e ter previsibilidade da agenda sem lidar com "falsos agendamentos".
+   - Acessa o painel usando um Código de Acesso rápido (`igor123778`), visualizando todos os horários e informações (data de agendamento, nome, serviço).
+
+## 3. Principais Funcionalidades
+### 3.1. Agendamento Fluido e Híbrido (Anônimo vs. Pix)
+- O cliente pode escolher qualquer serviço cadastrado no sistema.
+- Ao selecionar um horário, o sistema verifica a regra de negócios:
+  - **Horários Padrão (09:00 às 17:00):** O cliente informa apenas o nome. O agendamento é salvo imediatamente como `CONFIRMED` e `FREE` no banco.
+  - **Horários Premium (< 09:00 ou >= 18:00):** O cliente informa o nome e o sistema gera uma chave Pix Copia e Cola / QR Code via Asaas.
+- O sistema envia um CPF fixo (`00483932159`) para a API do Asaas a fim de não criar atrito pedindo o CPF do usuário, agilizando o fluxo.
+- **Ghost Authentication:** No backend, o sistema cria automaticamente uma conta Supabase "fantasma" vinculada àquele dispositivo. O frontend guarda um token no `localStorage` e loga o usuário no background, permitindo que ele acesse a aba Histórico depois.
 
 ## 2. Tecnologias e Arquitetura
 - **Frontend**: Next.js (App Router), React, Tailwind CSS
@@ -25,7 +44,7 @@ O aplicativo web da Barbearia do Igor é uma plataforma onde clientes podem agen
 - `/appointments` - Listagem dos agendamentos futuros confirmados.
 - `/appointments/new` - Início do fluxo de novo agendamento (Seleção de Serviço).
 - `/appointments/new/datetime` - Seleção de data e hora (verificando horários já ocupados e dias de funcionamento).
-- `/appointments/new/summary` - Resumo do pedido e **Integração com Asaas** (Geração do Pix, exibição do QR Code/Copia e Cola, e verificação automática de pagamento a cada 10 segundos).
+- `/appointments/new/summary` - Resumo do pedido e **Integração com Asaas** (Geração do Pix, exibição do QR Code/Copia e Cola, e verificação automática de pagamento a cada 5 segundos com Polling).
 - `/appointments/reschedule` - Tela para reagendamento de um horário existente (permitido até 24h de antecedência).
 - `/history` - Histórico filtrado de agendamentos do cliente. Consome a API paginada de histórico exibindo exclusivamente serviços `CONFIRMED` e `COMPLETED` em ordem cronológica reversa, sem filtro de serviços, garantindo performance e clareza.
 
@@ -38,7 +57,8 @@ O aplicativo web da Barbearia do Igor é uma plataforma onde clientes podem agen
 - `POST /api/auth/reset-password` - Rota auxiliar para disparo de e-mails de recuperação via Supabase.
 - `POST /api/checkout` - Rota que se comunica com a API do **Asaas** (`api.asaas.com/v3`). Verifica se o cliente existe no Asaas (pelo CPF), cria o cliente se necessário, gera a cobrança Pix e o QR Code, e salva o agendamento no Supabase com status `PENDING`.
 - `POST /api/checkout/cancel` - Rota para cancelar uma cobrança Pix gerada no Asaas caso o usuário desista.
-- `POST /api/checkout/confirm` - Rota que verifica no Asaas o status do pagamento. Se pago, atualiza o status do agendamento no Supabase para `CONFIRMED`.
+- `POST /api/checkout/confirm` - Rota que verifica no Asaas o status do pagamento. Se pago, atualiza o status do agendamento no Supabase para `CONFIRMED` e dispara e-mail de notificação para o cliente via Resend.
+- `POST /api/appointments/cleanup` - Endpoint chamado automaticamente via Cron Vercel a cada 10 minutos para alterar status de agendamentos PENDING maiores que 30 minutos para CANCELLED.
 - `GET /api/history` - Endpoint robusto que retorna o histórico de agendamentos do usuário autenticado filtrando rigorosamente apenas `CONFIRMED` e `COMPLETED`. Suporta paginação (`page`, `pageSize`) e período (`from`, `to`). Garante que agendamentos passados sejam marcados automaticamente como `COMPLETED`.
 
 ## 5. Integração Supabase e Banco de Dados (PostgreSQL)
@@ -65,11 +85,11 @@ O sistema abandonou o Prisma/SQLite em favor do Supabase (PostgreSQL). Todo o ac
 1. O agendamento é feito (escolha de serviço e horário).
 2. Na tela de resumo (`/appointments/new/summary`), se o usuário não tem CPF salvo, um modal o solicita (obrigatório para o Asaas). O auto-preenchimento do CPF ocorre se ele já estiver cadastrado no perfil.
 3. Ao salvar, atualiza a tabela `profiles`.
-4. A API valida o CPF e payload (serviceId, date, price), busca ou cria o `Customer` no Asaas, cria a `Payment` (Pix) e obtém o `PixQrCode`.
+4. A API valida o CPF e payload (serviceId, date, price), verifica colisão de horário no banco de dados (concorrência), bloqueia tentativa excessiva via Rate Limit (Upstash Redis), busca ou cria o `Customer` no Asaas, cria a `Payment` (Pix) e obtém o `PixQrCode`.
 5. Tratamento de exceção robusto (try/catch na conversão `.json()`) previne erros HTTP 500 no checkout quando a API do Asaas retorna páginas HTML ou 502 Bad Gateway.
 6. A cobrança Pix é associada a um `id` externo para ser guardado no banco.
-7. O frontend exibe o QR Code / Copia e Cola. O botão de confirmar verifica o status no Asaas chamando `/api/checkout/confirm`. Um intervalo automático (10s) também verifica em background.
-8. Quando o Asaas retorna `RECEIVED` ou `CONFIRMED`, a API atualiza o agendamento no Supabase e redireciona o cliente para a Home.
+7. O frontend exibe o QR Code / Copia e Cola. O botão de confirmar verifica o status no Asaas chamando `/api/checkout/confirm`. Um intervalo automático (Polling de 5s) também verifica em background.
+8. Quando o Asaas retorna `RECEIVED` ou `CONFIRMED`, a API atualiza o agendamento no Supabase, envia o email de confirmação e redireciona o cliente para a Home.
 9. Se o cliente clicar em "Cancelar Agendamento", a rota `/api/checkout/cancel` é chamada para cancelar a cobrança no Asaas e ocultar o Pix na tela.
 10. O fluxo de checkout é coberto por testes unitários (`checkout-api.test.ts` e `checkout-confirm-api.test.ts`) validando os payloads, as exceções e o sucesso.
 

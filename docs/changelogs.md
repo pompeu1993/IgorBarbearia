@@ -44,12 +44,28 @@ Todas as modificações do sistema devem ser registradas aqui.
   - Correção definitiva do erro HTTP 500 no endpoint `POST /api/checkout` que impedia a geração da chave PIX, implementando validação de payload rigorosa e tratamento seguro (try/catch no `.json()`) para respostas não-JSON (como 502 Bad Gateway ou 401 HTML) da API do Asaas.
   - Criação de testes unitários abrangentes (`tests/checkout/checkout-api.test.ts` e `tests/checkout/checkout-confirm-api.test.ts`) validando cenários de sucesso, falta de dados e falhas de comunicação com a API de pagamento.
   - Criação de extensa bateria de testes unitários para a tela de Perfil, Validação de CPF e Painel de Admin (Vitest).
+- **Automação Financeira e UX:**
+  - Redução do intervalo de Polling no frontend de 10s para 5s para confirmação mais rápida do Pix.
+  - Envio automático de e-mail de confirmação de agendamento integrado via Resend na rota de confirmação.
+- **Observabilidade e Performance:**
+  - Implementação de Rate Limiting (Anti-bot) no checkout usando Upstash/Redis, bloqueando mais de 5 tentativas por minuto.
+  - Implementação do `vercel.json` com Cron Job nativo chamando `/api/appointments/cleanup` a cada 10 minutos automaticamente.
+
 - **Split/Transferência PIX Automática (Asaas):**
   - Criação do endpoint de Webhook `POST /api/webhooks/asaas` para escutar eventos de pagamento `PAYMENT_RECEIVED` e `PAYMENT_CONFIRMED`.
   - Implementação da lógica de cálculo de repasse subtraindo a taxa fixa (R$ 1,25) do valor total pago.
   - Integração com a API de Transferências do Asaas para enviar automaticamente o valor líquido via PIX para a chave celular (12997036922).
   - Adição de mecanismo de idempotência verificando o `payment_status` no Supabase antes da transferência, prevenindo processamento duplicado.
   - Criação de testes unitários em `tests/webhooks/asaas-webhook.test.ts` cobrindo validação de payload, idempotência e sucesso na transferência.
+- **Nova Regra de Negócio: Agendamentos Anônimos e Pagamento Condicional:**
+  - Remoção da obrigatoriedade de Login para realizar agendamentos. Clientes informam apenas o "Nome".
+  - Implementação de criação transparente de "Ghost Users" no Supabase via `/api/checkout` para usuários não logados, armazenando credenciais temporárias no `localStorage` para login em background e visualização de histórico.
+  - Refatoração da lógica de pagamento: PIX agora é gerado e exigido **apenas** se o agendamento for antes das 09:00 ou a partir das 18:00.
+  - Uso de um CPF fixo (`00483932159`) para todas as integrações com o Asaas, bypassando a necessidade de cadastro completo do cliente e evitando bloqueios de CPF no gateway.
+  - Horários do calendário (`/appointments/new/datetime` e reagendamento) alterados para intervalos de 1 em 1 hora, conforme nova regra (ex: 09:00, 10:00, 11:00).
+- **Acesso Administrativo Simplificado:**
+  - Criação da rota `/admin-login` para acesso ao painel usando apenas um Código de Acesso (`igor123778`), sem necessidade de email/senha visíveis.
+  - Autenticação "under the hood" utilizando a conta real do administrador no Supabase, mantendo a segurança do RLS intacta.
 - **Melhorias de UI e Regras de Negócio:**
   - Ocultação automática e suave dos botões de geração de PIX na tela de checkout (`/appointments/new/summary`) logo após a geração bem-sucedida da cobrança.
   - Filtro na Agenda (Home e `/appointments`): Exibição restrita a agendamentos futuros que estão confirmados (pagos), com limite máximo de 3 agendamentos na tela inicial.
