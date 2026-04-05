@@ -17,12 +17,25 @@ describe("POST /api/appointments/cleanup", () => {
     vi.clearAllMocks();
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://mock.supabase.co";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "mock-key";
+    process.env.CRON_SECRET = "mock-secret";
+  });
+
+  it("deve retornar 401 se o CRON_SECRET estiver ausente ou incorreto", async () => {
+    const req = new Request("http://localhost:3000/api/appointments/cleanup", { 
+      method: "POST",
+      headers: { "Authorization": "Bearer wrong-secret" }
+    });
+    const response = await POST(req);
+    expect(response.status).toBe(401);
   });
 
   it("deve retornar 500 se as variáveis de ambiente estiverem ausentes", async () => {
     delete process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-    const req = new Request("http://localhost:3000/api/appointments/cleanup", { method: "POST" });
+    const req = new Request("http://localhost:3000/api/appointments/cleanup", { 
+      method: "POST",
+      headers: { "Authorization": "Bearer mock-secret" }
+    });
     const response = await POST(req);
     const json = await response.json();
 
@@ -37,7 +50,10 @@ describe("POST /api/appointments/cleanup", () => {
       error: new Error("DB Error"),
     });
 
-    const req = new Request("http://localhost:3000/api/appointments/cleanup", { method: "POST" });
+    const req = new Request("http://localhost:3000/api/appointments/cleanup", { 
+      method: "POST",
+      headers: { "Authorization": "Bearer mock-secret" }
+    });
     const response = await POST(req);
     const json = await response.json();
 
@@ -52,7 +68,10 @@ describe("POST /api/appointments/cleanup", () => {
       error: null,
     });
 
-    const req = new Request("http://localhost:3000/api/appointments/cleanup", { method: "POST" });
+    const req = new Request("http://localhost:3000/api/appointments/cleanup", { 
+      method: "POST",
+      headers: { "Authorization": "Bearer mock-secret" }
+    });
     const response = await POST(req);
     const json = await response.json();
 
