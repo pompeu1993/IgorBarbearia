@@ -56,7 +56,7 @@ export default function AdminAgenda() {
                 `)
                 .gte("date", startOfDay.toISOString())
                 .lt("date", endOfDay.toISOString())
-                .in("status", ["CONFIRMED", "COMPLETED", "PENDING"])
+                .eq("status", "CONFIRMED")
                 .order("date", { ascending: true });
 
             if (error) {
