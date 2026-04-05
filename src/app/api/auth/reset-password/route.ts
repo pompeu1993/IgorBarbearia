@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Inicializando o Resend dentro da função ou com um fallback para evitar crash no build (Vercel/Next.js)
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_key_for_build');
 
 export async function POST(req: Request) {
     try {
