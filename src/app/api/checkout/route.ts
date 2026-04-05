@@ -98,22 +98,27 @@ export async function POST(req: Request) {
 
             if (authError || !authData.user) {
                 console.error("[Checkout API] Erro ao criar Ghost User:", authError);
-                return NextResponse.json({ error: "Erro interno ao processar cadastro simplificado." }, { status: 500 });
+                // Se falhar a criação (ex: rate limit de email do Supabase), prosseguimos como ANÔNIMO DE VERDADE
+                // Isso garante que a regra "não precisa de cadastro" não trave o checkout.
+                targetUserId = null;
+                newGhostToken = null;
+            } else {
+                targetUserId = authData.user.id;
+
+                // Esperar um breve momento para garantir que o trigger do banco criou o profile
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Atualiza o profile
+                const { error: profileError } = await supabase.from('profiles').update({
+                    name: userName
+                }).eq('id', targetUserId);
+
+                if (profileError) {
+                    console.error("[Checkout API] Erro ao atualizar Ghost Profile:", profileError);
+                }
+
+                newGhostToken = { email: ghostEmail, password: ghostPassword };
             }
-
-            targetUserId = authData.user.id;
-
-            // Atualiza o profile com o nome do cliente (o trigger já deve ter criado o profile)
-            const { error: profileError } = await supabase.from('profiles').update({
-                name: userName
-            }).eq('id', targetUserId);
-
-            if (profileError) {
-                console.error("[Checkout API] Erro ao criar Ghost Profile:", profileError);
-                // Não falha aqui para não quebrar a expêriencia, tenta seguir
-            }
-
-            newGhostToken = { email: ghostEmail, password: ghostPassword };
         } else {
             // Tenta buscar o nome do usuário existente se não foi enviado
             const { data: profile } = await supabase.from('profiles').select('name').eq('id', targetUserId).maybeSingle();
@@ -130,17 +135,22 @@ export async function POST(req: Request) {
 
         // Agendamento GRATUITO
         if (!requiresPayment) {
+            const appointmentData: any = {
+                client_name: customerName,
+                service_id: serviceId,
+                date: date,
+                status: "CONFIRMED",
+                payment_status: "CONFIRMED",
+                payment_id: `FREE_${crypto.randomUUID().split('-')[0]}`
+            };
+
+            if (targetUserId) {
+                appointmentData.user_id = targetUserId;
+            }
+
             const { error: dbError } = await supabase
                 .from("appointments")
-                .insert([{
-                    user_id: targetUserId,
-                    client_name: customerName,
-                    service_id: serviceId,
-                    date: date,
-                    status: "CONFIRMED",
-                    payment_status: "CONFIRMED",
-                    payment_id: `FREE_${crypto.randomUUID().split('-')[0]}`
-                }]);
+                .insert([appointmentData]);
 
             if (dbError) {
                 console.error("Erro Supabase:", dbError);
@@ -260,17 +270,22 @@ export async function POST(req: Request) {
         const qrCodeText = qrCodeData.payload;
 
         // 6. Salvar o agendamento no Supabase com status pendente
+        const pendingAppointmentData: any = {
+            client_name: customerName,
+            service_id: serviceId,
+            date: date,
+            status: "PENDING",
+            payment_status: "PENDING",
+            payment_id: paymentId,
+        };
+
+        if (targetUserId) {
+            pendingAppointmentData.user_id = targetUserId;
+        }
+
         const { error: dbError } = await supabase
             .from("appointments")
-            .insert([{
-                user_id: targetUserId,
-                client_name: customerName,
-                service_id: serviceId,
-                date: date,
-                status: "PENDING",
-                payment_status: "PENDING",
-                payment_id: paymentId,
-            }]);
+            .insert([pendingAppointmentData]);
 
         if (dbError) {
             console.error("Erro Supabase:", dbError);
