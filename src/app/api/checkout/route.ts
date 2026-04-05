@@ -98,23 +98,23 @@ export async function POST(req: Request) {
 
             if (authError || !authData.user) {
                 console.error("[Checkout API] Erro ao criar Ghost User:", authError);
-                // Se falhar a criação (ex: rate limit de email do Supabase), prosseguimos como ANÔNIMO DE VERDADE
-                // Isso garante que a regra "não precisa de cadastro" não trave o checkout.
-                targetUserId = null;
-                newGhostToken = null;
+                return NextResponse.json({ error: "Erro interno ao processar agendamento. O serviço de autenticação está temporariamente indisponível." }, { status: 500 });
             } else {
                 targetUserId = authData.user.id;
 
-                // Esperar um breve momento para garantir que o trigger do banco criou o profile
+                // Esperar um breve momento para garantir que a autenticação foi concluída
                 await new Promise(resolve => setTimeout(resolve, 500));
 
-                // Atualiza o profile
-                const { error: profileError } = await supabase.from('profiles').update({
-                    name: userName
-                }).eq('id', targetUserId);
+                // Insere/Atualiza o profile garantindo que ele exista para satisfazer a Foreign Key
+                const { error: profileError } = await supabase.from('profiles').upsert([{
+                    id: targetUserId,
+                    name: userName,
+                    phone: null,
+                    cpf: null
+                }]);
 
                 if (profileError) {
-                    console.error("[Checkout API] Erro ao atualizar Ghost Profile:", profileError);
+                    console.error("[Checkout API] Erro ao atualizar/inserir Ghost Profile:", profileError);
                 }
 
                 newGhostToken = { email: ghostEmail, password: ghostPassword };
@@ -136,17 +136,13 @@ export async function POST(req: Request) {
         // Agendamento GRATUITO
         if (!requiresPayment) {
             const appointmentData: any = {
-                client_name: customerName,
                 service_id: serviceId,
                 date: date,
                 status: "CONFIRMED",
                 payment_status: "CONFIRMED",
-                payment_id: `FREE_${crypto.randomUUID().split('-')[0]}`
+                payment_id: `FREE_${crypto.randomUUID().split('-')[0]}`,
+                user_id: targetUserId
             };
-
-            if (targetUserId) {
-                appointmentData.user_id = targetUserId;
-            }
 
             const { error: dbError } = await supabase
                 .from("appointments")
@@ -271,17 +267,13 @@ export async function POST(req: Request) {
 
         // 6. Salvar o agendamento no Supabase com status pendente
         const pendingAppointmentData: any = {
-            client_name: customerName,
             service_id: serviceId,
             date: date,
             status: "PENDING",
             payment_status: "PENDING",
             payment_id: paymentId,
+            user_id: targetUserId
         };
-
-        if (targetUserId) {
-            pendingAppointmentData.user_id = targetUserId;
-        }
 
         const { error: dbError } = await supabase
             .from("appointments")

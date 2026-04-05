@@ -9,7 +9,6 @@ type AgendaAppointment = {
     date: string;
     status: string;
     created_at: string;
-    client_name?: string;
     profiles: {
         name: string;
         phone: string;
@@ -27,7 +26,6 @@ type AgendaAppointmentRow = {
     date: string;
     status: string;
     created_at: string;
-    client_name?: string;
     profiles: AgendaAppointment["profiles"] | AgendaAppointment["profiles"][];
     services: AgendaAppointment["services"] | AgendaAppointment["services"][];
 };
@@ -53,7 +51,6 @@ export default function AdminAgenda() {
                     status,
                     user_id,
                     created_at,
-                    client_name,
                     profiles(name, phone, cpf),
                     services(name, duration, price)
                 `)
@@ -94,14 +91,19 @@ export default function AdminAgenda() {
         return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
     };
 
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        window.location.href = "/";
+    };
+
     return (
         <main className="flex-1 w-full relative flex flex-col h-screen">
             <header className="px-6 py-6 bg-black/90 backdrop-blur-md sticky top-0 z-30 border-b border-white/10 shrink-0">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-black text-white uppercase tracking-widest">Agenda</h1>
-                    <Link href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
+                    <button onClick={handleLogout} className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
                         <span className="material-symbols-outlined text-[20px]">logout</span>
-                    </Link>
+                    </button>
                 </div>
                 
                 {/* Horizontal Date Picker */}
@@ -183,7 +185,7 @@ export default function AdminAgenda() {
                                     </div>
                                     <div className="relative z-10 mb-4">
                                         <div className="flex justify-between items-start mb-0.5">
-                                            <h3 className="text-white font-extrabold text-base tracking-tight">{apt.client_name || apt.profiles?.name || 'Cliente'}</h3>
+                                            <h3 className="text-white font-extrabold text-base tracking-tight">{apt.profiles?.name || 'Cliente'}</h3>
                                             <span className="text-primary font-black text-sm tracking-tight">
                                                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(apt.services?.price || 0)}
                                             </span>

@@ -9,7 +9,6 @@ interface AdminAppointment {
     date: string;
     status: string;
     created_at: string;
-    client_name?: string;
     profiles: {
         name: string;
         phone: string;
@@ -26,7 +25,6 @@ type AdminAppointmentRow = {
     date: string;
     status: string;
     created_at: string;
-    client_name?: string;
     profiles: AdminAppointment["profiles"] | AdminAppointment["profiles"][];
     services: AdminAppointment["services"] | AdminAppointment["services"][];
 };
@@ -50,7 +48,6 @@ export default function AdminHome() {
                     status,
                     user_id,
                     created_at,
-                    client_name,
                     profiles(name, phone, cpf),
                     services(name, price)
                 `)
@@ -71,7 +68,6 @@ export default function AdminHome() {
                     date: d.date,
                     status: d.status,
                     created_at: d.created_at,
-                    client_name: d.client_name,
                     profiles: Array.isArray(d.profiles) ? d.profiles[0] : d.profiles,
                     services: Array.isArray(d.services) ? d.services[0] : d.services,
                 }));
@@ -130,7 +126,7 @@ export default function AdminHome() {
                                 
                                 <div className="flex-1 relative z-10">
                                     <div className="flex justify-between items-start mb-0.5">
-                                        <h3 className="text-white font-extrabold text-base tracking-tight">{apt.client_name || apt.profiles?.name || 'Cliente'}</h3>
+                                        <h3 className="text-white font-extrabold text-base tracking-tight">{apt.profiles?.name || 'Cliente'}</h3>
                                         <span className="text-primary font-black text-sm tracking-tight">
                                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(apt.services?.price || 0)}
                                         </span>

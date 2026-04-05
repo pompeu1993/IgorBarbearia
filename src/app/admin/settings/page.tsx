@@ -159,13 +159,18 @@ export default function AdminSettings() {
         );
     }
 
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        window.location.href = "/";
+    };
+
     return (
         <main className="flex-1 w-full relative pb-24">
             <header className="px-6 py-8 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/10 flex items-start justify-between">
                 <h1 className="text-2xl font-black text-white uppercase tracking-widest">Configurações</h1>
-                <Link href="/" className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
+                <button onClick={handleLogout} className="size-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-all shrink-0">
                     <span className="material-symbols-outlined text-[20px]">logout</span>
-                </Link>
+                </button>
             </header>
 
             <div className="px-6 pt-6 space-y-8">
