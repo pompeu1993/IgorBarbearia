@@ -5,10 +5,16 @@ import 'server-only';
 // Caso a variável ambiente não carregue, disparamos um erro claro.
 
 function getRequiredEnv(name: string): string {
-    const value = process.env[name];
+    let value = process.env[name];
     if (!value) {
         throw new Error(`Variável de ambiente obrigatória não encontrada: ${name}`);
     }
+    
+    // Se o Next.js mantiver a barra invertida do escape no .env, nós a removemos
+    if (value.startsWith('\\$')) {
+        value = value.substring(1);
+    }
+    
     return value;
 }
 
