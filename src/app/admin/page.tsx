@@ -36,7 +36,7 @@ export default function AdminHome() {
             const tomorrow = new Date(today);
             tomorrow.setDate(tomorrow.getDate() + 1);
 
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from("appointments")
                 .select(`
                     id,

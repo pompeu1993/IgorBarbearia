@@ -39,7 +39,7 @@ export default function AdminAgenda() {
             const endOfDay = new Date(startOfDay);
             endOfDay.setDate(endOfDay.getDate() + 1);
 
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from("appointments")
                 .select(`
                     id,
