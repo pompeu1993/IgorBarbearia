@@ -83,7 +83,7 @@ Na configuração, o admin define quais dias da semana a barbearia abre e seleci
 
 ## 9. Manutenção e Regras de Negócio
 - Agendamentos anteriores à data atual que possuam status `CONFIRMED` são automaticamente marcados como `COMPLETED` quando o histórico é consultado.
-- Os preços dos serviços configurados pelo admin possuem validação estrita no frontend e backend para garantir um valor mínimo de R$ 5,00 (requisito mínimo da API Asaas).
+- Os preços dos serviços configurados pelo admin possuem validação estrita no frontend e backend para garantir um valor mínimo de R$ 2,00.
 - A exibição de agendamentos na Home (`/`) e na Agenda do cliente (`/appointments`) filtra ativamente apenas agendamentos pagos (`CONFIRMED`), limitando-se a 3 resultados na tela inicial.
 - Ao receber o webhook do Asaas, o sistema executa repasse (split) automático: subtrai uma taxa fixa de R$ 1,25 e transfere via PIX o valor líquido para a chave celular pré-configurada.
 
