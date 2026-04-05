@@ -325,7 +325,7 @@ function DateTimeSelection() {
                 </div>
             </main>
 
-            <div className={`fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-5 pb-safe z-40 max-w-md mx-auto mb-[80px] transition-transform duration-500 ${selectedDate && selectedTime ? 'translate-y-0' : 'translate-y-full'}`}>
+            <div className={`fixed bottom-[72px] left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 p-5 z-40 max-w-md mx-auto pb-6 transition-transform duration-500 ${selectedDate && selectedTime ? 'translate-y-0' : 'translate-y-full'}`}>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-1">
                         <div className="flex flex-col">

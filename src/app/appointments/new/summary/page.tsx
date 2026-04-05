@@ -412,7 +412,7 @@ function SummaryContent() {
 
             {/* Bottom Sticky Action Bar for Checkout */}
             {!showPixSection && (
-                <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-white/10 p-5 px-6 z-40 max-w-md mx-auto pb-8">
+                <div className="fixed bottom-[72px] left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-white/10 p-5 px-6 z-40 max-w-md mx-auto pb-6">
                     <button 
                         onClick={handleCheckout} 
                         disabled={checkingOut || (!user && !guestName.trim())} 
