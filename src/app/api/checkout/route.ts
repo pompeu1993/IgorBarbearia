@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-
-// Integração com a API do Asaas (Ambiente de Produção)
-const ASAAS_API_URL = process.env.ASAAS_API_URL || "https://api.asaas.com/v3";
-// O Next.js com dotenv-expand tem um bug onde tenta expandir chaves começando com $
-// Para evitar isso e não precisar das aspas literais no .env.local, escapamos no código:
-const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjY4NWNjNDAyLTAyZTgtNDBkMS05MGZjLWRkMmQxYTYzYjZlYjo6JGFhY2hfODAwMzFiMTctMGU0OC00ZWQzLTkyZDMtMmYzOTEzNmQ1Y2Q3";
+import { asaasConfig, getAsaasHeaders } from "@/config/asaas";
 
 type AsaasErrorDetail = {
     description: string;
@@ -26,10 +21,16 @@ function getErrorMessage(error: unknown) {
 export async function POST(req: Request) {
     try {
         console.log("=== INICIO CHECKOUT API ===");
+        
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+            console.error("[Checkout API] Variáveis de ambiente do Supabase ausentes.");
+            return NextResponse.json({ error: "Configuração do servidor incompleta. Contate o suporte." }, { status: 500 });
+        }
+
         const authHeader = req.headers.get("Authorization");
         const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
             { global: { headers: { Authorization: authHeader || "" } } }
         );
 
@@ -57,19 +58,29 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "CPF obrigatório para pagamento Pix no Asaas." }, { status: 400 });
         }
 
+        // 0. Verificar se o horário ainda está disponível antes de prosseguir
+        const { data: bookedSlots, error: bookedError } = await supabase.rpc("get_booked_slots", {
+            start_time: date,
+            end_time: date
+        });
+
+        if (bookedError) {
+            console.error("[Checkout API] Erro ao verificar disponibilidade:", bookedError);
+            return NextResponse.json({ error: "Erro ao verificar disponibilidade de horário." }, { status: 500 });
+        }
+
+        if (bookedSlots && bookedSlots.length > 0) {
+            return NextResponse.json({ error: "O horário selecionado não está mais disponível ou expirou." }, { status: 409 });
+        }
+
         const customerName = profile?.name || user?.user_metadata?.name || "Cliente";
         const cleanCpf = cpfToUse.replace(/\D/g, "");
         console.log("CPF processado:", cleanCpf, " | Cliente:", customerName);
-        console.log("Asaas URL:", ASAAS_API_URL);
-        console.log("Asaas Token length:", ASAAS_TOKEN.length);
 
         // 1. Buscar se o cliente já existe no Asaas pelo CPF
         let customerId = "";
-        const searchCustomerRes = await fetch(`${ASAAS_API_URL}/customers?cpfCnpj=${cleanCpf}`, {
-            headers: {
-                "access_token": ASAAS_TOKEN,
-                "Accept": "application/json"
-            }
+        const searchCustomerRes = await fetch(`${asaasConfig.API_URL}/customers?cpfCnpj=${cleanCpf}`, {
+            headers: getAsaasHeaders()
         });
         
         const searchRawText = await searchCustomerRes.text();
@@ -92,13 +103,9 @@ export async function POST(req: Request) {
             customerId = searchCustomerData.data[0].id;
         } else {
             // 2. Criar cliente no Asaas
-            const createCustomerRes = await fetch(`${ASAAS_API_URL}/customers`, {
+            const createCustomerRes = await fetch(`${asaasConfig.API_URL}/customers`, {
                 method: "POST",
-                headers: {
-                    "access_token": ASAAS_TOKEN,
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
+                headers: getAsaasHeaders(),
                 body: JSON.stringify({
                     name: customerName,
                     cpfCnpj: cleanCpf,
@@ -137,13 +144,9 @@ export async function POST(req: Request) {
         // Ensure price is a valid number. Asaas exige mínimo de R$ 5.00 para gerar cobrança via API
         const paymentValue = Math.max(5.00, Number(price) || 0);
 
-        const paymentRes = await fetch(`${ASAAS_API_URL}/payments`, {
+        const paymentRes = await fetch(`${asaasConfig.API_URL}/payments`, {
             method: "POST",
-            headers: {
-                "access_token": ASAAS_TOKEN,
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
+            headers: getAsaasHeaders(),
             body: JSON.stringify({
                 customer: customerId,
                 billingType: "PIX",
@@ -179,11 +182,8 @@ export async function POST(req: Request) {
         const paymentId = paymentData.id;
 
         // 4. Obter o QR Code do PIX
-        const qrCodeRes = await fetch(`${ASAAS_API_URL}/payments/${paymentId}/pixQrCode`, {
-            headers: {
-                "access_token": ASAAS_TOKEN,
-                "Accept": "application/json"
-            }
+        const qrCodeRes = await fetch(`${asaasConfig.API_URL}/payments/${paymentId}/pixQrCode`, {
+            headers: getAsaasHeaders()
         });
 
         const qrCodeRawText = await qrCodeRes.text();

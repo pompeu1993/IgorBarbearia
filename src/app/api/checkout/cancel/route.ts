@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-
-const ASAAS_API_URL = "https://api.asaas.com/v3";
-// Fixando o token pelo mesmo motivo do checkout route
-const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjY4NWNjNDAyLTAyZTgtNDBkMS05MGZjLWRkMmQxYTYzYjZlYjo6JGFhY2hfODAwMzFiMTctMGU0OC00ZWQzLTkyZDMtMmYzOTEzNmQ1Y2Q3";
+import { asaasConfig, getAsaasHeaders } from "@/config/asaas";
 
 export async function POST(req: Request) {
     try {
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+            console.error("[Checkout Cancel API] Variáveis de ambiente do Supabase ausentes.");
+            return NextResponse.json({ error: "Configuração do servidor incompleta. Contate o suporte." }, { status: 500 });
+        }
+
         const authHeader = req.headers.get("Authorization");
         const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+            process.env.NEXT_PUBLIC_SUPABASE_URL,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
             { global: { headers: { Authorization: authHeader || "" } } }
         );
 
@@ -21,11 +23,9 @@ export async function POST(req: Request) {
         }
 
         // 1. Cancel in Asaas
-        const deleteRes = await fetch(`${ASAAS_API_URL}/payments/${paymentId}`, {
+        const deleteRes = await fetch(`${asaasConfig.API_URL}/payments/${paymentId}`, {
             method: "DELETE",
-            headers: {
-                "access_token": ASAAS_TOKEN
-            }
+            headers: getAsaasHeaders()
         });
 
         const deleteData = await deleteRes.json();
