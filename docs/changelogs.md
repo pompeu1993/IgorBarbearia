@@ -60,12 +60,16 @@ Todas as modificações do sistema devem ser registradas aqui.
 - **Nova Regra de Negócio: Agendamentos Anônimos e Pagamento Condicional:**
   - Remoção da obrigatoriedade de Login para realizar agendamentos. Clientes informam apenas o "Nome".
   - Implementação de criação transparente de "Ghost Users" no Supabase via `/api/checkout` para usuários não logados, armazenando credenciais temporárias no `localStorage` para login em background e visualização de histórico.
+  - Correção no salvamento do cache (espera pelo login assíncrono) garantindo que o celular do usuário mantenha a sessão Ghost ativa.
+  - O perfil do Ghost User agora é atualizado diretamente na tabela `profiles` no ato do agendamento, evitando a necessidade de colunas extras (como `client_name`) na tabela de `appointments`, o que corrigiu erros 500 de schema.
   - Refatoração da lógica de pagamento: PIX agora é gerado e exigido **apenas** se o agendamento for antes das 09:00 ou a partir das 18:00.
   - Uso de um CPF fixo (`00483932159`) para todas as integrações com o Asaas, bypassando a necessidade de cadastro completo do cliente e evitando bloqueios de CPF no gateway.
   - Horários do calendário (`/appointments/new/datetime` e reagendamento) alterados para intervalos de 1 em 1 hora, conforme nova regra (ex: 09:00, 10:00, 11:00).
 - **Acesso Administrativo Simplificado:**
   - Criação da rota `/admin-login` para acesso ao painel usando apenas um Código de Acesso (`igor123778`), sem necessidade de email/senha visíveis.
   - Autenticação "under the hood" utilizando a conta real do administrador no Supabase, mantendo a segurança do RLS intacta.
+  - **Ghost Session Recovery:** Ao clicar em "Sair" no painel Admin, o sistema agora busca credenciais Ghost do `localStorage` e reloga silenciosamente o usuário comum, impedindo que o cliente perca seu histórico ao emprestar o celular para o Admin.
+  - Correção no redirecionamento: Ao reagendar um horário logado como Admin, o usuário é devolvido para `/admin/agenda` em vez da home pública.
 - **Melhorias de UI e Regras de Negócio:**
   - Ocultação automática e suave dos botões de geração de PIX na tela de checkout (`/appointments/new/summary`) logo após a geração bem-sucedida da cobrança.
   - Filtro na Agenda (Home e `/appointments`): Exibição restrita a agendamentos futuros que estão confirmados (pagos), com limite máximo de 3 agendamentos na tela inicial.

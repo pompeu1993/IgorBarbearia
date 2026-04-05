@@ -10,7 +10,7 @@ CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
   name TEXT,
   phone TEXT,
-  cpf TEXT UNIQUE,
+  cpf TEXT, -- Não é mais UNIQUE obrigatório para suportar Ghost Users
   avatar_url TEXT,
   role TEXT DEFAULT 'client', -- 'admin' ou 'client'
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE appointments (
   status TEXT NOT NULL DEFAULT 'PENDING', -- PENDING, CONFIRMED, CANCELLED, COMPLETED
   payment_status TEXT NOT NULL DEFAULT 'PENDING', -- PENDING, PAID, FAILED, CANCELLED
   payment_id TEXT, -- ID da transação no Asaas
-  user_id UUID REFERENCES auth.users(id) NOT NULL,
+  user_id UUID REFERENCES auth.users(id), -- Opcional para suportar falhas na geração de Ghost Users
   service_id UUID REFERENCES services(id) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL

@@ -31,3 +31,14 @@ Quando a barbearia estiver com a agenda lotada e muito tráfego.
 - [ ] **Monitoramento (Sentry ou Datadog)**: Rastrear erros silenciosos do frontend em produção. (*Requer configuração manual de credenciais rodando `npx @sentry/wizard@latest -i nextjs`*).
 - [x] **Otimização de SEO (Next.js)**: Configurado Metatags e OpenGraph para a página principal da barbearia indexar bem no Google.
 
+***
+
+## 🔄 Fase 5: Pivot de Negócios (Agendamento Anônimo & Pix Condicional)
+
+Implementações das novas regras de negócio para maximizar a conversão.
+
+- [x] **Agendamento Anônimo ("Ghost Users")**: Permitir agendamentos apenas com o "Nome", criando contas invisíveis no Supabase atreladas ao dispositivo.
+- [x] **Pagamento Condicional**: Cobrar Pix no Asaas apenas em horários de pico (antes das 09h ou a partir das 18h). Demais horários gratuitos.
+- [x] **Simplificação Asaas**: Bypass do CPF via payload fixo (`00483932159`) para não exigir dados do usuário final.
+- [x] **Login Administrativo Rápido**: Acesso ao painel `/admin` apenas com um código de acesso simples, mantendo segurança do Supabase.
+
