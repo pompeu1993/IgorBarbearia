@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 const ASAAS_API_URL = process.env.ASAAS_API_URL || "https://api.asaas.com/v3";
 // O Next.js com dotenv-expand tem um bug onde tenta expandir chaves começando com $
 // Para evitar isso e não precisar das aspas literais no .env.local, escapamos no código:
-const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjRmNDhlMGRiLTA4MjgtNGU4OS05Y2RjLWQ2N2U1YWZiMTVmZDo6JGFhY2hfNzc0YzAyMTMtOTUwZi00ZjY3LTg5YWQtYzdiOTFjZTI3NTZj";
+const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjY4NWNjNDAyLTAyZTgtNDBkMS05MGZjLWRkMmQxYTYzYjZlYjo6JGFhY2hfODAwMzFiMTctMGU0OC00ZWQzLTkyZDMtMmYzOTEzNmQ1Y2Q3";
 
 type AsaasErrorDetail = {
     description: string;

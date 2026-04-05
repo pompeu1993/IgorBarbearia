@@ -276,13 +276,6 @@ function SummaryContent() {
                                                 <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
                                                 <span className="text-sm font-medium">{formattedTime} • {service.duration} min</span>
                                             </div>
-                                            <div className="flex items-start gap-2 text-white/90 pt-2 mt-2 border-t border-white/5">
-                                                <span className="material-symbols-outlined text-primary text-[18px] mt-0.5">location_on</span>
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-bold text-white">The Barber Elite</span>
-                                                    <span className="text-[11px] leading-tight text-white/70">Av. Paulista, 1200 - Jardins, São Paulo</span>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -50,6 +50,11 @@ Todas as modificações do sistema devem ser registradas aqui.
   - Integração com a API de Transferências do Asaas para enviar automaticamente o valor líquido via PIX para a chave celular (12997036922).
   - Adição de mecanismo de idempotência verificando o `payment_status` no Supabase antes da transferência, prevenindo processamento duplicado.
   - Criação de testes unitários em `tests/webhooks/asaas-webhook.test.ts` cobrindo validação de payload, idempotência e sucesso na transferência.
+- **Melhorias de UI e Regras de Negócio:**
+  - Ocultação automática e suave dos botões de geração de PIX na tela de checkout (`/appointments/new/summary`) logo após a geração bem-sucedida da cobrança.
+  - Filtro na Agenda (Home e `/appointments`): Exibição restrita a agendamentos futuros que estão confirmados (pagos), com limite máximo de 3 agendamentos na tela inicial.
+  - Validação de Preços (Admin): Adicionada proteção em tempo real no painel administrativo (`/admin/settings`) para garantir que os preços de novos serviços não sejam inferiores a R$ 5,00 (limite mínimo do Asaas), com feedback visual e testes automatizados.
+  - Remoção da exibição estática de localidade na tela de resumo de agendamento.
 ### Modified
 - **`src/app/login/page.tsx`:** O layout da tela de login foi inteiramente reconstruído para refletir com exatidão o "Premium" design estabelecido pelo novo mockup. O texto "Premium" foi alterado para "Igor Barbearia". O botão "Esqueci minha senha" foi reposicionado para baixo do input de senha e linkado corretamente para a nova tela de recuperação (`/recuperar-senha`).
 - **`src/app/recuperar-senha/page.tsx`:** Nova tela construída seguindo fielmente o mockup UI premium. Ela invoca a Edge Function `send-reset-email` do Supabase bypassando os limites nativos de SMTP do Supabase e utilizando o Resend para enviar a recuperação de senha.

@@ -22,6 +22,8 @@ graph TD
     M2 -- Estão OK --> N2
     N2 --> F
     
+    N2 -- Webhook Asaas --> O[Repasse PIX Automático]
+    
     F --> M[Banco de Dados]
     G --> M
     H --> M

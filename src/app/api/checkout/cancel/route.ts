@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const ASAAS_API_URL = "https://api.asaas.com/v3";
-const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmVmMjE3MThmLTgwMTAtNDAyZS1iNmYzLWM5Y2U0YjQ0NjI4Mjo6JGFhY2hfYjQxNzk5ZGEtMjg3ZC00MGMzLWFhMTUtM2I5NWQ2NGI4YzY2";
+// Fixando o token pelo mesmo motivo do checkout route
+const ASAAS_TOKEN = "$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjY4NWNjNDAyLTAyZTgtNDBkMS05MGZjLWRkMmQxYTYzYjZlYjo6JGFhY2hfODAwMzFiMTctMGU0OC00ZWQzLTkyZDMtMmYzOTEzNmQ1Y2Q3";
 
 export async function POST(req: Request) {
     try {
