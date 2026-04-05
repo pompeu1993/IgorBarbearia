@@ -9,6 +9,7 @@ type AgendaAppointment = {
     date: string;
     status: string;
     created_at: string;
+    client_name?: string;
     profiles: {
         name: string;
         phone: string;
@@ -26,6 +27,7 @@ type AgendaAppointmentRow = {
     date: string;
     status: string;
     created_at: string;
+    client_name?: string;
     profiles: AgendaAppointment["profiles"] | AgendaAppointment["profiles"][];
     services: AgendaAppointment["services"] | AgendaAppointment["services"][];
 };
@@ -51,6 +53,7 @@ export default function AdminAgenda() {
                     status,
                     user_id,
                     created_at,
+                    client_name,
                     profiles(name, phone, cpf),
                     services(name, duration, price)
                 `)
@@ -180,7 +183,7 @@ export default function AdminAgenda() {
                                     </div>
                                     <div className="relative z-10 mb-4">
                                         <div className="flex justify-between items-start mb-0.5">
-                                            <h3 className="text-white font-extrabold text-base tracking-tight">{apt.profiles?.name || 'Cliente'}</h3>
+                                            <h3 className="text-white font-extrabold text-base tracking-tight">{apt.client_name || apt.profiles?.name || 'Cliente'}</h3>
                                             <span className="text-primary font-black text-sm tracking-tight">
                                                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(apt.services?.price || 0)}
                                             </span>

@@ -227,8 +227,12 @@ export default function ProfilePage() {
     if (!isAuthenticated) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-black px-6">
-                <p className="text-slate-400 mb-6">Você precisa estar logado para acessar seu perfil.</p>
-                <Link href="/login" className="px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-xl">Fazer Login</Link>
+                <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-3">Perfil não encontrado.</h2>
+                <p className="text-slate-400 mb-6 text-center">Para ter um perfil, realize um agendamento neste dispositivo ou faça login caso já possua conta.</p>
+                <div className="flex flex-col gap-4 w-full max-w-xs">
+                    <Link href="/" className="w-full py-4 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-xl text-center">NOVO AGENDAMENTO</Link>
+                    <Link href="/login" className="w-full py-4 bg-transparent border border-white/20 text-white font-bold uppercase tracking-widest text-xs rounded-xl text-center">FAZER LOGIN</Link>
+                </div>
             </div>
         );
     }

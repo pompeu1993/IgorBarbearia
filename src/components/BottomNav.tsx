@@ -25,34 +25,16 @@ export function BottomNav() {
             <div className="flex justify-between items-end pb-4">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href;
-                    // Se não estiver logado, apenas 'Início' funciona
-                    const isItemDisabled = !isAuthenticated && item.name !== "Início";
-
-                    if (isItemDisabled) {
-                        return (
-                            <div
-                                key={item.name}
-                                className="flex flex-col items-center gap-1.5 min-w-[60px] opacity-30 pointer-events-none text-slate-500"
-                            >
-                                <span className="material-symbols-outlined" style={item.fill ? { fontVariationSettings: "'FILL' 1" } : undefined}>
-                                    {item.icon}
-                                </span>
-                                <span className="text-[9px] font-bold uppercase tracking-wider">{item.name}</span>
-                            </div>
-                        );
-                    }
 
                     return (
                         <Link
                             key={item.name}
                             href={item.href}
-                            className={`flex flex-col items-center gap-1.5 min-w-[60px] group transition-colors ${isActive ? "text-primary" : "text-slate-500 hover:text-primary"
-                                }`}
+                            className={`flex flex-col items-center gap-1.5 min-w-[60px] transition-colors ${
+                                isActive ? "text-primary" : "text-slate-500 hover:text-white"
+                            }`}
                         >
-                            <span
-                                className="material-symbols-outlined group-hover:scale-110 transition-transform"
-                                style={item.fill || isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
-                            >
+                            <span className="material-symbols-outlined" style={item.fill ? { fontVariationSettings: "'FILL' 1" } : undefined}>
                                 {item.icon}
                             </span>
                             <span className="text-[9px] font-bold uppercase tracking-wider">{item.name}</span>

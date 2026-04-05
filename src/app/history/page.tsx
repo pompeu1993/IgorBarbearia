@@ -77,7 +77,11 @@ export default function HistoryPage() {
             </header>
             <main className="flex-1 overflow-y-auto pb-[130px] hide-scrollbar relative z-10 px-6 py-6 space-y-6">
                 {!isAuthenticated ? (
-                    <div className="text-center py-20 text-white text-sm">Faça login para ver seu histórico.</div>
+                    <div className="text-center py-20 text-white text-sm">
+                        <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-3">Nenhum histórico encontrado.</h2>
+                        <p className="text-sm text-slate-400 mb-6">Faça um agendamento para começar a registrar seu histórico neste dispositivo.</p>
+                        <Link href="/" className="px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-xl inline-block mt-4">NOVO AGENDAMENTO</Link>
+                    </div>
                 ) : (
                     <>
                         <HistoryFilters

@@ -116,8 +116,9 @@ export default function AppointmentsPage() {
             <main className="flex-1 overflow-y-auto pb-32 hide-scrollbar relative z-10 px-6 py-6">
                 {!isAuthenticated ? (
                     <div className="flex flex-col items-center justify-center h-full text-center mt-12">
-                        <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-3">Faça login para ver seus agendamentos.</h2>
-                        <Link href="/login" className="px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-xl mt-4">IR PARA O LOGIN</Link>
+                        <h2 className="text-xl font-bold text-white uppercase tracking-tight mb-3">Nenhum agendamento encontrado.</h2>
+                        <p className="text-sm text-slate-400 mb-6">Você ainda não possui agendamentos neste dispositivo.</p>
+                        <Link href="/" className="px-6 py-3 bg-primary text-black font-bold uppercase tracking-widest text-xs rounded-xl">NOVO AGENDAMENTO</Link>
                     </div>
                 ) : loading ? (
                     <div className="flex justify-center p-10">

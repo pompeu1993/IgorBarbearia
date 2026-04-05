@@ -23,7 +23,11 @@ export default function Home() {
   // Mostra o dado em cache instantaneamente, enquanto busca a atualização real no fundo
   const [profileName, setProfileName] = useState<string | null>(() => {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("cachedProfileName") || null;
+      let cached = sessionStorage.getItem("cachedProfileName") || null;
+      if (cached && cached.startsWith("ghost_")) {
+        cached = localStorage.getItem("guestName") || "Visitante";
+      }
+      return cached;
     }
     return null;
   });
@@ -70,11 +74,20 @@ export default function Home() {
         .maybeSingle();
 
       let newProfileName = user.email?.split('@')[0] || "Cliente";
+      
+      if (profile && profile.name) {
+        newProfileName = profile.name;
+      }
+      
+      // Previne exibir o email do ghost user na UI
+      if (newProfileName.startsWith("ghost_")) {
+        newProfileName = localStorage.getItem("guestName") || "Visitante";
+      }
+
       let newAvatarUrl = null;
       let newIsAdmin = user.email === 'rafaelmiguelalonso@gmail.com';
 
       if (profile) {
-        newProfileName = profile.name || newProfileName;
         newAvatarUrl = profile.avatar_url;
         newIsAdmin = profile.role === 'admin' || newIsAdmin;
       }
@@ -150,8 +163,13 @@ export default function Home() {
       {/* Header */}
       <header className="grid grid-cols-3 items-center px-4 py-5 bg-black/90 backdrop-blur-md sticky top-0 z-20 border-b border-primary/20">
         <div className="flex items-center">
-          {isAuthenticated && isAdmin && (
+          {isAuthenticated && isAdmin ? (
             <Link href="/admin" className="text-[10px] font-bold tracking-widest text-primary uppercase border border-primary/30 px-2 py-1 rounded bg-primary/10 flex items-center gap-1 hover:bg-primary hover:text-black transition-colors">
+              <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+              Admin
+            </Link>
+          ) : (
+            <Link href="/admin-login" className="text-[10px] font-bold tracking-widest text-primary uppercase border border-primary/30 px-2 py-1 rounded bg-primary/10 flex items-center gap-1 hover:bg-primary hover:text-black transition-colors">
               <span className="material-symbols-outlined text-[14px]">admin_panel_settings</span>
               Admin
             </Link>

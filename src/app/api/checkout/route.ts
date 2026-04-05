@@ -90,7 +90,10 @@ export async function POST(req: Request) {
             const { data: authData, error: authError } = await supabase.auth.admin.createUser({
                 email: ghostEmail,
                 password: ghostPassword,
-                email_confirm: true
+                email_confirm: true,
+                user_metadata: {
+                    name: userName
+                }
             });
 
             if (authError || !authData.user) {
@@ -100,8 +103,8 @@ export async function POST(req: Request) {
 
             targetUserId = authData.user.id;
 
-            // Insere o profile com o nome do cliente e CPF nulo (já que usaremos um fixo pro Asaas)
-            const { error: profileError } = await supabase.from('profiles').insert([{
+            // Atualiza o profile com o nome do cliente e CPF nulo (já que usaremos um fixo pro Asaas)
+            const { error: profileError } = await supabase.from('profiles').upsert([{
                 id: targetUserId,
                 name: userName,
                 cpf: null
@@ -127,12 +130,13 @@ export async function POST(req: Request) {
         // Regra de negócio: "todos os cpfs devem ser com o mesmo CPF 00483932159 dentro do sistema para nao barrar no asaas"
         const FIXED_ASAAS_CPF = "00483932159";
 
+        // Agendamento GRATUITO
         if (!requiresPayment) {
-            // Agendamento GRATUITO
             const { error: dbError } = await supabase
                 .from("appointments")
                 .insert([{
                     user_id: targetUserId,
+                    client_name: customerName,
                     service_id: serviceId,
                     date: date,
                     status: "CONFIRMED",
@@ -262,6 +266,7 @@ export async function POST(req: Request) {
             .from("appointments")
             .insert([{
                 user_id: targetUserId,
+                client_name: customerName,
                 service_id: serviceId,
                 date: date,
                 status: "PENDING",

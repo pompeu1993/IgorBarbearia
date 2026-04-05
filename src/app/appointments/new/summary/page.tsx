@@ -47,7 +47,11 @@ function SummaryContent() {
 
         // Pre-fill name if user is logged in or has cached name
         if (user?.email) {
-            setGuestName(sessionStorage.getItem("cachedProfileName") || user.user_metadata?.name || user.email.split('@')[0]);
+            let name = sessionStorage.getItem("cachedProfileName") || user.user_metadata?.name || user.email.split('@')[0];
+            if (name.startsWith("ghost_")) {
+                name = localStorage.getItem("guestName") || "Visitante";
+            }
+            setGuestName(name);
         } else {
             const cachedName = localStorage.getItem("guestName") || sessionStorage.getItem("cachedProfileName");
             if (cachedName) setGuestName(cachedName);

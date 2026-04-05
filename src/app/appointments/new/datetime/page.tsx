@@ -226,7 +226,7 @@ function DateTimeSelection() {
                 </div>
             </div>
 
-            <main className="flex-1 w-full px-5 pb-[130px]">
+            <main className="flex-1 w-full px-5 pt-6 pb-[180px] relative">
                 <div className="mt-6 p-5 rounded-2xl bg-[#0a0a0a] border border-white/10 flex items-center gap-4 shadow-lg relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/0 group-hover:bg-primary/10 blur-[40px] rounded-full -mr-16 -mt-16 transition-colors duration-500 pointer-events-none"></div>
                     <div className="size-14 rounded-2xl bg-gradient-to-br from-[#dca715] to-[#8a680b] flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)] text-black relative z-10">
@@ -338,17 +338,10 @@ function DateTimeSelection() {
                             <span className="text-primary text-lg font-black tracking-tight">{formatPrice(service.price)}</span>
                         </div>
                     </div>
-                    {isAuthenticated ? (
-                        <Link href={`/appointments/new/summary?serviceId=${serviceId}&datetime=${finalDateTimeStr}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform">
-                            <span>Confirmar Horário</span>
-                            <span className="material-symbols-outlined font-black">calendar_check</span>
-                        </Link>
-                    ) : (
-                        <Link href={`/login?redirect=/appointments/new/summary?serviceId=${serviceId}&datetime=${finalDateTimeStr}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform">
-                            <span>Fazer Login para Confirmar</span>
-                            <span className="material-symbols-outlined font-black">lock</span>
-                        </Link>
-                    )}
+                    <Link href={`/appointments/new/summary?serviceId=${serviceId}&datetime=${finalDateTimeStr}`} className="w-full h-16 bg-gradient-to-r from-[#dca715] via-primary to-[#dca715] text-black rounded-2xl font-black text-lg shadow-[0_10px_30px_-10px_rgba(212,175,55,0.5)] flex items-center justify-center gap-3 active:scale-[0.98] transition-transform">
+                        <span>Continuar para Resumo</span>
+                        <span className="material-symbols-outlined font-black">arrow_forward</span>
+                    </Link>
                 </div>
             </div>
         </>
