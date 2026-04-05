@@ -107,13 +107,16 @@ function SummaryContent() {
             const data = await res.json();
             
             if (res.ok) {
-                // Se foi gerado um ghost user, salva no cache e loga no background
-                if (data.ghostToken) {
+                // Sempre salvar o guestName se existir, para não perder o cache do nome do visitante
+                if (guestName.trim()) {
                     localStorage.setItem("guestName", guestName.trim());
                     sessionStorage.setItem("cachedProfileName", guestName.trim());
-                    
-                    // Auto-login silencioso
-                    supabase.auth.signInWithPassword({
+                }
+
+                // Se foi gerado um ghost user NOVO, loga no background
+                if (data.ghostToken) {
+                    // Esperar o login para garantir que a sessão seja criada antes de navegar
+                    await supabase.auth.signInWithPassword({
                         email: data.ghostToken.email,
                         password: data.ghostToken.password
                     }).catch(console.error);

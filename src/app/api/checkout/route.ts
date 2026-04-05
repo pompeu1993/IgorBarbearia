@@ -103,12 +103,10 @@ export async function POST(req: Request) {
 
             targetUserId = authData.user.id;
 
-            // Atualiza o profile com o nome do cliente e CPF nulo (já que usaremos um fixo pro Asaas)
-            const { error: profileError } = await supabase.from('profiles').upsert([{
-                id: targetUserId,
-                name: userName,
-                cpf: null
-            }]);
+            // Atualiza o profile com o nome do cliente (o trigger já deve ter criado o profile)
+            const { error: profileError } = await supabase.from('profiles').update({
+                name: userName
+            }).eq('id', targetUserId);
 
             if (profileError) {
                 console.error("[Checkout API] Erro ao criar Ghost Profile:", profileError);
