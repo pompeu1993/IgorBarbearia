@@ -104,8 +104,16 @@ function SummaryContent() {
                 })
             });
 
-            const data = await res.json();
-            
+            let data;
+            try {
+                const text = await res.text();
+                data = JSON.parse(text);
+            } catch (err) {
+                console.error("Falha ao ler JSON:", err);
+                alert("Erro grave no servidor (Vercel). Tente novamente mais tarde.");
+                return;
+            }
+
             if (res.ok) {
                 // Sempre salvar o guestName se existir, para não perder o cache do nome do visitante
                 if (guestName.trim()) {

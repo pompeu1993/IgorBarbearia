@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { asaasConfig, getAsaasHeaders } from "@/config/asaas";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import crypto from "crypto";
 
 // Inicializa o limitador apenas se as chaves estiverem configuradas
 const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
