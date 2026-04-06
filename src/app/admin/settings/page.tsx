@@ -16,7 +16,7 @@ export default function AdminSettings() {
     const [priceError, setPriceError] = useState<string | null>(null);
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
+        let value = e.target.value;
         setPrice(value);
 
         const numPrice = parseFloat(value);

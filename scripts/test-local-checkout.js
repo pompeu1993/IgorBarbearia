@@ -1,4 +1,3 @@
-/* eslint-disable */
 import http from 'http';
 
 async function testLocalCheckout() {
