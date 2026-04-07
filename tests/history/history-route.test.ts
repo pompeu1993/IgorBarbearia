@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { describe, expect, it, vi } from "vitest";
 import { createHistoryGetHandler } from "@/app/api/history/route";
 

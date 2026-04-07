@@ -13,6 +13,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://thebarberelite.com"),
   title: "A Elite do Corte | The Barber Elite",
   description: "Eleve seu estilo a um novo patamar. Agende seu horário na The Barber Elite e experimente o padrão ouro em barbearia clássica e moderna com o Igor.",
   openGraph: {

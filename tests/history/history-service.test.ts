@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { describe, expect, it, vi } from "vitest";
 import { loadUserHistory } from "@/lib/history/service";
 

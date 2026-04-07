@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { describe, expect, it } from "vitest";
 import { buildHistoryResponse, parseHistoryQuery } from "@/lib/history/utils";
 

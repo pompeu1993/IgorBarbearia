@@ -10,10 +10,29 @@ vi.mock("@supabase/supabase-js", () => ({
             if (table === "appointments") {
                 return {
                     update: vi.fn().mockReturnThis(),
-                    eq: vi.fn().mockResolvedValue({
+                    eq: vi.fn().mockReturnThis(),
+                    select: vi.fn().mockReturnThis(),
+                    single: vi.fn().mockResolvedValue({
+                        data: {
+                            id: "apt_123",
+                            user_id: "usr_123",
+                            guest_name: "Test Guest",
+                            date: "2024-01-01T10:00:00Z",
+                            service_name: "Corte"
+                        },
                         error: null
                     })
                 };
+            }
+            if (table === "profiles") {
+                return {
+                    select: vi.fn().mockReturnThis(),
+                    eq: vi.fn().mockReturnThis(),
+                    maybeSingle: vi.fn().mockResolvedValue({
+                        data: { email: "test@example.com" },
+                        error: null
+                    })
+                }
             }
             return {};
         })

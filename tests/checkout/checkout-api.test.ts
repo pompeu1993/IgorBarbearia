@@ -12,7 +12,13 @@ vi.mock("@supabase/supabase-js", () => ({
                     user: { id: "user-123", email: "test@example.com", user_metadata: { name: "Test User", cpf: "12345678909" } }
                 },
                 error: null
-            })
+            }),
+            admin: {
+                createUser: vi.fn().mockResolvedValue({
+                    data: { user: { id: "ghost-123" } },
+                    error: null
+                })
+            }
         },
         from: vi.fn((table) => {
             if (table === "profiles") {
@@ -22,7 +28,8 @@ vi.mock("@supabase/supabase-js", () => ({
                     maybeSingle: vi.fn().mockResolvedValue({
                         data: { cpf: "123.456.789-09", name: "Test User" },
                         error: null
-                    })
+                    }),
+                    upsert: vi.fn().mockResolvedValue({ error: null })
                 };
             }
             if (table === "appointments") {
@@ -33,7 +40,8 @@ vi.mock("@supabase/supabase-js", () => ({
                 };
             }
             return {};
-        })
+        }),
+        rpc: vi.fn().mockResolvedValue({ data: null, error: null })
     }))
 }));
 
@@ -99,7 +107,7 @@ describe("POST /api/checkout", () => {
             return Promise.resolve({ ok: false });
         });
 
-        const req = createMockRequest({ serviceId: "serv-1", date: "2023-12-01T10:00:00Z", price: 50, serviceName: "Corte" });
+        const req = createMockRequest({ serviceId: "serv-1", date: "2023-12-01T10:00:00Z", price: 50, serviceName: "Corte", userName: "Test Guest" });
         const res = await POST(req);
         const data = await res.json();
 
@@ -121,7 +129,7 @@ describe("POST /api/checkout", () => {
             return Promise.resolve({ ok: false });
         });
 
-        const req = createMockRequest({ serviceId: "serv-1", date: "2023-12-01T10:00:00Z", price: 50 });
+        const req = createMockRequest({ serviceId: "serv-1", date: "2023-12-01T10:00:00Z", price: 50, userName: "Test Guest" });
         const res = await POST(req);
         const data = await res.json();
 
@@ -150,7 +158,7 @@ describe("POST /api/checkout", () => {
             return Promise.resolve({ ok: false });
         });
 
-        const req = createMockRequest({ serviceId: "serv-1", date: "2023-12-01T10:00:00Z", price: 50 });
+        const req = createMockRequest({ serviceId: "serv-1", date: "2023-12-01T10:00:00Z", price: 50, userName: "Test Guest" });
         const res = await POST(req);
         const data = await res.json();
 

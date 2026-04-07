@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "../../../src/app/api/appointments/cleanup/route";
 import { createClient } from "@supabase/supabase-js";
