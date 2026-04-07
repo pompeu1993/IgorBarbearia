@@ -7,6 +7,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 type Service = {
     id: string;
     name: string;
@@ -188,7 +190,7 @@ function DateTimeSelection() {
             const isAdmin = session?.user?.email === 'rafaelmiguelalonso@gmail.com';
             
             if (isAdmin) {
-                router.push("/admin/agenda");
+                router.push("/admin/calendar");
             } else {
                 router.push("/appointments");
             }

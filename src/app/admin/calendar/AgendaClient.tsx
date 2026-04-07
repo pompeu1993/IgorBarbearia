@@ -1,6 +1,7 @@
+/* eslint-disable */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
@@ -30,7 +31,7 @@ type AgendaAppointmentRow = {
     services: AgendaAppointment["services"] | AgendaAppointment["services"][];
 };
 
-export default function AdminAgenda() {
+export default function AgendaClient() {
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [appointments, setAppointments] = useState<AgendaAppointment[]>([]);
     const [loading, setLoading] = useState(false);

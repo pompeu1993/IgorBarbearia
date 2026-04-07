@@ -59,8 +59,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <span className="material-symbols-outlined text-[24px]">{pathname === '/admin' ? 'home' : 'home'}</span>
                     <span className="text-[10px] font-bold uppercase tracking-widest">Início</span>
                 </Link>
-                <Link href="/admin/agenda" className={`flex flex-col items-center gap-1.5 transition-colors ${pathname === '/admin/agenda' ? 'text-primary' : 'text-white/50 hover:text-white'}`}>
-                    <span className="material-symbols-outlined text-[24px]">{pathname === '/admin/agenda' ? 'calendar_month' : 'calendar_month'}</span>
+                <Link href="/admin/calendar" className={`flex flex-col items-center gap-1.5 transition-colors ${pathname === '/admin/calendar' ? 'text-primary' : 'text-white/50 hover:text-white'}`}>
+                    <span className="material-symbols-outlined text-[24px]">{pathname === '/admin/calendar' ? 'calendar_month' : 'calendar_month'}</span>
                     <span className="text-[10px] font-bold uppercase tracking-widest">Agenda</span>
                 </Link>
                 <Link href="/admin/settings" className={`flex flex-col items-center gap-1.5 transition-colors ${pathname === '/admin/settings' ? 'text-primary' : 'text-white/50 hover:text-white'}`}>
