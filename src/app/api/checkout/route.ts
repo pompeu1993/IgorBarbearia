@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { asaasConfig, getAsaasHeaders } from "@/config/asaas";

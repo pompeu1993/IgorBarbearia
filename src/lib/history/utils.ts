@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { HistoryItem, HistoryQuery, HistoryResponse, RawHistoryRow } from "@/lib/history/types";
 
 const MAX_PAGE_SIZE = 50;

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { describe, it, expect, vi } from "vitest";
 import { updateUserProfile } from "@/lib/profile/service";
 

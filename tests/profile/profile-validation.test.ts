@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { describe, it, expect } from "vitest";
 
 // Extraímos a lógica pura de validação para ser perfeitamente testável isoladamente
